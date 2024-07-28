@@ -99,7 +99,7 @@ const user = ref({
 })
 
 // 输入框验证
-const msg = ref('')
+let msg = ref('')
 let isRightPhone = ref(false)
 let isRightPwd = ref(false)
 let signin = ref(false)
