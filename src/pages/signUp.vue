@@ -90,8 +90,29 @@
 </template>
 
 <script setup>
-import { ref, onUpdated, nextTick } from 'vue'
+import { ref, onUpdated, nextTick, onMounted } from 'vue'
 import Toast from '../components/toast.vue'
+
+// 引入axios
+onMounted(async () => {
+  const { data: resp } = await axios.post(
+    'http://192.168.100.7:7001/onlineShop/signUp',
+    {
+      name: 'demo',
+      phoneNumber: '12345678910',
+      pwd: '123demo456'
+    },
+    {
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8'
+        // "Access-Control-Allow-Methods": "PUT,POST,GET,DELETE,OPTIONS",
+        // "Access-Control-Allow-Origin": "*"
+      }
+    }
+  )
+
+  console.log(resp)
+})
 
 // 用户信息
 const user = ref({

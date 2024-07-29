@@ -70,7 +70,27 @@
 
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
-import Toast from './toast'
+import Toast from '../components/toast.vue'
+
+// 引入axios
+onMounted(async () => {
+  const { data: resp } = await axios.get(
+    'http://192.168.100.7:7001/onlineShop/getVerificationCode',
+    {
+      verificationCode: '8324'
+    },
+    {
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8'
+        // "Access-Control-Allow-Methods": "PUT,POST,GET,DELETE,OPTIONS",
+        // "Access-Control-Allow-Origin": "*"
+      }
+    }
+  )
+
+  console.log(resp.verificationCode)
+  alert('验证码：' + resp.verificationCode)
+})
 
 // 验证码输入框点击变色
 let isActived = ref(false)
@@ -102,8 +122,6 @@ const input4 = () => {
   isActived4.value = true
 }
 
-// 倒计时
-let countdown = ref('03:00')
 let m = ref(2)
 let s = ref(59)
 onMounted(async () => {
