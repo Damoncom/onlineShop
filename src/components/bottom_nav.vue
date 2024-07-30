@@ -1,8 +1,8 @@
 <template>
   <div class="bottom_box">
     <div class="home">
-      <i class="iconfont icon-home"></i>
-      <div class="title">Home</div>
+      <i class="iconfont icon-home" :class="props.init_home == true ? 'purple' : 'icon-home'"></i>
+      <div class="title" :class="props.init_home == true ? 'purple' : 'title'">Home</div>
     </div>
     <div class="search">
       <i class="iconfont icon-sousuo"></i>
@@ -19,15 +19,16 @@
       <div class="title">Order</div>
     </div>
     <div class="profile">
-      <i class="iconfont icon-geren1" :class="profile.init == true ? 'purple' : 'icon-geren1'"></i>
-      <div class="title" :class="profile.init == true ? 'purple' : 'icon-geren1'">Profile</div>
+      <i class="iconfont icon-geren1" :class="props.init == true ? 'purple' : 'icon-geren1'"></i>
+      <div class="title" :class="props.init == true ? 'purple' : 'title'">Profile</div>
     </div>
   </div>
 </template>
 <script setup>
 import { ref } from 'vue'
 
-const profile = defineProps(['init'])
+const props = defineProps(['init_', 'init_home'])
+console.log(props)
 </script>
 <style lang="scss" scoped>
 .bottom_box {
@@ -55,6 +56,9 @@ const profile = defineProps(['init'])
       font-size: 10px;
       color: #979c9e;
       margin-top: 2px;
+    }
+    .purple {
+      color: #a456dd;
     }
   }
   .search {

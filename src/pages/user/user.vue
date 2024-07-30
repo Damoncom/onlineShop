@@ -69,10 +69,31 @@
   <BottomNav :init="isProfilePage" />
 </template>
 <script setup>
-import { ref } from 'vue'
-import BottomNav from '../components/bottom_nav'
+import { ref, onMounted } from 'vue'
+import BottomNav from '../../components/bottom_nav'
 
-// 确认时Profile页面
+// 引入axios
+onMounted(async () => {
+  const { data: resp } = await axios.get(
+    'http://192.168.100.7:7001/onlineShop/getUserInfo',
+    {
+      name: 'demo',
+      email: 'Demo@email.com',
+      phoneNumber: '12345678910'
+    },
+    {
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8'
+        // "Access-Control-Allow-Methods": "PUT,POST,GET,DELETE,OPTIONS",
+        // "Access-Control-Allow-Origin": "*"
+      }
+    }
+  )
+
+  console.log(resp)
+})
+
+// 确认是Profile页面
 const isProfilePage = true
 
 // 头像

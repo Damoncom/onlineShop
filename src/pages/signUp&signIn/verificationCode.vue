@@ -10,7 +10,7 @@
       </div>
       <div class="number_box">
         <div class="num1" @click="input" :class="isActived == true ? 'num_actived' : 'num1'">
-          <input type="number" class="input1" />
+          <input type="number" class="input1" ref="input1" />
         </div>
         <div class="num2" @click="input2" :class="isActived2 == true ? 'num_actived' : 'num2'">
           <input type="number" class="input2" />
@@ -70,7 +70,7 @@
 
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
-import Toast from '../components/toast.vue'
+import Toast from '../../components/toast.vue'
 
 // 引入axios
 onMounted(async () => {
@@ -170,6 +170,9 @@ let verificationCode = ref('')
 const submit = () => {
   isSubmit.value = true
 }
+
+const input1 = ref(null)
+console.log(input1)
 </script>
 
 <style lang="scss" scoped>

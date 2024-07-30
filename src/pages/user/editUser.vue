@@ -7,7 +7,7 @@
       </div>
     </div>
     <div class="content">
-      <div class="img_box">
+      <div class="img_box" @click="changeImg">
         <img :src="imgUrl" class="img" />
         <i class="iconfont icon-zhaoxiangji1"></i>
       </div>
@@ -98,13 +98,30 @@
     <!-- 引入toast组件 -->
     <Toast :init="msg" v-if="isSave == true" />
   </div>
+  <div class="mask" v-if="isChange == true"></div>
+  <div class="changeImg_box" v-if="isChange == true">
+    <div class="take_photo">
+      <img src="@/assets/photo_img.jpg" class="photo_img" />
+      <div class="photo_text">Take a photo</div>
+    </div>
+    <div class="picture">
+      <img src="@/assets/picture_img.jpg" class="picture_img" />
+      <div class="picture_text">Gallary</div>
+    </div>
+  </div>
 </template>
 
 <script setup>
 import { ref, onUpdated, nextTick } from 'vue'
-import Toast from '../components/toast.vue'
+import Toast from '../../components/toast.vue'
 
+// 修改头像
 const imgUrl = ref('src/assets/imgurl.jpg')
+let isChange = ref(false)
+const changeImg = () => {
+  isChange.value = true
+  console.log('yes')
+}
 
 // 用户信息
 const user = ref({
@@ -497,6 +514,63 @@ const save = () => {
         width: 325px;
         height: 44px;
       }
+    }
+  }
+}
+.mask {
+  width: 375px;
+  height: 812px;
+  background-color: rgba($color: #000000, $alpha: 0.5);
+  position: absolute;
+  top: 0;
+}
+.changeImg_box {
+  width: 288px;
+  height: 117px;
+  border-radius: 10px;
+  background-color: #ffffff;
+  z-index: 999;
+  position: absolute;
+  top: 348px;
+  left: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  .take_photo {
+    width: 49%;
+    height: 80px;
+    border-right: 1px solid #c4c4c4;
+    // background-color: #a456dd;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    .photo_img {
+      width: 36px;
+      height: 36px;
+    }
+    .photo_text {
+      font-size: 12px;
+      line-height: 26px;
+      font-weight: 700;
+    }
+  }
+  .picture {
+    width: 50%;
+    height: 80px;
+    // background-color: #a456dd;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    .picture_img {
+      width: 36px;
+      height: 36px;
+    }
+    .picture_text {
+      font-size: 12px;
+      line-height: 26px;
+      font-weight: 700;
     }
   }
 }

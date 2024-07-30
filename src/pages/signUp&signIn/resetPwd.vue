@@ -53,10 +53,11 @@
           <p class="text">Reset Passowrd</p>
         </div>
       </div>
-
-      <div class="sign_in">
-        <p class="text">Sign In</p>
-      </div>
+      <RouterLink to="/signIn" class="link_signin">
+        <div class="sign_in">
+          <p class="text">Sign In</p>
+        </div>
+      </RouterLink>
     </div>
 
     <!-- 引入toast组件 -->
@@ -73,17 +74,19 @@
         <p class="discription_text">Congratulation! your Password has been changed successfully.</p>
       </div>
     </div>
-    <div class="button">
-      <div class="back_home_button">
-        <p class="text1">Sign In</p>
+    <RouterLink to="/location" class="link_location">
+      <div class="button">
+        <div class="back_home_button">
+          <p class="text1">Sign In</p>
+        </div>
       </div>
-    </div>
+    </RouterLink>
   </div>
 </template>
 
 <script setup>
 import { ref, onUpdated, nextTick, onMounted } from 'vue'
-import Toast from '../components/toast.vue'
+import Toast from '../../components/toast.vue'
 
 // 引入axios
 onMounted(async () => {
@@ -334,17 +337,19 @@ input {
         height: 44px;
       }
     }
-
-    .sign_in {
-      width: 54px;
-      height: 24px;
-      margin: 24px 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      .text {
-        font-size: 16px;
-        color: #a456dd;
+    .link_signin {
+      text-decoration: none;
+      .sign_in {
+        width: 54px;
+        height: 24px;
+        margin: 24px 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .text {
+          font-size: 16px;
+          color: #a456dd;
+        }
       }
     }
   }
@@ -408,30 +413,33 @@ input {
       }
     }
   }
-  .button {
-    width: 335px;
-    height: 46px;
-    margin-top: 46px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    .back_home_button {
+  .link_location {
+    text-decoration: none;
+    .button {
       width: 335px;
       height: 46px;
-      border-radius: 6px;
-      background-color: #a456dd;
+      margin-top: 46px;
       display: flex;
       justify-content: center;
       align-items: center;
-      transition: all 0.1s ease-in-out;
-      .text1 {
-        font-size: 16px;
-        color: #ffffff;
+      .back_home_button {
+        width: 335px;
+        height: 46px;
+        border-radius: 6px;
+        background-color: #a456dd;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: all 0.1s ease-in-out;
+        .text1 {
+          font-size: 16px;
+          color: #ffffff;
+        }
       }
-    }
-    .back_home_button:active {
-      width: 325px;
-      height: 44px;
+      .back_home_button:active {
+        width: 325px;
+        height: 44px;
+      }
     }
   }
 }

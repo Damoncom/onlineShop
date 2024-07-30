@@ -6,14 +6,29 @@
 
     <div class="content">
       <div class="header">
-        <div class="title">Sign In</div>
+        <div class="title">Sign Up</div>
         <div class="discription">Get great experience with AlNVE</div>
       </div>
       <div class="tab_bar">
         <div class="sign_up_button">Sign Up</div>
-        <div class="sign_in_button">Sign In</div>
+        <div class="sign_in_button">
+          <RouterLink to="/signIn" class="link_signin">Sign In</RouterLink>
+        </div>
       </div>
       <div class="input_field">
+        <div class="input_name">
+          <div class="title">Full Name</div>
+          <div class="form">
+            <div class="main">
+              <i
+                class="iconfont icon-geren"
+                :class="isRightName == true ? 'icon-geren_purple' : 'icon-geren'"
+              ></i>
+              <input type="text" placeholder="Enter your name" class="name" v-model="user.name" />
+              <img src="@/assets/right.svg" class="right" v-if="isRightName == true" />
+            </div>
+          </div>
+        </div>
         <div class="input_phone">
           <div class="title">Phone Number</div>
           <div class="form">
@@ -46,28 +61,15 @@
           </div>
         </div>
       </div>
-
-      <div class="more">
-        <div class="more_left">
-          <input type="checkbox" class="remember_checkbox" v-model="isRemember" />
-          <div class="remember">
-            <p class="remember_text">Remember Me</p>
-          </div>
-        </div>
-        <div class="more_right">
-          <p class="right_text">Forgot Password?</p>
-        </div>
-      </div>
-
       <div class="button_box">
-        <div class="create_button" @click="signIn">
-          <p class="text">Sign In</p>
+        <div class="create_button" @click="createAccount">
+          <p class="text">Create Account</p>
+          <RouterLink to="/verificationCode" class="link" v-if="create == true"></RouterLink>
         </div>
       </div>
-
       <div class="bottom">
         <div class="title">
-          <p class="text">Or Sign In With</p>
+          <p class="text">Or Sign Up With</p>
         </div>
         <div class="social_buttons">
           <div class="google" @click="googleRegister">
@@ -84,19 +86,20 @@
     </div>
 
     <!-- 引入toast组件 -->
-    <Toast :init="msg" v-if="isActivedSignin == true" />
+    <Toast :init="msg" v-if="isActivedCreate == true" />
   </div>
 </template>
 
 <script setup>
 import { ref, onUpdated, nextTick, onMounted } from 'vue'
-import Toast from '../components/toast.vue'
+import Toast from '../../components/toast.vue'
 
 // 引入axios
 onMounted(async () => {
   const { data: resp } = await axios.post(
-    'http://192.168.100.7:7001/onlineShop/signIn',
+    'http://192.168.100.7:7001/onlineShop/signUp',
     {
+      name: 'demo',
       phoneNumber: '12345678910',
       pwd: '123demo456'
     },
@@ -114,18 +117,27 @@ onMounted(async () => {
 
 // 用户信息
 const user = ref({
+  name: '',
   phoneNumber: '',
   pwd: ''
 })
 
 // 输入框验证
-let msg = ref('')
+const msg = ref('')
+let isRightName = ref(false)
 let isRightPhone = ref(false)
 let isRightPwd = ref(false)
-let signin = ref(false)
-let isActivedSignin = ref(false)
+let create = ref(false)
+let isActivedCreate = ref(false)
 onUpdated(async () => {
   await nextTick()
+
+  // 判断用户名是否为空
+  if (user.value.name !== '') {
+    isRightName.value = true
+  } else {
+    isRightName.value = false
+  }
 
   // 判断手机号码的输入格式正确与否
   // /^[1][3-9][0-9]{9}$/   注:以数字1开头，第二位是3到9的数字，后面跟着9个数字，
@@ -146,33 +158,72 @@ onUpdated(async () => {
   }
 
   // 综合判断
-  if (isRightPhone.value === false && isRightPwd.value === false) {
+  if (isRightPhone.value === false && isRightPwd.value === false && isRightName.value === false) {
+    msg.value = 'Input error'
+  } else if (
+    isRightPhone.value === true &&
+    isRightPwd.value === false &&
+    isRightName.value === false
+  ) {
+    msg.value = 'Incorrect name and password input'
+  } else if (
+    isRightPhone.value === false &&
+    isRightPwd.value === true &&
+    isRightName.value === false
+  ) {
+    msg.value = 'Incorrect name and phone number input'
+  } else if (
+    isRightPhone.value === false &&
+    isRightPwd.value === false &&
+    isRightName.value === true
+  ) {
     msg.value = 'Incorrect phone number and password input'
-  } else if (isRightPhone.value === true && isRightPwd.value === false) {
-    msg.value = 'Incorrect password input'
-  } else if (isRightPhone.value === false && isRightPwd.value === true) {
+  } else if (
+    isRightPhone.value === true &&
+    isRightPwd.value === true &&
+    isRightName.value === false
+  ) {
+    msg.value = 'Name cannot be empty'
+  } else if (
+    isRightPhone.value === true &&
+    isRightPwd.value === false &&
+    isRightName.value === true
+  ) {
+    msg.value =
+      'Starting with a letter, with a length between 6-18, can only contain characters, numbers, and underscores'
+  } else if (
+    isRightPhone.value === false &&
+    isRightPwd.value === true &&
+    isRightName.value === true
+  ) {
     msg.value = 'Incorrect phone number input'
-  } else if (isRightPhone.value === true && isRightPwd.value === true) {
+  } else if (
+    isRightPhone.value === true &&
+    isRightPwd.value === true &&
+    isRightName.value === true
+  ) {
     msg.value = 'Successfully!'
-    signin.value = true
-    console.log('signin的值：' + signin.value)
-    console.log('手机号：' + user.value.phoneNumber + ' 密码：' + user.value.pwd + '  登录成功！')
+    create.value = true
+    console.log('create的值：' + create.value)
+    console.log(
+      '名字：' +
+        user.value.name +
+        '手机号：' +
+        user.value.phoneNumber +
+        ' 密码：' +
+        user.value.pwd +
+        '  注册成功！'
+    )
   }
 })
 
-// 登录按钮
-const signIn = () => {
-  isActivedSignin.value = true
+// 创建账户按钮
+const createAccount = () => {
+  isActivedCreate.value = true
   setTimeout(() => {
-    isActivedSignin.value = false
-  }, 3000)
+    isActivedCreate.value = false
+  }, 4000)
 }
-
-let isRemember = ref(false)
-// onUpdated(async () => {
-//   await nextTick()
-//   console.log(isRemember.value)
-// })
 
 // 其他渠道注册
 let isGoogle = ref(false)
@@ -248,16 +299,6 @@ input {
         height: 42px;
         font-size: 14px;
         line-height: 18.2px;
-        color: #a7a9b7;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-      .sign_in_button {
-        width: 160px;
-        height: 42px;
-        font-size: 14px;
-        line-height: 18.2px;
         color: #191d31;
         background-color: #ffffff;
         border-radius: 50px;
@@ -265,12 +306,72 @@ input {
         justify-content: center;
         align-items: center;
       }
+      .sign_in_button {
+        width: 160px;
+        height: 42px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .link_signin {
+          padding: 10px 30px;
+          font-size: 14px;
+          line-height: 18.2px;
+          color: #a7a9b7;
+          text-decoration: none;
+        }
+      }
     }
 
     .input_field {
       width: 327px;
-      height: 192px;
-
+      height: 298px;
+      .input_name {
+        width: 327px;
+        height: 86px;
+        margin-bottom: 20px;
+        .title {
+          width: auto;
+          height: 34px;
+          font-size: 16px;
+          color: #191d31;
+        }
+        .form {
+          width: 327px;
+          height: 52px;
+          border: 1px solid #f3f3f3;
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          .main {
+            width: 300px;
+            height: 24px;
+            margin-left: 10px;
+            display: flex;
+            align-items: center;
+            .icon-geren {
+              font-size: 20px;
+              color: #a7a9b7;
+            }
+            .icon-geren_purple {
+              color: #a456dd;
+            }
+            .name {
+              vertical-align: center;
+              margin-left: 14px;
+              width: 235px;
+              font-size: 17px;
+            }
+            .name::-webkit-input-placeholder {
+              font-size: 16px;
+              color: #a7a9b7;
+            }
+            .right {
+              width: 23px;
+              height: 23px;
+            }
+          }
+        }
+      }
       .input_phone {
         width: 327px;
         height: 86px;
@@ -365,50 +466,11 @@ input {
         }
       }
     }
-    .more {
-      width: 327px;
-      height: 24px;
-      margin-top: 16px;
-      display: flex;
-      align-items: center;
-      .more_left {
-        width: 124px;
-        height: 18px;
-        display: flex;
-        align-items: center;
-        .remember_checkbox {
-          width: 15px;
-          height: 15px;
-          border: 1px solid #1c31c8;
-          border-radius: 20px;
-        }
-        .remember {
-          height: 18px;
-          display: flex;
-          align-items: center;
-          margin-left: 5px;
-          .remember_text {
-            width: 100px;
-            font-size: 14px;
-            color: #a7a9b7;
-          }
-        }
-      }
-      .more_right {
-        height: 18px;
-        display: flex;
-        align-items: center;
-        margin-left: auto;
-        .right_text {
-          font-size: 14px;
-          color: #a456dd;
-        }
-      }
-    }
     .button_box {
       width: 335px;
       height: 46px;
       margin-top: 37px;
+      position: relative;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -430,11 +492,16 @@ input {
         width: 325px;
         height: 44px;
       }
+      .link {
+        width: 335px;
+        height: 46px;
+        position: absolute;
+      }
     }
 
     .bottom {
       width: 375px;
-      margin: 25px 0 30px 0;
+      margin: 17px 0 30px 0;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -458,7 +525,7 @@ input {
         justify-content: center;
 
         .google {
-          width: 103px;
+          width: 44px;
           height: 44px;
           border: 1px solid #d0d5dd;
           border-radius: 8px;
@@ -476,7 +543,7 @@ input {
           background-color: #d0d5dd57;
         }
         .facebook {
-          width: 103px;
+          width: 44px;
           height: 44px;
           border: 1px solid #d0d5dd;
           border-radius: 8px;
@@ -494,7 +561,7 @@ input {
           background-color: #d0d5dd57;
         }
         .apple {
-          width: 103px;
+          width: 44px;
           height: 44px;
           border: 1px solid #d0d5dd;
           border-radius: 8px;
