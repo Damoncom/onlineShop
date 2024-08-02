@@ -1,34 +1,66 @@
 <template>
   <div class="bottom_box">
-    <div class="home">
+    <!-- home页面 -->
+    <div class="home" @click="LinkToHome">
       <i class="iconfont icon-home" :class="props.init_home == true ? 'purple' : 'icon-home'"></i>
       <div class="title" :class="props.init_home == true ? 'purple' : 'title'">Home</div>
     </div>
+    <!-- search页面 -->
     <div class="search">
       <i class="iconfont icon-sousuo"></i>
       <div class="title">Search</div>
     </div>
+    <!-- cart页面 -->
     <div class="cart">
       <i class="iconfont icon-yuan">
         <i class="iconfont icon-gouwudai"></i>
       </i>
       <div class="title">Cart</div>
     </div>
-    <div class="order">
-      <i class="iconfont icon-dingdan"></i>
-      <div class="title">Order</div>
+    <!-- order页面 -->
+    <div class="order" @click="LinkToOrder">
+      <i
+        class="iconfont icon-dingdan"
+        :class="props.init_order == true ? 'purple' : 'icon-dingdan'"
+      ></i>
+      <div class="title" :class="props.init_order == true ? 'purple' : 'title'">Order</div>
     </div>
-    <div class="profile">
-      <i class="iconfont icon-geren1" :class="props.init == true ? 'purple' : 'icon-geren1'"></i>
-      <div class="title" :class="props.init == true ? 'purple' : 'title'">Profile</div>
+    <!-- profile页面 -->
+    <div class="profile" @click="LinkToProfile">
+      <i
+        class="iconfont icon-geren1"
+        :class="props.init_profile == true ? 'purple' : 'icon-geren1'"
+      ></i>
+      <div class="title" :class="props.init_profile == true ? 'purple' : 'title'">Profile</div>
     </div>
   </div>
 </template>
 <script setup>
 import { ref } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 
-const props = defineProps(['init_', 'init_home'])
+const router = useRouter()
+const route = useRoute()
+
+const props = defineProps(['init_home', 'init_order', 'init_profile'])
 console.log(props)
+
+// 跳转到页面
+const LinkToHome = () => {
+  router.push({
+    path: '/home'
+  })
+}
+const LinkToOrder = () => {
+  router.push({
+    path: '/order'
+  })
+}
+const LinkToProfile = () => {
+  router.push({
+    path: '/profile'
+  })
+}
 </script>
 <style lang="scss" scoped>
 .bottom_box {
@@ -77,6 +109,9 @@ console.log(props)
       color: #979c9e;
       margin-top: 2px;
     }
+    .purple {
+      color: #a456dd;
+    }
   }
   .cart {
     height: 40px;
@@ -105,6 +140,9 @@ console.log(props)
       margin-top: 25px;
       //   margin-top: 2px;
     }
+    .purple {
+      color: #a456dd;
+    }
   }
   .order {
     height: 40px;
@@ -122,6 +160,9 @@ console.log(props)
       font-size: 10px;
       color: #979c9e;
       margin-top: 3px;
+    }
+    .purple {
+      color: #a456dd;
     }
   }
   .profile {

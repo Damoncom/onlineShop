@@ -1,7 +1,7 @@
 <template>
   <div class="app">
     <div class="bar">
-      <i class="iconfont icon-jiantou"></i>
+      <i class="iconfont icon-jiantou" @click="goBack"></i>
     </div>
 
     <div class="content">
@@ -11,60 +11,63 @@
       </div>
       <div class="tab_bar">
         <div class="sign_up_button">Sign Up</div>
-        <div class="sign_in_button">
-          <RouterLink to="/signIn" class="link_signin">Sign In</RouterLink>
-        </div>
+        <div class="sign_in_button" @click="linkToSignIn">Sign In</div>
       </div>
-      <div class="input_field">
-        <div class="input_name">
-          <div class="title">Full Name</div>
-          <div class="form">
-            <div class="main">
-              <i
-                class="iconfont icon-geren"
-                :class="isRightName == true ? 'icon-geren_purple' : 'icon-geren'"
-              ></i>
-              <input type="text" placeholder="Enter your name" class="name" v-model="user.name" />
-              <img src="@/assets/right.svg" class="right" v-if="isRightName == true" />
+      <KeepAlive include="signUP">
+        <div class="input_field">
+          <div class="input_name">
+            <div class="title">Full Name</div>
+            <div class="form">
+              <div class="main">
+                <i
+                  class="iconfont icon-geren"
+                  :class="isRightName == true ? 'icon-geren_purple' : 'icon-geren'"
+                ></i>
+                <input type="text" placeholder="Enter your name" class="name" v-model="user.name" />
+                <img src="@/assets/right.svg" class="right" v-if="isRightName == true" />
+              </div>
             </div>
           </div>
-        </div>
-        <div class="input_phone">
-          <div class="title">Phone Number</div>
-          <div class="form">
-            <div class="main">
-              <i
-                class="iconfont icon-tel"
-                :class="isRightPhone == true ? 'icon-tel_purple' : 'icon-tel'"
-              ></i>
-              <input
-                type="number"
-                placeholder="Enter your number"
-                class="phoneNumber"
-                v-model="user.phoneNumber"
-              />
-              <img src="@/assets/right.svg" class="right" v-if="isRightPhone == true" />
+          <div class="input_phone">
+            <div class="title">Phone Number</div>
+            <div class="form">
+              <div class="main">
+                <i
+                  class="iconfont icon-tel"
+                  :class="isRightPhone == true ? 'icon-tel_purple' : 'icon-tel'"
+                ></i>
+                <input
+                  type="number"
+                  placeholder="Enter your number"
+                  class="phoneNumber"
+                  v-model="user.phoneNumber"
+                />
+                <img src="@/assets/right.svg" class="right" v-if="isRightPhone == true" />
+              </div>
             </div>
           </div>
-        </div>
-        <div class="input_pwd">
-          <div class="title">Password</div>
-          <div class="form">
-            <div class="main">
-              <i
-                class="iconfont icon-lock"
-                :class="isRightPwd == true ? 'icon-lock_purple' : 'icon-lock'"
-              ></i>
-              <input type="text" placeholder="Enter your password" class="pwd" v-model="user.pwd" />
-              <img src="@/assets/right.svg" class="right" v-if="isRightPwd == true" />
+          <div class="input_pwd">
+            <div class="title">Password</div>
+            <div class="form">
+              <div class="main">
+                <i
+                  class="iconfont icon-lock"
+                  :class="isRightPwd == true ? 'icon-lock_purple' : 'icon-lock'"
+                ></i>
+                <input
+                  type="text"
+                  placeholder="Enter your password"
+                  class="pwd"
+                  v-model="user.pwd"
+                />
+                <img src="@/assets/right.svg" class="right" v-if="isRightPwd == true" />
+              </div>
             </div>
-          </div>
-        </div>
-      </div>
+          </div></div
+      ></KeepAlive>
       <div class="button_box">
         <div class="create_button" @click="createAccount">
           <p class="text">Create Account</p>
-          <RouterLink to="/verificationCode" class="link" v-if="create == true"></RouterLink>
         </div>
       </div>
       <div class="bottom">
@@ -91,29 +94,25 @@
 </template>
 
 <script setup>
-import { ref, onUpdated, nextTick, onMounted } from 'vue'
+import { ref, unref, onUpdated, nextTick, onMounted } from 'vue'
+import signUP from './signUp'
 import Toast from '../../components/toast.vue'
+import axios from 'axios'
+import { useRouter, useRoute } from 'vue-router'
+const router = useRouter()
+const route = useRoute()
 
-// 引入axios
-onMounted(async () => {
-  const { data: resp } = await axios.post(
-    'http://192.168.100.7:7001/onlineShop/signUp',
-    {
-      name: 'demo',
-      phoneNumber: '12345678910',
-      pwd: '123demo456'
-    },
-    {
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8'
-        // "Access-Control-Allow-Methods": "PUT,POST,GET,DELETE,OPTIONS",
-        // "Access-Control-Allow-Origin": "*"
-      }
-    }
-  )
+// 回退一页
+const goBack = () => {
+  router.go(-1)
+}
 
-  console.log(resp)
-})
+// 切换到signIn页面
+const linkToSignIn = () => {
+  router.push({
+    path: '/signIn'
+  })
+}
 
 // 用户信息
 const user = ref({
@@ -131,7 +130,6 @@ let create = ref(false)
 let isActivedCreate = ref(false)
 onUpdated(async () => {
   await nextTick()
-
   // 判断用户名是否为空
   if (user.value.name !== '') {
     isRightName.value = true
@@ -156,7 +154,10 @@ onUpdated(async () => {
   } else {
     isRightPwd.value = true
   }
+})
 
+// 创建账户按钮
+const createAccount = async () => {
   // 综合判断
   if (isRightPhone.value === false && isRightPwd.value === false && isRightName.value === false) {
     msg.value = 'Input error'
@@ -214,11 +215,13 @@ onUpdated(async () => {
         user.value.pwd +
         '  注册成功！'
     )
-  }
-})
 
-// 创建账户按钮
-const createAccount = () => {
+    router.push({
+      path: '/verificationCode',
+      query: unref(user)
+    })
+  }
+
   isActivedCreate.value = true
   setTimeout(() => {
     isActivedCreate.value = false
@@ -252,10 +255,14 @@ input {
     height: 48px;
     display: flex;
     align-items: center;
-    margin-left: 20px;
-    .icon-jiantou {
-      font-size: 16px;
-      color: #191d31;
+    margin-left: 10px;
+    .link_home {
+      text-decoration: none;
+      padding: 10px;
+      .icon-jiantou {
+        font-size: 16px;
+        color: #191d31;
+      }
     }
   }
   .content {
@@ -312,13 +319,10 @@ input {
         display: flex;
         justify-content: center;
         align-items: center;
-        .link_signin {
-          padding: 10px 30px;
-          font-size: 14px;
-          line-height: 18.2px;
-          color: #a7a9b7;
-          text-decoration: none;
-        }
+        font-size: 14px;
+        line-height: 18.2px;
+        color: #a7a9b7;
+        text-decoration: none;
       }
     }
 

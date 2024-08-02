@@ -57,9 +57,7 @@
           <div class="nav_icon">
             <img src="@/assets/nav_icon.jpg" class="nav_img" />
           </div>
-          <div class="jump">
-            <RouterLink to="/signUp" class="link">Start</RouterLink>
-          </div>
+          <div class="jump" @click="linkToSignUp">Start</div>
         </div>
       </swiper-slide>
     </swiper-container>
@@ -68,7 +66,10 @@
 
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 
+const router = useRouter()
+const route = useRoute()
 // 引入swiper
 import { register } from 'swiper/element/bundle'
 
@@ -100,6 +101,13 @@ onMounted(async () => {
     isLoad.value = false
   }, 3000)
 })
+
+// 跳转到signUp页面
+const linkToSignUp = () => {
+  router.push({
+    path: '/signUp'
+  })
+}
 </script>
 
 <style lang="scss" scoped>
@@ -204,11 +212,9 @@ onMounted(async () => {
         display: flex;
         align-items: center;
         justify-content: center;
-        .link {
-          font-size: 16px;
-          color: white;
-          text-decoration: none;
-        }
+        font-size: 16px;
+        color: white;
+        text-decoration: none;
       }
     }
   }

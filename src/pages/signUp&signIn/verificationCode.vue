@@ -1,33 +1,37 @@
 <template>
   <div class="app">
     <div class="bar">
-      <i class="iconfont icon-jiantou"></i>
+      <i class="iconfont icon-jiantou" @click="goBack"></i>
     </div>
     <div class="content">
       <div class="header">
         <div class="title">Verification Code</div>
-        <div class="discription">We have sent the code verification to your number</div>
+        <div class="discription">
+          We have sent the code verification to your number
+          <span>{{ phone }}</span>
+        </div>
       </div>
       <div class="number_box">
         <div class="num1" @click="input" :class="isActived == true ? 'num_actived' : 'num1'">
-          <input type="number" class="input1" ref="input1" />
+          <input type="number" class="input1" v-model="num1" />
         </div>
         <div class="num2" @click="input2" :class="isActived2 == true ? 'num_actived' : 'num2'">
-          <input type="number" class="input2" />
+          <input type="number" class="input2" v-model="num2" />
         </div>
         <div class="num3" @click="input3" :class="isActived3 == true ? 'num_actived' : 'num3'">
-          <input type="number" class="input3" />
+          <input type="number" class="input3" v-model="num3" />
         </div>
         <div class="num4" @click="input4" :class="isActived4 == true ? 'num_actived' : 'num4'">
-          <input type="number" class="input4" />
+          <input type="number" class="input4" v-model="num4" />
         </div>
       </div>
       <div class="countdown">
         <p class="time">{{ m + ':' + s }}</p>
       </div>
       <div class="button_box">
-        <div class="create_button" @click="submit">
+        <div class="create_button" @click="submit(user)">
           <p class="text">Submit</p>
+          <RouterLink to="/home" class="link_home"></RouterLink>
         </div>
       </div>
       <div class="bottom">
@@ -69,27 +73,41 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, nextTick, onUpdated } from 'vue'
 import Toast from '../../components/toast.vue'
+import axios from 'axios'
+import { useRouter, useRoute } from 'vue-router'
+import { reactive, isReactive } from 'vue'
 
-// 引入axios
+// 回退到上一页面
+const goBack = () => {
+  router.go(-1)
+}
+
+// 获取路由参数
+const router = useRouter()
+const route = useRoute()
+let user = route.query
+console.log(user)
+const phone = user.phoneNumber
+// let phoneNumber = ref('')
+
+// 页面载入完毕获取验证码
 onMounted(async () => {
-  const { data: resp } = await axios.get(
-    'http://192.168.100.7:7001/onlineShop/getVerificationCode',
-    {
-      verificationCode: '8324'
+  const { data: resp } = await axios({
+    method: 'get',
+    // url: `${baseUrl}/getVerificationCode`,
+    url: 'http://192.168.100.7:7001/onlineShop/getVerificationCode',
+    params: {
+      // verificationCode: '1234',
+      phoneNumber: user.phoneNumber
     },
-    {
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8'
-        // "Access-Control-Allow-Methods": "PUT,POST,GET,DELETE,OPTIONS",
-        // "Access-Control-Allow-Origin": "*"
-      }
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8'
+      // Authorization: `Bearer ${resp.data.token}`
     }
-  )
-
-  console.log(resp.verificationCode)
-  alert('验证码：' + resp.verificationCode)
+  })
+  console.log(resp)
 })
 
 // 验证码输入框点击变色
@@ -122,6 +140,7 @@ const input4 = () => {
   isActived4.value = true
 }
 
+// 倒计时
 let m = ref(2)
 let s = ref(59)
 onMounted(async () => {
@@ -163,16 +182,56 @@ const recendFunc = () => {
   }, 3000)
 }
 
-// 提交验证码
-let isSubmit = ref(false)
-let verificationCode = ref('')
+// 验证码数字input
+let num1 = ref()
+let num2 = ref()
+let num3 = ref()
+let num4 = ref()
 
-const submit = () => {
-  isSubmit.value = true
+// 提交验证码（submit按钮）
+let isSubmit = ref(false)
+const submit = (user) => {
+  let num1_string = num1.value
+  let num2_string = num2.value
+  let num3_string = num3.value
+  let num4_string = num4.value
+  let sum =
+    num1_string.toString() +
+    num2_string.toString() +
+    num3_string.toString() +
+    num4_string.toString()
+  let verificationCode = Number(sum)
+
+  Reflect.set(user, 'verificationCode', verificationCode.toString())
+  console.log(user)
+
+  // 发送数据
+  axios.defaults.headers.post['Content-Type'] = 'application/json; charset=utf-8'
+  axios
+    .post('http://192.168.100.7:7001/onlineShop/signUp', user)
+    .then(function ({ data: response }) {
+      console.log(response)
+      console.log(user)
+      if (response.code == 1000) {
+      } else {
+        isActivedCreate.value = true
+        msg.value = response.errMsg
+        setTimeout(() => {
+          isActivedCreate.value = false
+        }, 4000)
+      }
+    })
+    .catch(function (error) {
+      console.log(error)
+    })
+
+  localStorage.setItem('user', JSON.stringify(user))
+  const user_info = JSON.parse(localStorage.getItem('user'))
+  console.log(user_info)
 }
 
-const input1 = ref(null)
-console.log(input1)
+// const user_info = JSON.parse(localStorage.getItem('user'))
+// console.log(user_info)
 </script>
 
 <style lang="scss" scoped>
@@ -219,6 +278,9 @@ input {
         font-size: 16px;
         color: #a7a9b7;
         line-height: 20px;
+        span {
+          color: #191d31;
+        }
       }
     }
     .number_box {
@@ -323,9 +385,15 @@ input {
         justify-content: center;
         align-items: center;
         transition: all 0.1s ease-in-out;
+        position: relative;
         .text {
           font-size: 16px;
           color: #ffffff;
+        }
+        .link_home {
+          position: absolute;
+          width: 335px;
+          height: 46px;
         }
       }
       .create_button:active {

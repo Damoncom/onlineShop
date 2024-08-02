@@ -1,7 +1,7 @@
 <template>
   <div class="app">
     <div class="bar">
-      <i class="iconfont icon-jiantou"></i>
+      <i class="iconfont icon-jiantou" @click="goBack"></i>
       <div class="title">
         <p class="text">Select Location</p>
       </div>
@@ -34,7 +34,17 @@
 </template>
 <script setup>
 import { ref, onUpdated, nextTick } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 
+const router = useRouter()
+const route = useRoute()
+
+// 回退到上一页
+const goBack = () => {
+  router.go(-1)
+}
+
+// 地址列表
 const regionList = ref([
   {
     id: '1',
@@ -62,6 +72,7 @@ const chooseRegion = (e) => {
   avtivedIndex.value = e.target.dataset.index
 }
 
+// 搜索功能
 let inputText = ref('')
 let searchElement = ref('')
 let searchIndex = ref('')

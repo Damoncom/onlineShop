@@ -47,6 +47,15 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+
+const router = useRouter()
+const route = useRoute()
+
+// 回退到上一页
+const goBack = () => {
+  router.go(-1)
+}
 
 // 控制蒙层
 let isActivedCurrent = ref(false)

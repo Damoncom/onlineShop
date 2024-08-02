@@ -1,7 +1,7 @@
 <template>
   <div class="app">
     <div class="bar">
-      <i class="iconfont icon-jiantou"></i>
+      <i class="iconfont icon-jiantou" @click="goBack"></i>
     </div>
 
     <div class="content">
@@ -10,9 +10,7 @@
         <div class="discription">Get great experience with AlNVE</div>
       </div>
       <div class="tab_bar">
-        <div class="sign_up_button">
-          <RouterLink to="/signUp" class="link_signup">Sign Up</RouterLink>
-        </div>
+        <div class="sign_up_button" @click="linkToSignUp">Sign Up</div>
         <div class="sign_in_button">Sign In</div>
       </div>
       <div class="input_field">
@@ -64,7 +62,7 @@
       </div>
 
       <div class="button_box">
-        <div class="create_button" @click="signIn">
+        <div class="create_button" @click="signIn(user)">
           <p class="text">Sign In</p>
         </div>
       </div>
@@ -95,26 +93,25 @@
 <script setup>
 import { ref, onUpdated, nextTick, onMounted } from 'vue'
 import Toast from '../../components/toast.vue'
+import { useRouter, useRoute } from 'vue-router'
+import { reactive, isReactive, isRef } from 'vue'
+import { unref } from 'vue'
+import { toValue } from 'vue'
 
-// 引入axios
-onMounted(async () => {
-  const { data: resp } = await axios.post(
-    'http://192.168.100.7:7001/onlineShop/signIn',
-    {
-      phoneNumber: '12345678910',
-      pwd: '123demo456'
-    },
-    {
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8'
-        // "Access-Control-Allow-Methods": "PUT,POST,GET,DELETE,OPTIONS",
-        // "Access-Control-Allow-Origin": "*"
-      }
-    }
-  )
+const router = useRouter()
+const route = useRoute()
 
-  console.log(resp)
-})
+// 回退一页
+const goBack = () => {
+  router.go(-1)
+}
+
+// 跳转到signUp页面
+const linkToSignUp = () => {
+  router.push({
+    path: '/signUp'
+  })
+}
 
 // 用户信息
 const user = ref({
@@ -148,7 +145,10 @@ onUpdated(async () => {
   } else {
     isRightPwd.value = true
   }
+})
 
+// 登录按钮
+const signIn = (user) => {
   // 综合判断
   if (isRightPhone.value === false && isRightPwd.value === false) {
     msg.value = 'Incorrect phone number and password input'
@@ -159,24 +159,44 @@ onUpdated(async () => {
   } else if (isRightPhone.value === true && isRightPwd.value === true) {
     msg.value = 'Successfully!'
     signin.value = true
-    console.log('signin的值：' + signin.value)
-    console.log('手机号：' + user.value.phoneNumber + ' 密码：' + user.value.pwd + '  登录成功！')
-  }
-})
+    console.log('手机号：' + user.phoneNumber + ' 密码：' + user.pwd + '  登录成功！')
 
-// 登录按钮
-const signIn = () => {
-  isActivedSignin.value = true
-  setTimeout(() => {
-    isActivedSignin.value = false
-  }, 3000)
+    // 跳转
+    router.push({
+      path: '/home'
+    })
+  }
+
+  // 需发送的数据
+  let obj = JSON.parse(JSON.stringify(user))
+  // console.log(obj)
+
+  // 发送数据
+  axios.defaults.headers.post['Content-Type'] = 'application/json; charset=utf-8'
+  axios
+    .post('http://192.168.100.7:7001/onlineShop/signIn', obj)
+    .then(function ({ data: response }) {
+      console.log(response)
+      console.log(response.data)
+      localStorage.setItem('token', response.data.token)
+      const token_info = localStorage.getItem('token')
+      console.log(token_info)
+
+      if (response.code == 1000) {
+      } else {
+        isActivedCreate.value = true
+        msg.value = response.errMsg
+        setTimeout(() => {
+          isActivedCreate.value = false
+        }, 4000)
+      }
+    })
+    .catch(function (error) {
+      console.log(error)
+    })
 }
 
 let isRemember = ref(false)
-// onUpdated(async () => {
-//   await nextTick()
-//   console.log(isRemember.value)
-// })
 
 // 其他渠道注册
 let isGoogle = ref(false)
@@ -205,10 +225,14 @@ input {
     height: 48px;
     display: flex;
     align-items: center;
-    margin-left: 20px;
-    .icon-jiantou {
-      font-size: 16px;
-      color: #191d31;
+    margin-left: 10px;
+    .link_home {
+      padding: 10px;
+      text-decoration: none;
+      .icon-jiantou {
+        font-size: 16px;
+        color: #191d31;
+      }
     }
   }
   .content {
@@ -253,13 +277,11 @@ input {
         display: flex;
         justify-content: center;
         align-items: center;
-        .link_signup {
-          padding: 10px 30px;
-          font-size: 14px;
-          line-height: 18.2px;
-          color: #a7a9b7;
-          text-decoration: none;
-        }
+        // padding: 10px 30px;
+        font-size: 14px;
+        line-height: 18.2px;
+        color: #a7a9b7;
+        text-decoration: none;
       }
       .sign_in_button {
         width: 160px;

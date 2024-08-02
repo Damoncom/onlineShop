@@ -1,7 +1,7 @@
 <template>
   <div class="app">
     <div class="bar">
-      <i class="iconfont icon-jiantou"></i>
+      <i class="iconfont icon-jiantou" @click="goBack"></i>
       <div class="title">
         <p class="text">Edit Profile</p>
       </div>
@@ -11,84 +11,86 @@
         <img :src="imgUrl" class="img" />
         <i class="iconfont icon-zhaoxiangji1"></i>
       </div>
-      <div class="frame">
-        <div class="input_name">
-          <div class="title">Your Name</div>
-          <div class="form">
-            <div class="main">
-              <i class="iconfont icon-geren"></i>
-              <input type="text" placeholder="Enter your name" class="name" v-model="user.name" />
-            </div>
-          </div>
-        </div>
-        <div class="input_email">
-          <div class="title">Your Email</div>
-          <div class="form">
-            <div class="main">
-              <i class="iconfont icon-xinxi"></i>
-              <input
-                type="text"
-                placeholder="Enter your email"
-                class="email"
-                v-model="user.email"
-              />
-            </div>
-          </div>
-        </div>
-        <div class="input_phone">
-          <div class="title">Your Phone No.</div>
-          <div class="form">
-            <div class="main">
-              <i class="iconfont icon-tel"></i>
-              <input
-                type="text"
-                placeholder="Enter your phone number"
-                class="phone"
-                v-model="user.phoneNumber"
-              />
-            </div>
-          </div>
-        </div>
-        <div class="input_birthday">
-          <div class="title">Birth Date</div>
-          <div class="form">
-            <div class="main">
-              <i class="iconfont icon-rili"></i>
-              <input
-                type="text"
-                placeholder="Enter your birth date"
-                class="birthday"
-                v-model="user.birthay"
-              />
-            </div>
-          </div>
-        </div>
-        <div class="input_gender">
-          <div class="title">Gender</div>
-          <div class="form">
-            <div class="main">
-              <i class="iconfont icon-xingbie"></i>
-              <input
-                type="text"
-                placeholder="Enter your gender"
-                class="gender"
-                v-model="user.gender"
-              />
-              <div class="select" @click="selectGender">
-                <i class="iconfont icon-jiantou"></i>
+      <KeepAlive>
+        <div class="frame">
+          <div class="input_name">
+            <div class="title">Your Name</div>
+            <div class="form">
+              <div class="main">
+                <i class="iconfont icon-geren"></i>
+                <input type="text" placeholder="Enter your name" class="name" v-model="user.name" />
               </div>
             </div>
           </div>
-          <div class="select_list" v-if="isSelectGender == true">
-            <div class="male" @click="clickMale(user)">
-              <p class="male_text">Male</p>
+          <div class="input_email">
+            <div class="title">Your Email</div>
+            <div class="form">
+              <div class="main">
+                <i class="iconfont icon-xinxi"></i>
+                <input
+                  type="text"
+                  placeholder="Enter your email"
+                  class="email"
+                  v-model="user.email"
+                />
+              </div>
             </div>
-            <div class="female" @click="clickFemale(user)">
-              <p class="female_text">Female</p>
+          </div>
+          <div class="input_phone">
+            <div class="title">Your Phone No.</div>
+            <div class="form">
+              <div class="main">
+                <i class="iconfont icon-tel"></i>
+                <input
+                  type="text"
+                  placeholder="Enter your phone number"
+                  class="phone"
+                  v-model="user.phoneNumber"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="input_birthday">
+            <div class="title">Birth Date</div>
+            <div class="form">
+              <div class="main">
+                <i class="iconfont icon-rili"></i>
+                <input
+                  type="text"
+                  placeholder="Enter your birth date"
+                  class="birthday"
+                  v-model="user.birthday"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="input_gender">
+            <div class="title">Gender</div>
+            <div class="form">
+              <div class="main">
+                <i class="iconfont icon-xingbie"></i>
+                <input
+                  type="text"
+                  placeholder="Enter your gender"
+                  class="gender"
+                  v-model="input_gender"
+                />
+                <div class="select" @click="selectGender">
+                  <i class="iconfont icon-jiantou"></i>
+                </div>
+              </div>
+            </div>
+            <div class="select_list" v-if="isSelectGender == true">
+              <div class="male" @click="clickMale(user)">
+                <p class="male_text">Male</p>
+              </div>
+              <div class="female" @click="clickFemale(user)">
+                <p class="female_text">Female</p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </KeepAlive>
       <div class="button">
         <div class="back_home_button" @click="save">
           <p class="text1">Save</p>
@@ -104,45 +106,108 @@
       <img src="@/assets/photo_img.jpg" class="photo_img" />
       <div class="photo_text">Take a photo</div>
     </div>
-    <div class="picture">
-      <img src="@/assets/picture_img.jpg" class="picture_img" />
-      <div class="picture_text">Gallary</div>
+    <div class="picture_upload">
+      <input type="file" @change="handleFileUpload" ref="uploadInput" class="upload_input" />
+      <div class="picture">
+        <img src="@/assets/picture_img.jpg" class="picture_img" />
+        <div class="picture_text">Gallary</div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onUpdated, nextTick } from 'vue'
+import { ref, onUpdated, nextTick, unref, isReactive, isRef } from 'vue'
 import Toast from '../../components/toast.vue'
+import { useRouter, useRoute } from 'vue-router'
+
+const router = useRouter()
+const route = useRoute()
+
+// 回退到上一页
+const goBack = () => {
+  router.go(-1)
+}
 
 // 修改头像
+const uploadInput = ref(null)
+// const fileList = ref([])
 const imgUrl = ref('src/assets/imgurl.jpg')
 let isChange = ref(false)
 const changeImg = () => {
   isChange.value = true
   console.log('yes')
 }
+const handleFileUpload = async (file, fileList) => {
+  isChange.value = false
+  console.log(uploadInput)
+
+  // 需要发送的数据
+  let formData = new FormData()
+  formData.append('file', unref(uploadInput).files[0])
+
+  // post请求
+  const token_info = localStorage.getItem('token')
+  axios.defaults.headers.post['Content-Type'] = 'multipart/form-data'
+  axios.defaults.headers.post['Authorization'] = `Bearer ${token_info}`
+  axios
+    .post('http://192.168.100.7:7001/onlineShop/uploadImage', formData)
+    .then(function ({ data: response }) {
+      console.log(response)
+      // 获取上传图片的路径
+      imgUrl.value = 'http://192.168.100.7:7001' + response.url
+      console.log(imgUrl.value)
+      if (response.code == 1000) {
+      } else {
+        isActivedCreate.value = true
+        msg.value = response.errMsg
+        setTimeout(() => {
+          isActivedCreate.value = false
+        }, 4000)
+      }
+    })
+    .catch(function (error) {
+      console.log(error)
+    })
+}
 
 // 用户信息
 const user = ref({
-  name: 'Demo',
-  phoneNumber: '12345678910',
+  name: '',
+  phoneNumber: '',
   pwd: '',
-  email: 'demo@email.com',
-  address: '3 Raynes park Rd, HamptonVIC 3188, Australia',
-  birthay: '01/04/2020',
-  cardNum: '1234 1234 1234 4242',
-  gender: 'Male'
+  email: '',
+  address: '',
+  birthday: '',
+  cardNum: '',
+  gender: '',
+  iconImage: imgUrl
 })
 
+// onUpdated(async () => {
+//   await nextTick()
+//   console.log(user)
+// })
+// name: 'Demo',
+//   phoneNumber: '12345678910',
+//   pwd: 'demo456',
+//   email: 'demo@email.com',
+//   address: '3 Raynes park Rd, HamptonVIC 3188, Australia',
+//   birthday: '01-04-2020',
+//   cardNum: '1234 1234 1234 4242',
+//   gender: '0'
+
 // 性别选择
+const input_gender = ref('')
 const isSelectGender = ref(false)
 let count = ref(0)
 const clickMale = (user) => {
-  user.gender = 'Male'
+  input_gender.value = 'Male'
+  user.gender = '0'
 }
 const clickFemale = (user) => {
-  user.gender = 'Female'
+  input_gender.value = 'Female'
+  user.gender = '1'
 }
 const selectGender = () => {
   count.value++
@@ -162,10 +227,53 @@ const save = () => {
   setTimeout(() => {
     isSave.value = false
   }, 3000)
+
+  // 需发送的数据
+  let obj = JSON.parse(JSON.stringify(user.value))
+  // console.log(obj)
+
+  // 发送数据
+  const token_info = localStorage.getItem('token')
+  axios.defaults.headers.put['Content-Type'] = 'application/json; charset=utf-8'
+  axios.defaults.headers.put['Authorization'] = `Bearer ${token_info}`
+  axios
+    .put('http://192.168.100.7:7001/onlineShop/updateUserInfo', obj)
+    .then(function ({ data: response }) {
+      console.log(response)
+      if (response.code == 1000) {
+      } else {
+        isActivedCreate.value = true
+        msg.value = response.errMsg
+        setTimeout(() => {
+          isActivedCreate.value = false
+        }, 4000)
+      }
+    })
+    .catch(function (error) {
+      console.log(error)
+    })
+
+  // 跳转到profile页面
+  router.push({
+    path: '/profile'
+    // query: unref(user)
+  })
+
+  console.log('修改过的数据：' + obj)
+  console.log(obj)
+
+  localStorage.setItem('profile', JSON.stringify(user))
+  const profile_info = JSON.parse(localStorage.getItem('profile'))
+  console.log(profile_info)
 }
 </script>
 
 <style lang="scss" scoped>
+input {
+  background: none;
+  outline: none;
+  border: none;
+}
 .app {
   .bar {
     width: 375px;
@@ -555,22 +663,34 @@ const save = () => {
       font-weight: 700;
     }
   }
-  .picture {
+  .picture_upload {
     width: 50%;
     height: 80px;
-    // background-color: #a456dd;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    .picture_img {
-      width: 36px;
-      height: 36px;
+    position: relative;
+    .upload_input {
+      position: absolute;
+      width: 144px;
+      height: 80px;
+      opacity: 0;
     }
-    .picture_text {
-      font-size: 12px;
-      line-height: 26px;
-      font-weight: 700;
+    .picture {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      .picture_img {
+        width: 36px;
+        height: 36px;
+      }
+      .picture_text {
+        font-size: 12px;
+        line-height: 26px;
+        font-weight: 700;
+      }
     }
   }
 }

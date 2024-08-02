@@ -1,0 +1,212 @@
+<template>
+  <div class="app">
+    <div class="bar">
+      <i class="iconfont icon-jiantou" @click="goBack"></i>
+      <div class="title">
+        <p class="text">Order</p>
+      </div>
+    </div>
+    <div class="content">
+      <div class="tab_bar">
+        <div class="upcoming">
+          <p class="tab_text">Upcoming</p>
+        </div>
+        <div class="history">
+          <p class="tab_text">Order History</p>
+        </div>
+      </div>
+      <div class="orders">
+        <ul class="orders_list">
+          <li class="orders_item" v-for="(order, order_index) of orderList" :key="order_index">
+            <img :src="order.imgUrl" class="li_img" />
+            <div class="text_box">
+              <div class="title">{{ order.name }}</div>
+              <div class="brand">{{ order.brand }}</div>
+              <div class="price">{{ order.price }}</div>
+            </div>
+            <div class="state">
+              <p class="state_text">{{ order.state }}</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <BottomNav :init_profile="isOrderPage" />
+</template>
+
+<script setup>
+import { ref } from 'vue'
+import BottomNav from '../../components/bottom_nav.vue'
+import { useRouter, useRoute } from 'vue-router'
+import order from '@/assets/prodoct_img.jpg'
+
+const router = useRouter()
+const route = useRoute()
+
+// 回退到上一页
+const goBack = () => {
+  router.go(-1)
+}
+
+// 确认是Order页面
+const isOrderPage = true
+
+// 商品列表信息
+const orderList = ref([
+  {
+    id: '1',
+    name: 'Givenchy L‘ intemporel Blossom',
+    brand: 'Givenchy',
+    imgUrl: order,
+    price: '$29.00',
+    state: 'On Going'
+  },
+  {
+    id: '2',
+    name: 'Givenchy L‘ intemporel Blossom',
+    brand: 'Givenchy',
+    imgUrl: order,
+    price: '$29.00',
+    state: 'Cancelled'
+  },
+  {
+    id: '3',
+    name: 'Givenchy L‘ intemporel Blossom',
+    brand: 'Givenchy',
+    imgUrl: order,
+    price: '$29.00',
+    state: 'Pending'
+  }
+])
+</script>
+
+<style lang="scss" scoped>
+.app {
+  .bar {
+    width: 375px;
+    height: 48px;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .icon-jiantou {
+      font-size: 16px;
+      color: #191d31;
+      margin-right: auto;
+      margin-left: 20px;
+    }
+    .title {
+      height: 24px;
+      margin-right: 148px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      .text {
+        font-size: 16px;
+        color: #374151;
+      }
+    }
+  }
+  .content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    .tab_bar {
+      width: 335px;
+      height: 32px;
+      margin-top: 24px;
+      background-color: #76768020;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      .upcoming {
+        width: 49.5%;
+        background-color: white;
+        border-radius: 7px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .tab_text {
+          font-size: 13px;
+          line-height: 26px;
+          letter-spacing: -0.08px;
+        }
+      }
+      .history {
+        width: 49.5%;
+        border-radius: 7px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .tab_text {
+          font-size: 13px;
+          line-height: 26px;
+          letter-spacing: -0.08px;
+        }
+      }
+    }
+    .orders {
+      margin-top: 24px;
+      // ul
+      .orders_list {
+        // li
+        .orders_item {
+          width: 335px;
+          height: 120px;
+          margin-bottom: 16px;
+          border: 1px solid #f2f2f2;
+          border-radius: 4px;
+          display: flex;
+          align-items: center;
+          .li_img {
+            width: 88px;
+            height: 88px;
+            border-radius: 10px;
+            margin-left: 12px;
+          }
+          .text_box {
+            width: 195px;
+            height: 89px;
+            margin-left: 12px;
+            .title {
+              width: 165px;
+              font-size: 14px;
+              line-height: 22px;
+              color: #000000;
+            }
+            .brand {
+              font-size: 12px;
+              color: #a3a3a3;
+              line-height: 18px;
+            }
+            .price {
+              font-size: 16px;
+              color: #001c33;
+              line-height: 30px;
+            }
+          }
+          .state {
+            width: 49px;
+            height: 22px;
+            margin: 0 10px 20px 0;
+            border-radius: 30px;
+            background-color: #ecf8ff;
+            display: flex;
+            align-self: flex-end;
+            align-items: center;
+            justify-content: center;
+            .state_text {
+              font-size: 8px;
+              color: #2d9cdb;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+</style>

@@ -6,7 +6,7 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'home',
+      name: 'walkthrough',
       component: walkthrough
     },
     {
@@ -15,7 +15,8 @@ const router = createRouter({
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import('../pages/signUp&signIn/signUp')
+      component: () => import('../pages/signUp&signIn/signUp'),
+      meta: { keepAlive: true }
     },
     {
       path: '/verificationCode',
@@ -41,6 +42,26 @@ const router = createRouter({
       path: '/select_location',
       name: 'selectLocation',
       component: () => import('../pages/location/selectLocation')
+    },
+    {
+      path: '/home',
+      name: 'home',
+      component: () => import('../pages/home/home')
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: () => import('../pages/user/user.vue')
+    },
+    {
+      path: '/editUser',
+      name: 'editUser',
+      component: () => import('../pages/user/editUser.vue')
+    },
+    {
+      path: '/order',
+      name: 'order',
+      component: () => import('../pages/order/order_upcoming')
     }
   ]
 })

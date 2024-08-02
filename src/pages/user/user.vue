@@ -1,16 +1,16 @@
 <template>
   <div class="app">
     <div class="bar">
-      <i class="iconfont icon-jiantou"></i>
+      <i class="iconfont icon-jiantou" @click="goBack"></i>
       <div class="title">
         <p class="text">Profile</p>
       </div>
-      <i class="iconfont icon-bianji"></i>
+      <i class="iconfont icon-bianji" @click="linkToEdit"></i>
     </div>
     <div class="content">
       <div class="user">
         <div class="details">
-          <img :src="imgUrl" class="img" />
+          <img :src="user.iconImage" class="img" />
           <div class="info">
             <div class="name">{{ user.name }}</div>
             <div class="emailAndphone">
@@ -34,7 +34,7 @@
             <div class="detail">{{ user.phoneNumber }}</div>
           </div>
         </div>
-        <div class="address_box">
+        <div class="address_box" @click="linkToLoaction">
           <div class="list">
             <div class="title">Address</div>
             <div class="detail">{{ user.address }}</div>
@@ -43,7 +43,7 @@
         <div class="birthday_box">
           <div class="list">
             <div class="title">Birthday</div>
-            <div class="detail">{{ user.birthay }}</div>
+            <div class="detail">{{ user.birthday }}</div>
           </div>
         </div>
         <div class="vacination_box">
@@ -66,49 +66,73 @@
       </div>
     </div>
   </div>
-  <BottomNav :init="isProfilePage" />
+  <BottomNav :init_profile="isProfilePage" />
 </template>
 <script setup>
-import { ref, onMounted } from 'vue'
-import BottomNav from '../../components/bottom_nav'
+import { ref, onMounted, onServerPrefetch, onBeforeUpdate } from 'vue'
+import BottomNav from '@/components/bottom_nav.vue'
+import { useRouter, useRoute } from 'vue-router'
+import { onBeforeMount } from 'vue'
 
-// 引入axios
-onMounted(async () => {
-  const { data: resp } = await axios.get(
-    'http://192.168.100.7:7001/onlineShop/getUserInfo',
-    {
-      name: 'demo',
-      email: 'Demo@email.com',
-      phoneNumber: '12345678910'
-    },
-    {
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8'
-        // "Access-Control-Allow-Methods": "PUT,POST,GET,DELETE,OPTIONS",
-        // "Access-Control-Allow-Origin": "*"
-      }
-    }
-  )
+const router = useRouter()
+const route = useRoute()
 
-  console.log(resp)
+// 回退到上一页
+const goBack = () => {
+  router.go(-1)
+}
+
+// 获取从editUser页面传参（修改过的参数）
+// const user_after = route.query
+// console.log(user_after)
+
+// 用户信息
+const user = ref({
+  name: '',
+  phoneNumber: '',
+  pwd: '',
+  email: '',
+  address: '',
+  birthday: '',
+  cardNum: ''
 })
+console.log('profile本来的数据：' + user)
+console.log(user)
+
+// 获取用户信息
+onBeforeMount(async () => {
+  const token_info = localStorage.getItem('token')
+  const { data: resp } = await axios({
+    method: 'get',
+    url: 'http://192.168.100.7:7001/onlineShop/getUserInfo',
+    params: {},
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'application/json; charset=utf-8'
+    }
+  })
+  console.log(resp)
+  user.value = resp.data
+  console.log('profile更新过的数据：' + user)
+  console.log(user)
+})
+
+// 跳转编辑个人信息页面
+const linkToEdit = () => {
+  router.push({
+    path: '/editUser'
+  })
+}
 
 // 确认是Profile页面
 const isProfilePage = true
 
-// 头像
-const imgUrl = ref('src/assets/imgurl.jpg')
-
-// 用户信息
-const user = ref({
-  name: 'Demo',
-  phoneNumber: '12345678910',
-  pwd: '',
-  email: 'demo@email.com',
-  address: '3 Raynes park Rd, HamptonVIC 3188, Australia',
-  birthay: '01/04/2020',
-  cardNum: '1234 1234 1234 4242'
-})
+// address调到定位页面
+const linkToLoaction = () => {
+  router.push({
+    path: '/location'
+  })
+}
 </script>
 
 <style lang="scss" scoped>
