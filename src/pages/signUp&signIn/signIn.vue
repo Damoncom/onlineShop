@@ -61,6 +61,7 @@
         </div>
       </div>
 
+      <!-- TODO:把user.phoneNumber的值和数据库中已存在的手机号作对比，如果数据库中不存在该值，则弹出toast -->
       <div class="button_box">
         <div class="create_button" @click="signIn(user)">
           <p class="text">Sign In</p>
@@ -149,6 +150,12 @@ onUpdated(async () => {
 
 // 登录按钮
 const signIn = (user) => {
+  isActivedSignin.value = true
+  setTimeout(async () => {
+    await nextTick()
+    isActivedSignin.value = false
+  }, 4000)
+
   // 综合判断
   if (isRightPhone.value === false && isRightPwd.value === false) {
     msg.value = 'Incorrect phone number and password input'
@@ -157,14 +164,9 @@ const signIn = (user) => {
   } else if (isRightPhone.value === false && isRightPwd.value === true) {
     msg.value = 'Incorrect phone number input'
   } else if (isRightPhone.value === true && isRightPwd.value === true) {
-    msg.value = 'Successfully!'
+    // msg.value = 'Successfully!'
     signin.value = true
     console.log('手机号：' + user.phoneNumber + ' 密码：' + user.pwd + '  登录成功！')
-
-    // 跳转
-    router.push({
-      path: '/home'
-    })
   }
 
   // 需发送的数据
@@ -177,15 +179,22 @@ const signIn = (user) => {
     .post('http://192.168.100.7:7001/onlineShop/signIn', obj)
     .then(function ({ data: response }) {
       console.log(response)
-      console.log(response.data)
       localStorage.setItem('token', response.data.token)
       const token_info = localStorage.getItem('token')
       console.log(token_info)
 
       if (response.code == 1000) {
+        msg.value = 'Successfully!'
+        // 跳转
+        router.push({
+          path: '/home'
+        })
       } else {
         isActivedCreate.value = true
         msg.value = response.errMsg
+        if (isRightPhone.value === true && isRightPwd.value === true) {
+          msg.value = 'There is no such user, please register'
+        }
         setTimeout(() => {
           isActivedCreate.value = false
         }, 4000)

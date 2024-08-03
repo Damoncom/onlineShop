@@ -11,86 +11,84 @@
         <img :src="imgUrl" class="img" />
         <i class="iconfont icon-zhaoxiangji1"></i>
       </div>
-      <KeepAlive>
-        <div class="frame">
-          <div class="input_name">
-            <div class="title">Your Name</div>
-            <div class="form">
-              <div class="main">
-                <i class="iconfont icon-geren"></i>
-                <input type="text" placeholder="Enter your name" class="name" v-model="user.name" />
-              </div>
-            </div>
-          </div>
-          <div class="input_email">
-            <div class="title">Your Email</div>
-            <div class="form">
-              <div class="main">
-                <i class="iconfont icon-xinxi"></i>
-                <input
-                  type="text"
-                  placeholder="Enter your email"
-                  class="email"
-                  v-model="user.email"
-                />
-              </div>
-            </div>
-          </div>
-          <div class="input_phone">
-            <div class="title">Your Phone No.</div>
-            <div class="form">
-              <div class="main">
-                <i class="iconfont icon-tel"></i>
-                <input
-                  type="text"
-                  placeholder="Enter your phone number"
-                  class="phone"
-                  v-model="user.phoneNumber"
-                />
-              </div>
-            </div>
-          </div>
-          <div class="input_birthday">
-            <div class="title">Birth Date</div>
-            <div class="form">
-              <div class="main">
-                <i class="iconfont icon-rili"></i>
-                <input
-                  type="text"
-                  placeholder="Enter your birth date"
-                  class="birthday"
-                  v-model="user.birthday"
-                />
-              </div>
-            </div>
-          </div>
-          <div class="input_gender">
-            <div class="title">Gender</div>
-            <div class="form">
-              <div class="main">
-                <i class="iconfont icon-xingbie"></i>
-                <input
-                  type="text"
-                  placeholder="Enter your gender"
-                  class="gender"
-                  v-model="input_gender"
-                />
-                <div class="select" @click="selectGender">
-                  <i class="iconfont icon-jiantou"></i>
-                </div>
-              </div>
-            </div>
-            <div class="select_list" v-if="isSelectGender == true">
-              <div class="male" @click="clickMale(user)">
-                <p class="male_text">Male</p>
-              </div>
-              <div class="female" @click="clickFemale(user)">
-                <p class="female_text">Female</p>
-              </div>
+      <div class="frame">
+        <div class="input_name">
+          <div class="title">Your Name</div>
+          <div class="form">
+            <div class="main">
+              <i class="iconfont icon-geren"></i>
+              <input type="text" placeholder="Enter your name" class="name" v-model="user.name" />
             </div>
           </div>
         </div>
-      </KeepAlive>
+        <div class="input_email">
+          <div class="title">Your Email</div>
+          <div class="form">
+            <div class="main">
+              <i class="iconfont icon-xinxi"></i>
+              <input
+                type="text"
+                placeholder="Enter your email"
+                class="email"
+                v-model="user.email"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="input_phone">
+          <div class="title">Your Phone No.</div>
+          <div class="form">
+            <div class="main">
+              <i class="iconfont icon-tel"></i>
+              <input
+                type="text"
+                placeholder="Enter your phone number"
+                class="phone"
+                v-model="user.phoneNumber"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="input_birthday">
+          <div class="title">Birth Date</div>
+          <div class="form">
+            <div class="main">
+              <i class="iconfont icon-rili"></i>
+              <input
+                type="text"
+                placeholder="Enter your birth date"
+                class="birthday"
+                v-model="user.birthday"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="input_gender">
+          <div class="title">Gender</div>
+          <div class="form">
+            <div class="main">
+              <i class="iconfont icon-xingbie"></i>
+              <input
+                type="text"
+                placeholder="Enter your gender"
+                class="gender"
+                v-model="input_gender"
+              />
+              <div class="select" @click="selectGender">
+                <i class="iconfont icon-jiantou"></i>
+              </div>
+            </div>
+          </div>
+          <div class="select_list" v-if="isSelectGender == true">
+            <div class="male" @click="clickMale(user)">
+              <p class="male_text">Male</p>
+            </div>
+            <div class="female" @click="clickFemale(user)">
+              <p class="female_text">Female</p>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="button">
         <div class="back_home_button" @click="save">
           <p class="text1">Save</p>
@@ -131,12 +129,15 @@ const goBack = () => {
 
 // 修改头像
 const uploadInput = ref(null)
-// const fileList = ref([])
 const imgUrl = ref('src/assets/imgurl.jpg')
+// onUpdated(async () => {
+//   await nextTick()
+//   console.log(imgUrl)
+// })
+
 let isChange = ref(false)
 const changeImg = () => {
   isChange.value = true
-  console.log('yes')
 }
 const handleFileUpload = async (file, fileList) => {
   isChange.value = false
@@ -156,6 +157,9 @@ const handleFileUpload = async (file, fileList) => {
       console.log(response)
       // 获取上传图片的路径
       imgUrl.value = 'http://192.168.100.7:7001' + response.url
+      user.iconImage = 'http://192.168.100.7:7001' + response.url
+      // 存储修改过的用户数据
+      localStorage.setItem('imgupdated', JSON.stringify(imgUrl))
       console.log(imgUrl.value)
       if (response.code == 1000) {
       } else {
@@ -171,32 +175,6 @@ const handleFileUpload = async (file, fileList) => {
     })
 }
 
-// 用户信息
-const user = ref({
-  name: '',
-  phoneNumber: '',
-  pwd: '',
-  email: '',
-  address: '',
-  birthday: '',
-  cardNum: '',
-  gender: '',
-  iconImage: imgUrl
-})
-
-// onUpdated(async () => {
-//   await nextTick()
-//   console.log(user)
-// })
-// name: 'Demo',
-//   phoneNumber: '12345678910',
-//   pwd: 'demo456',
-//   email: 'demo@email.com',
-//   address: '3 Raynes park Rd, HamptonVIC 3188, Australia',
-//   birthday: '01-04-2020',
-//   cardNum: '1234 1234 1234 4242',
-//   gender: '0'
-
 // 性别选择
 const input_gender = ref('')
 const isSelectGender = ref(false)
@@ -204,10 +182,14 @@ let count = ref(0)
 const clickMale = (user) => {
   input_gender.value = 'Male'
   user.gender = '0'
+  isSelectGender.value = false
+  count.value = 0
 }
 const clickFemale = (user) => {
   input_gender.value = 'Female'
   user.gender = '1'
+  isSelectGender.value = false
+  count.value = 0
 }
 const selectGender = () => {
   count.value++
@@ -217,6 +199,34 @@ const selectGender = () => {
     isSelectGender.value = true
   }
 }
+
+// 用户信息
+const user_info = JSON.parse(localStorage.getItem('user'))
+// 获取存储的用户数据
+const user_details = JSON.parse(localStorage.getItem('user_details'))
+console.log(user_details)
+const imgupdated = JSON.parse(localStorage.getItem('imgupdated'))
+// onUpdated(async () => {
+//   await nextTick()
+//   console.log(imgupdated)
+// })
+
+const user = ref({
+  name: user_details.name,
+  phoneNumber: user_details.phoneNumber,
+  pwd: user_info.pwd,
+  email: user_details.email,
+  address: '',
+  birthday: user_details.birthday,
+  cardNum: '',
+  gender: user_details.gender,
+  iconImage: imgupdated.value
+})
+
+onUpdated(async () => {
+  await nextTick()
+  console.log(user)
+})
 
 // 保存修改按钮
 let msg = ref('')
@@ -230,7 +240,7 @@ const save = () => {
 
   // 需发送的数据
   let obj = JSON.parse(JSON.stringify(user.value))
-  // console.log(obj)
+  console.log(obj)
 
   // 发送数据
   const token_info = localStorage.getItem('token')
@@ -253,6 +263,9 @@ const save = () => {
       console.log(error)
     })
 
+  // 存储修改过的用户数据
+  localStorage.setItem('user_details', JSON.stringify(obj))
+
   // 跳转到profile页面
   router.push({
     path: '/profile'
@@ -261,10 +274,6 @@ const save = () => {
 
   console.log('修改过的数据：' + obj)
   console.log(obj)
-
-  localStorage.setItem('profile', JSON.stringify(user))
-  const profile_info = JSON.parse(localStorage.getItem('profile'))
-  console.log(profile_info)
 }
 </script>
 

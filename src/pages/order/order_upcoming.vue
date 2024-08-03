@@ -11,13 +11,18 @@
         <div class="upcoming">
           <p class="tab_text">Upcoming</p>
         </div>
-        <div class="history">
+        <div class="history" @click="linkToHistory">
           <p class="tab_text">Order History</p>
         </div>
       </div>
       <div class="orders">
         <ul class="orders_list">
-          <li class="orders_item" v-for="(order, order_index) of orderList" :key="order_index">
+          <li
+            class="orders_item"
+            v-for="(order, order_index) of orderList"
+            :key="order_index"
+            :data-index="order_index"
+          >
             <img :src="order.imgUrl" class="li_img" />
             <div class="text_box">
               <div class="title">{{ order.name }}</div>
@@ -25,6 +30,7 @@
               <div class="price">{{ order.price }}</div>
             </div>
             <div class="state">
+              <!-- :style="{ backgroundColor: order.state == 'Pending' ? '#fff0e3' : '#ecf8ff' } -->
               <p class="state_text">{{ order.state }}</p>
             </div>
           </li>
@@ -37,10 +43,11 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import BottomNav from '../../components/bottom_nav.vue'
 import { useRouter, useRoute } from 'vue-router'
 import order from '@/assets/prodoct_img.jpg'
+import order2 from '@/assets/order2.jpg'
 
 const router = useRouter()
 const route = useRoute()
@@ -50,13 +57,20 @@ const goBack = () => {
   router.go(-1)
 }
 
+// 跳转到历史商品页面
+const linkToHistory = () => {
+  router.push({
+    path: '/order_history'
+  })
+}
+
 // 确认是Order页面
 const isOrderPage = true
 
 // 商品列表信息
 const orderList = ref([
   {
-    id: '1',
+    id: 1,
     name: 'Givenchy L‘ intemporel Blossom',
     brand: 'Givenchy',
     imgUrl: order,
@@ -64,7 +78,7 @@ const orderList = ref([
     state: 'On Going'
   },
   {
-    id: '2',
+    id: 2,
     name: 'Givenchy L‘ intemporel Blossom',
     brand: 'Givenchy',
     imgUrl: order,
@@ -72,7 +86,7 @@ const orderList = ref([
     state: 'Cancelled'
   },
   {
-    id: '3',
+    id: 3,
     name: 'Givenchy L‘ intemporel Blossom',
     brand: 'Givenchy',
     imgUrl: order,
@@ -80,6 +94,31 @@ const orderList = ref([
     state: 'Pending'
   }
 ])
+console.log(orderList)
+// 控制商品状态
+
+// 从商品历史页面添加的商品
+const addOrder = route.query
+const count = ref(orderList.value.length)
+
+if (JSON.stringify(addOrder) != '{}') {
+  orderList.value.push({
+    id: count.value + 1,
+    name: addOrder.name,
+    brand: addOrder.brand,
+    price: addOrder.price,
+    imgUrl: order2,
+    state: 'Pending'
+  })
+}
+
+// 存储商品列表
+localStorage.setItem('orderList', JSON.stringify(orderList))
+
+// TODO:存储的最新商品列表orderList_info不知道怎么替换掉原本的orderList来显示
+// 渲染最新列表数据到页面
+const orderList_info = JSON.parse(localStorage.getItem('orderList'))
+console.log(orderList_info)
 </script>
 
 <style lang="scss" scoped>
@@ -99,7 +138,7 @@ const orderList = ref([
     }
     .title {
       height: 24px;
-      margin-right: 148px;
+      margin-right: 168px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -150,7 +189,7 @@ const orderList = ref([
       }
     }
     .orders {
-      margin-top: 24px;
+      margin: 24px 0;
       // ul
       .orders_list {
         // li
@@ -160,6 +199,7 @@ const orderList = ref([
           margin-bottom: 16px;
           border: 1px solid #f2f2f2;
           border-radius: 4px;
+          box-shadow: rgba(149, 157, 165, 0.2) 0px 1px 24px;
           display: flex;
           align-items: center;
           .li_img {
@@ -203,6 +243,12 @@ const orderList = ref([
               font-size: 8px;
               color: #2d9cdb;
             }
+          }
+          .state_cancel {
+            background-color: #ffecec;
+          }
+          .state_cancel {
+            background-color: #fff0e3;
           }
         }
       }

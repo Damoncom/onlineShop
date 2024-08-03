@@ -22,6 +22,12 @@ import router from './router/index'
 // import App from './pages/home/home'
 // import App from './pages/imgTest'
 
+import VConsole from 'vconsole'
+
+if (process.env.NODE_ENV !== 'local') {
+  const vConsole = new VConsole({ theme: 'dark' })
+}
+
 const app = createApp(App)
 
 app.use(createPinia())

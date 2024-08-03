@@ -31,7 +31,6 @@
       <div class="button_box">
         <div class="create_button" @click="submit(user)">
           <p class="text">Submit</p>
-          <RouterLink to="/home" class="link_home"></RouterLink>
         </div>
       </div>
       <div class="bottom">
@@ -108,6 +107,7 @@ onMounted(async () => {
     }
   })
   console.log(resp)
+  alert(resp.verificationCode)
 })
 
 // 验证码输入框点击变色
@@ -213,6 +213,14 @@ const submit = (user) => {
       console.log(response)
       console.log(user)
       if (response.code == 1000) {
+        // 存储注册时的信息
+        localStorage.setItem('user', JSON.stringify(user))
+        const user_info = JSON.parse(localStorage.getItem('user'))
+        console.log(user_info)
+
+        router.push({
+          path: '/signIn'
+        })
       } else {
         isActivedCreate.value = true
         msg.value = response.errMsg
@@ -224,10 +232,6 @@ const submit = (user) => {
     .catch(function (error) {
       console.log(error)
     })
-
-  localStorage.setItem('user', JSON.stringify(user))
-  const user_info = JSON.parse(localStorage.getItem('user'))
-  console.log(user_info)
 }
 
 // const user_info = JSON.parse(localStorage.getItem('user'))

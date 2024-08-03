@@ -62,6 +62,16 @@ const router = createRouter({
       path: '/order',
       name: 'order',
       component: () => import('../pages/order/order_upcoming')
+    },
+    {
+      path: '/order_history',
+      name: 'order_history',
+      component: () => import('../pages/order/order_history')
+    },
+    {
+      path: '/order_tracking',
+      name: 'order_tracking',
+      component: () => import('../pages/order/order_tracking')
     }
   ]
 })
