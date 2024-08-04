@@ -11,19 +11,16 @@
           <span>{{ phone }}</span>
         </div>
       </div>
-      <div class="number_box">
-        <div class="num1" @click="input" :class="isActived == true ? 'num_actived' : 'num1'">
-          <input type="number" class="input1" v-model="num1" />
-        </div>
-        <div class="num2" @click="input2" :class="isActived2 == true ? 'num_actived' : 'num2'">
-          <input type="number" class="input2" v-model="num2" />
-        </div>
-        <div class="num3" @click="input3" :class="isActived3 == true ? 'num_actived' : 'num3'">
-          <input type="number" class="input3" v-model="num3" />
-        </div>
-        <div class="num4" @click="input4" :class="isActived4 == true ? 'num_actived' : 'num4'">
-          <input type="number" class="input4" v-model="num4" />
-        </div>
+      <div class="verification-container">
+        <input
+          v-for="(code, index) in verificationCodes"
+          :key="index"
+          v-model="verificationCodes[index]"
+          @input="handleInput(index, $event)"
+          @keydown="handleKeyDown(index, $event)"
+          maxlength="1"
+          class="verification-input"
+        />
       </div>
       <div class="countdown">
         <p class="time">{{ m + ':' + s }}</p>
@@ -83,63 +80,7 @@ const goBack = () => {
   router.go(-1)
 }
 
-// 获取路由参数
-const router = useRouter()
-const route = useRoute()
-let user = route.query
-console.log(user)
-const phone = user.phoneNumber
-// let phoneNumber = ref('')
-
-// 页面载入完毕获取验证码
-onMounted(async () => {
-  const { data: resp } = await axios({
-    method: 'get',
-    // url: `${baseUrl}/getVerificationCode`,
-    url: 'http://192.168.100.7:7001/onlineShop/getVerificationCode',
-    params: {
-      // verificationCode: '1234',
-      phoneNumber: user.phoneNumber
-    },
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8'
-      // Authorization: `Bearer ${resp.data.token}`
-    }
-  })
-  console.log(resp)
-  alert(resp.verificationCode)
-})
-
-// 验证码输入框点击变色
-let isActived = ref(false)
-let isActived2 = ref(false)
-let isActived3 = ref(false)
-let isActived4 = ref(false)
-const input = () => {
-  isActived2.value = false
-  isActived3.value = false
-  isActived4.value = false
-  isActived.value = true
-}
-const input2 = () => {
-  isActived.value = false
-  isActived3.value = false
-  isActived4.value = false
-  isActived2.value = true
-}
-const input3 = () => {
-  isActived.value = false
-  isActived2.value = false
-  isActived4.value = false
-  isActived3.value = true
-}
-const input4 = () => {
-  isActived.value = false
-  isActived2.value = false
-  isActived3.value = false
-  isActived4.value = true
-}
-
+//TODO:保0操作
 // 倒计时
 let m = ref(2)
 let s = ref(59)
@@ -169,40 +110,84 @@ onMounted(async () => {
   }, 1000)
 })
 
-// 重新发送验证码
-const msg = ref('')
-let isRecend = ref(false)
-let recendColor = ref(false)
-const recendFunc = () => {
-  isRecend.value = true
-  recendColor.value = true
-  msg.value = 'The verification code has been successfully sent!'
-  setTimeout(() => {
-    isRecend.value = false
-  }, 3000)
+// 获取路由参数
+const router = useRouter()
+const route = useRoute()
+let user = route.query
+console.log(user)
+const phone = user.phoneNumber
+let user_signIn = {
+  phoneNumber: user.phoneNumber,
+  pwd: user.pwd
 }
+console.log(user_signIn)
 
-// 验证码数字input
-let num1 = ref()
-let num2 = ref()
-let num3 = ref()
-let num4 = ref()
+// 页面载入完毕获取验证码
+onMounted(async () => {
+  const { data: resp } = await axios({
+    method: 'get',
+    // url: `${baseUrl}/getVerificationCode`,
+    url: 'http://192.168.100.7:7001/onlineShop/getVerificationCode',
+    params: {
+      // verificationCode: '1234',
+      phoneNumber: user.phoneNumber
+    },
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8'
+      // Authorization: `Bearer ${resp.data.token}`
+    }
+  })
+  console.log(resp)
+  alert(resp.verificationCode)
+})
+
+// 验证码框
+const verificationCodes = ref(['', '', '', ''])
+
+const handleInput = (index, event) => {
+  const value = event.target.value
+  verificationCodes.value[index] = value
+
+  // 自动跳到下一个输入框
+  if (value && index < verificationCodes.value.length - 1) {
+    const nextInput = event.target.nextElementSibling
+    if (nextInput) {
+      nextTick(() => {
+        nextInput.focus()
+      })
+    }
+  }
+}
+const handleKeyDown = (index, event) => {
+  // 处理删除操作
+  if (event.key === 'Backspace' && !event.target.value && index > 0) {
+    const prevInput = event.target.previousElementSibling
+    if (prevInput) {
+      nextTick(() => {
+        prevInput.focus()
+      })
+    }
+  }
+}
 
 // 提交验证码（submit按钮）
 let isSubmit = ref(false)
 const submit = (user) => {
-  let num1_string = num1.value
-  let num2_string = num2.value
-  let num3_string = num3.value
-  let num4_string = num4.value
-  let sum =
-    num1_string.toString() +
-    num2_string.toString() +
-    num3_string.toString() +
-    num4_string.toString()
-  let verificationCode = Number(sum)
+  isRecend.value = true
+  setTimeout(async () => {
+    await nextTick()
+    isRecend.value = false
+  }, 4000)
 
-  Reflect.set(user, 'verificationCode', verificationCode.toString())
+  const sum =
+    verificationCodes.value[0] +
+    verificationCodes.value[1] +
+    verificationCodes.value[2] +
+    verificationCodes.value[3]
+
+  console.log(sum)
+
+  Reflect.set(user, 'verificationCode', sum)
   console.log(user)
 
   // 发送数据
@@ -212,15 +197,50 @@ const submit = (user) => {
     .then(function ({ data: response }) {
       console.log(response)
       console.log(user)
-      if (response.code == 1000) {
+      if (response.errCode == 1000) {
         // 存储注册时的信息
         localStorage.setItem('user', JSON.stringify(user))
         const user_info = JSON.parse(localStorage.getItem('user'))
         console.log(user_info)
 
-        router.push({
-          path: '/signIn'
-        })
+        // 发送数据
+        axios.defaults.headers.post['Content-Type'] = 'application/json; charset=utf-8'
+        axios
+          .post('http://192.168.100.7:7001/onlineShop/signIn', user_signIn)
+          .then(function ({ data: response }) {
+            console.log(response)
+            localStorage.setItem('token', response.data.token)
+            const token_info = localStorage.getItem('token')
+            console.log(token_info)
+
+            if (response.errCode == 1000) {
+              msg.value = 'Successfully!'
+              // 跳转
+              router.push({
+                path: '/home'
+              })
+            } else {
+              isActivedCreate.value = true
+              msg.value = response.errMsg
+              setTimeout(() => {
+                isActivedCreate.value = false
+              }, 4000)
+            }
+          })
+          .catch(function (error) {
+            console.log(error)
+          })
+      } else if (response.errCode == 1001) {
+        msg.value = '该用户已注册！'
+        setTimeout(async () => {
+          await nextTick()
+          router.push({
+            path: '/signUp'
+          })
+        }, 2000)
+      } else if (response.errCode == 1002) {
+        msg.value = '验证码错误！'
+        router.go(0)
       } else {
         isActivedCreate.value = true
         msg.value = response.errMsg
@@ -234,8 +254,19 @@ const submit = (user) => {
     })
 }
 
-// const user_info = JSON.parse(localStorage.getItem('user'))
-// console.log(user_info)
+// 重新发送验证码
+const msg = ref('')
+let isRecend = ref(false)
+let recendColor = ref(false)
+const recendFunc = () => {
+  isRecend.value = true
+  recendColor.value = true
+  msg.value = 'The verification code has been successfully sent!'
+  setTimeout(() => {
+    isRecend.value = false
+    router.go(0)
+  }, 2000)
+}
 </script>
 
 <style lang="scss" scoped>
@@ -287,77 +318,26 @@ input {
         }
       }
     }
-    .number_box {
+    .verification-container {
       width: 327px;
       height: 59px;
       margin-top: 38px;
       display: flex;
       align-items: center;
       justify-content: center;
-      .num1 {
+      .verification-input {
         width: 66px;
         height: 59px;
+        text-align: center;
+        font-size: 20px;
         background-color: #f8f9fb;
         border: 1px solid transparent;
         border-radius: 12px;
-        margin: 0 10.5px 0 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        .input1 {
-          width: 66px;
-          height: 59px;
-          font-size: 20px;
-          color: #191d31;
-          text-align: center;
-        }
+        margin: 0 7.5px;
       }
-      .num2 {
-        width: 66px;
-        height: 59px;
-        background-color: #f8f9fb;
-        border: 1px solid transparent;
-        border-radius: 12px;
-        margin: 0 10.5px;
-        .input2 {
-          width: 66px;
-          height: 59px;
-          font-size: 20px;
-          color: #191d31;
-          text-align: center;
-        }
-      }
-      .num3 {
-        width: 66px;
-        height: 59px;
-        background-color: #f8f9fb;
-        border: 1px solid transparent;
-        border-radius: 12px;
-        margin: 0 10.5px;
-        .input3 {
-          width: 66px;
-          height: 59px;
-          font-size: 20px;
-          color: #191d31;
-          text-align: center;
-        }
-      }
-      .num4 {
-        width: 66px;
-        height: 59px;
-        background-color: #f8f9fb;
-        border: 1px solid transparent;
-        border-radius: 12px;
-        margin: 0 0 0 10.5px;
-        .input4 {
-          width: 66px;
-          height: 59px;
-          font-size: 20px;
-          color: #191d31;
-          text-align: center;
-        }
-      }
-      .num_actived {
+
+      .verification-input:focus {
+        // outline: none;
         border: 1px solid #a456dd;
         box-shadow: #a556dd24 0px 2px 8px 0px;
       }

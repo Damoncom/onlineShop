@@ -206,21 +206,28 @@ const user_info = JSON.parse(localStorage.getItem('user'))
 const user_details = JSON.parse(localStorage.getItem('user_details'))
 console.log(user_details)
 const imgupdated = JSON.parse(localStorage.getItem('imgupdated'))
-// onUpdated(async () => {
-//   await nextTick()
-//   console.log(imgupdated)
-// })
 
+// const user = ref({
+//   name: user_details.name,
+//   phoneNumber: user_details.phoneNumber,
+//   pwd: user_info.pwd,
+//   email: user_details.email,
+//   address: '',
+//   birthday: user_details.birthday,
+//   cardNum: '',
+//   gender: user_details.gender,
+//   iconImage: imgupdated.value
+// })
 const user = ref({
-  name: user_details.name,
-  phoneNumber: user_details.phoneNumber,
+  name: user_info.name,
+  phoneNumber: user_info.phoneNumber,
   pwd: user_info.pwd,
-  email: user_details.email,
+  email: '',
   address: '',
-  birthday: user_details.birthday,
+  birthday: '',
   cardNum: '',
-  gender: user_details.gender,
-  iconImage: imgupdated.value
+  gender: '',
+  iconImage: ''
 })
 
 onUpdated(async () => {
@@ -319,6 +326,7 @@ input {
       height: 100px;
       margin-top: 24px;
       position: relative;
+
       .img {
         width: 100px;
         height: 100px;

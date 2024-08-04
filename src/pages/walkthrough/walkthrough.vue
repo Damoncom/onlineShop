@@ -10,6 +10,7 @@
       :space-between="spaceBetween"
       :centered-slides="true"
       :pagenation="true"
+      v-if="isLoad == false"
     >
       <swiper-slide>
         <div class="swiper_wrapper">
@@ -46,9 +47,9 @@
       <swiper-slide>
         <div class="swiper_wrapper">
           <div class="img_box">
-            <img src="@/assets/walk3.jpg" class="img" />
+            <img src="@/assets/walk3.jpg" class="img3" />
           </div>
-          <div class="text_box">
+          <div class="text_box3">
             <div class="title">Search Your Product Easily</div>
             <div class="discription">
               Now you can search your favorite product by only sweeping up your smartphone
@@ -114,9 +115,9 @@ const linkToSignUp = () => {
 .app {
   .default {
     width: 375px;
-    height: 812px;
+    // height: 812px;
     // height: 100%;
-    // height: 100ph;
+    height: 100vh;
     background-color: #a456dd;
     display: flex;
     align-items: center;
@@ -150,8 +151,8 @@ const linkToSignUp = () => {
   }
   .scroll_box {
     width: 375px;
-    height: 812px;
-    // height: 100%;
+    // height: 812px;
+    height: 100vh;
     background-image: url('src/assets/walk_bg.jpg');
     background-size: contain;
     display: flex;
@@ -172,11 +173,35 @@ const linkToSignUp = () => {
           width: 288px;
           height: 218px;
         }
+        .img3 {
+          width: 202px;
+          height: 202px;
+        }
       }
       .text_box {
         width: 301px;
         height: 80px;
         margin-top: 120px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        .title {
+          font-size: 20px;
+          color: #141a1f;
+        }
+        .discription {
+          font-size: 12px;
+          color: #3b3b3b;
+          line-height: 20px;
+          margin-top: 15px;
+          text-align: center;
+        }
+      }
+      .text_box3 {
+        width: 301px;
+        height: 80px;
+        margin-top: 60px;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -206,7 +231,7 @@ const linkToSignUp = () => {
       .jump {
         width: 139px;
         height: 40px;
-        margin-top: 24px;
+        margin: 24px 0 44px 0;
         background-color: #a456dd;
         border-radius: 12px;
         display: flex;

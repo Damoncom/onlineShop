@@ -61,7 +61,6 @@
         </div>
       </div>
 
-      <!-- TODO:把user.phoneNumber的值和数据库中已存在的手机号作对比，如果数据库中不存在该值，则弹出toast -->
       <div class="button_box">
         <div class="create_button" @click="signIn(user)">
           <p class="text">Sign In</p>
@@ -119,6 +118,24 @@ const user = ref({
   phoneNumber: '',
   pwd: ''
 })
+console.log(user)
+
+// TODO:记住密码功能
+// 记住密码
+let isRemember = ref(false)
+
+// const obj_last = JSON.parse(localStorage.getItem('obj_last'))
+// console.log(obj_last)
+
+// if (JSON.stringify(obj_last) != '{}') {
+//   user.value.phoneNumber = obj_last.phoneNumber
+//   user.value.pwd = obj_last.pwd
+//   isRemember.value = obj_last.isRemember
+// } else {
+//   user.value.phoneNumber = ''
+//   user.value.pwd = ''
+//   isRemember.value = false
+// }
 
 // 输入框验证
 let msg = ref('')
@@ -156,6 +173,10 @@ const signIn = (user) => {
     isActivedSignin.value = false
   }, 4000)
 
+  // 需发送的数据
+  let obj = JSON.parse(JSON.stringify(user))
+  console.log(obj)
+
   // 综合判断
   if (isRightPhone.value === false && isRightPwd.value === false) {
     msg.value = 'Incorrect phone number and password input'
@@ -167,45 +188,55 @@ const signIn = (user) => {
     // msg.value = 'Successfully!'
     signin.value = true
     console.log('手机号：' + user.phoneNumber + ' 密码：' + user.pwd + '  登录成功！')
-  }
 
-  // 需发送的数据
-  let obj = JSON.parse(JSON.stringify(user))
-  // console.log(obj)
+    // 发送数据
+    axios.defaults.headers.post['Content-Type'] = 'application/json; charset=utf-8'
+    axios
+      .post('http://192.168.100.7:7001/onlineShop/signIn', obj)
+      .then(function ({ data: response }) {
+        console.log(response)
 
-  // 发送数据
-  axios.defaults.headers.post['Content-Type'] = 'application/json; charset=utf-8'
-  axios
-    .post('http://192.168.100.7:7001/onlineShop/signIn', obj)
-    .then(function ({ data: response }) {
-      console.log(response)
-      localStorage.setItem('token', response.data.token)
-      const token_info = localStorage.getItem('token')
-      console.log(token_info)
+        // 存储token
+        localStorage.setItem('token', response.data.token)
+        const token_info = localStorage.getItem('token')
+        console.log(token_info)
 
-      if (response.code == 1000) {
-        msg.value = 'Successfully!'
-        // 跳转
-        router.push({
-          path: '/home'
-        })
-      } else {
-        isActivedCreate.value = true
-        msg.value = response.errMsg
-        if (isRightPhone.value === true && isRightPwd.value === true) {
-          msg.value = 'There is no such user, please register'
+        if (response.errCode == 1000) {
+          msg.value = 'Successfully!'
+          // 存储登录信息
+
+          //TODO:登录时获取localstorage里相对应的user信息
+          Reflect.set(obj, 'isRemember', true)
+          localStorage.setItem('user', JSON.stringify(obj))
+
+          // 跳转
+          router.push({
+            path: '/home'
+          })
+        } else if (response.errCode == 1003) {
+          msg.value = response.errMsg
+          setTimeout(async () => {
+            await nextTick()
+            router.push({
+              path: '/signUp'
+            })
+          }, 2000)
+        } else if (response.errCode == 1004) {
+          msg.value = response.errMsg
+        } else {
+          isActivedCreate.value = true
+          msg.value = response.errMsg
+          setTimeout(() => {
+            isActivedCreate.value = false
+          }, 4000)
         }
-        setTimeout(() => {
-          isActivedCreate.value = false
-        }, 4000)
-      }
-    })
-    .catch(function (error) {
-      console.log(error)
-    })
+      })
+      .catch(function (error) {
+        console.log(error)
+        // msg.value = 'There is no such user, please register'
+      })
+  }
 }
-
-let isRemember = ref(false)
 
 // 其他渠道注册
 let isGoogle = ref(false)

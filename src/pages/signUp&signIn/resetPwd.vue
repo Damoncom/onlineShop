@@ -1,7 +1,7 @@
 <template>
   <div class="app">
     <div class="bar">
-      <i class="iconfont icon-jiantou"></i>
+      <i class="iconfont icon-jiantou" @click="goBack"></i>
     </div>
 
     <div class="content">
@@ -74,40 +74,30 @@
         <p class="discription_text">Congratulation! your Password has been changed successfully.</p>
       </div>
     </div>
-    <RouterLink to="/location" class="link_location">
-      <div class="button">
-        <div class="back_home_button">
-          <p class="text1">Sign In</p>
-        </div>
+
+    <div class="button">
+      <div class="back_home_button">
+        <p class="text1">Sign In</p>
       </div>
-    </RouterLink>
+    </div>
   </div>
+
+  <!-- 引入toast组件 -->
+  <Toast :init="msg" v-if="isActivedReset == true" />
 </template>
 
 <script setup>
 import { ref, onUpdated, nextTick, onMounted } from 'vue'
 import Toast from '../../components/toast.vue'
+import { useRouter, useRoute } from 'vue-router'
 
-// 引入axios
-onMounted(async () => {
-  const { data: resp } = await axios.put(
-    'http://192.168.100.7:7001/onlineShop/updatePwd',
-    {
-      verificationCode: '8453',
-      pwd: '123demo456',
-      phoneNumber: '12345678910'
-    },
-    {
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8'
-        // "Access-Control-Allow-Methods": "PUT,POST,GET,DELETE,OPTIONS",
-        // "Access-Control-Allow-Origin": "*"
-      }
-    }
-  )
+const router = useRouter()
+const route = useRoute()
 
-  console.log(resp)
-})
+// 回退到上一页
+const goBack = () => {
+  router.go(-1)
+}
 
 // 用户信息
 const user = ref({
@@ -158,13 +148,19 @@ onUpdated(async () => {
   }
 })
 
+// TODO:重置密码
 // 重置密码按钮
 const reset = () => {
   isReset.value = true
   isActivedReset.value = true
+  if (isAllRight.value == true) {
+    router.push({
+      path: '/signIn'
+    })
+  }
   setTimeout(() => {
     isActivedReset.value = false
-  }, 3000)
+  }, 4000)
 }
 </script>
 

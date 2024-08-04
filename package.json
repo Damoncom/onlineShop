@@ -14,13 +14,14 @@
     "axios": "^1.2.1",
     "element-plus": "^2.4.1",
     "mockjs": "^1.0.0",
-    "pinia": "^2.1.7",
+    "pinia": "^2.0.27",
     "reset-css": "^5.0.2",
     "swiper": "^11.1.8",
     "vue": "^3.4.29",
     "vue-router": "^4.3.3",
     "vue-toastification": "^2.0.0-rc.5",
-    "vue3-baidu-map-gl": "^2.3.4"
+    "vue3-baidu-map-gl": "^2.3.4",
+    "vuex": "^4.0.2"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.8.0",

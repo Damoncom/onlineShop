@@ -23,7 +23,7 @@ const props = defineProps(['init'])
     display: flex;
     align-items: center;
     justify-content: center;
-    animation: toast 3s ease-in-out;
+    animation: toast 4s ease-in-out;
     p {
       font-size: 16px;
       color: white;

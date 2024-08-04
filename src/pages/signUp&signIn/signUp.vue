@@ -3,7 +3,6 @@
     <div class="bar">
       <i class="iconfont icon-jiantou" @click="goBack"></i>
     </div>
-
     <div class="content">
       <div class="header">
         <div class="title">Sign Up</div>
@@ -158,6 +157,8 @@ onUpdated(async () => {
 
 // 创建账户按钮
 const createAccount = async () => {
+  isActivedCreate.value = true
+
   // 综合判断
   if (isRightPhone.value === false && isRightPwd.value === false && isRightName.value === false) {
     msg.value = 'Input error'
@@ -205,24 +206,17 @@ const createAccount = async () => {
   ) {
     msg.value = 'Successfully!'
     create.value = true
-    console.log('create的值：' + create.value)
+    // console.log('create的值：' + create.value)
     console.log(
-      '名字：' +
-        user.value.name +
-        '手机号：' +
-        user.value.phoneNumber +
-        ' 密码：' +
-        user.value.pwd +
-        '  注册成功！'
+      '名字：' + user.value.name + '手机号：' + user.value.phoneNumber + ' 密码：' + user.value.pwd
     )
 
+    // 跳转到验证码页面
     router.push({
       path: '/verificationCode',
       query: unref(user)
     })
   }
-
-  isActivedCreate.value = true
   setTimeout(() => {
     isActivedCreate.value = false
   }, 4000)

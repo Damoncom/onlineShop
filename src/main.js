@@ -5,7 +5,7 @@ import { createPinia } from 'pinia'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 
-import Vue3BaiduMapGL from 'vue3-baidu-map-gl'
+// import Vue3BaiduMapGL from 'vue3-baidu-map-gl'
 
 import App from './App.vue'
 import router from './router/index'
@@ -21,9 +21,9 @@ import router from './router/index'
 // import App from './pages/location/selectLocation'
 // import App from './pages/home/home'
 // import App from './pages/imgTest'
+// import App from './pages/verticalcodeTest'
 
 import VConsole from 'vconsole'
-
 if (process.env.NODE_ENV !== 'local') {
   const vConsole = new VConsole({ theme: 'dark' })
 }
@@ -33,5 +33,5 @@ const app = createApp(App)
 app.use(createPinia())
 app.use(router)
 app.use(ElementPlus)
-app.use(Vue3BaiduMapGL)
+// app.use(Vue3BaiduMapGL)
 app.mount('#app')

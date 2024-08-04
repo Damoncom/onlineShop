@@ -26,6 +26,8 @@
 import { ref } from 'vue'
 import BottomNav from '@/components/bottom_nav.vue'
 
+// TODO:登陆过的用户直接跳转到该页面
+
 // 确认是Home页面
 const isHomePage = true
 </script>
