@@ -40,7 +40,12 @@
                 class="iconfont icon-lock"
                 :class="isRightPwd == true ? 'icon-lock_purple' : 'icon-lock'"
               ></i>
-              <input type="text" placeholder="Enter your password" class="pwd" v-model="user.pwd" />
+              <input
+                type="password"
+                placeholder="Enter your password"
+                class="pwd"
+                v-model="user.pwd"
+              />
               <img src="@/assets/right.svg" class="right" v-if="isRightPwd == true" />
             </div>
           </div>
@@ -49,15 +54,13 @@
 
       <div class="more">
         <div class="more_left">
-          <input type="checkbox" class="remember_checkbox" v-model="isRemember" />
+          <input type="checkbox" class="remember_checkbox" v-model="user.isRemember" />
           <div class="remember">
             <p class="remember_text">Remember Me</p>
           </div>
         </div>
         <div class="more_right">
-          <p class="right_text">
-            <RouterLink to="/resetPwd" class="link_resetPwd">Forgot Password?</RouterLink>
-          </p>
+          <p class="right_text" @click="linkToReset">Forgot Password?</p>
         </div>
       </div>
 
@@ -91,7 +94,7 @@
 </template>
 
 <script setup>
-import { ref, onUpdated, nextTick, onMounted } from 'vue'
+import { ref, onUpdated, nextTick, onMounted, onBeforeMount } from 'vue'
 import Toast from '../../components/toast.vue'
 import { useRouter, useRoute } from 'vue-router'
 import { reactive, isReactive, isRef } from 'vue'
@@ -114,28 +117,35 @@ const linkToSignUp = () => {
 }
 
 // 用户信息
-const user = ref({
+const user = reactive({
   phoneNumber: '',
-  pwd: ''
+  pwd: '',
+  isRemember: true
 })
 console.log(user)
 
-// TODO:记住密码功能
-// 记住密码
-let isRemember = ref(false)
+// TODO:密码md5加密传输
 
-// const obj_last = JSON.parse(localStorage.getItem('obj_last'))
-// console.log(obj_last)
+// TODO:忘记密码功能
+const linkToReset = () => {
+  router.push({
+    path: '/resetPwd'
+  })
+}
 
-// if (JSON.stringify(obj_last) != '{}') {
-//   user.value.phoneNumber = obj_last.phoneNumber
-//   user.value.pwd = obj_last.pwd
-//   isRemember.value = obj_last.isRemember
-// } else {
-//   user.value.phoneNumber = ''
-//   user.value.pwd = ''
-//   isRemember.value = false
-// }
+// TODO:记住密码功能(完成一半。问题：原本是user1的数据，新的user2登录，并选择了不记住登录信息，下一个user登录的时候已经清空了缓存，可以正常登录使用，但是user2的登录显示的还是user1的数据，因为user1的缓存没有清空)
+onBeforeMount(async () => {
+  await nextTick()
+  const isRemember_info = JSON.parse(localStorage.getItem('isRemember'))
+  const user_details = JSON.parse(localStorage.getItem('user_details'))
+  if (isRemember_info == false) {
+    // 清除localstorage缓存
+    localStorage.clear()
+  } else {
+    user.phoneNumber = user_details.phoneNumber
+    user.pwd = user_details.pwd
+  }
+})
 
 // 输入框验证
 let msg = ref('')
@@ -149,7 +159,7 @@ onUpdated(async () => {
   // 判断手机号码的输入格式正确与否
   // /^[1][3-9][0-9]{9}$/   注:以数字1开头，第二位是3到9的数字，后面跟着9个数字，
   const phoneReg = /^[1][3-9][0-9]{9}$/
-  if (!phoneReg.test(user.value.phoneNumber)) {
+  if (!phoneReg.test(user.phoneNumber)) {
     isRightPhone.value = false
   } else {
     isRightPhone.value = true
@@ -158,7 +168,7 @@ onUpdated(async () => {
   // 判断密码的输入格式正确与否
   // ^[a-zA-Z]\w{5,17}$  注：正确格式为：以字母开头，长度在6~18之间，只能包含字符、数字和下划线。
   const pwdReg = /^[a-zA-Z]\w{5,17}$/
-  if (!pwdReg.test(user.value.pwd)) {
+  if (!pwdReg.test(user.pwd)) {
     isRightPwd.value = false
   } else {
     isRightPwd.value = true
@@ -201,13 +211,11 @@ const signIn = (user) => {
         const token_info = localStorage.getItem('token')
         console.log(token_info)
 
+        // 存储isRemember的值
+        localStorage.setItem('isRemember', JSON.stringify(obj.isRemember))
+
         if (response.errCode == 1000) {
           msg.value = 'Successfully!'
-          // 存储登录信息
-
-          //TODO:登录时获取localstorage里相对应的user信息
-          Reflect.set(obj, 'isRemember', true)
-          localStorage.setItem('user', JSON.stringify(obj))
 
           // 跳转
           router.push({
@@ -233,7 +241,6 @@ const signIn = (user) => {
       })
       .catch(function (error) {
         console.log(error)
-        // msg.value = 'There is no such user, please register'
       })
   }
 }
@@ -470,12 +477,10 @@ input {
         align-items: center;
         margin-left: auto;
         .right_text {
-          .link_resetPwd {
-            padding: 10px 0;
-            font-size: 14px;
-            color: #a456dd;
-            text-decoration: none;
-          }
+          padding: 10px 0;
+          font-size: 14px;
+          color: #a456dd;
+          text-decoration: none;
         }
       }
     }

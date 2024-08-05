@@ -8,7 +8,7 @@
     </div>
     <div class="content">
       <div class="img_box" @click="changeImg">
-        <img :src="imgUrl" class="img" />
+        <img :src="user.iconImage" class="img" />
         <i class="iconfont icon-zhaoxiangji1"></i>
       </div>
       <div class="frame">
@@ -27,7 +27,7 @@
             <div class="main">
               <i class="iconfont icon-xinxi"></i>
               <input
-                type="text"
+                type="email"
                 placeholder="Enter your email"
                 class="email"
                 v-model="user.email"
@@ -54,12 +54,7 @@
           <div class="form">
             <div class="main">
               <i class="iconfont icon-rili"></i>
-              <input
-                type="text"
-                placeholder="Enter your birth date"
-                class="birthday"
-                v-model="user.birthday"
-              />
+              <input type="date" class="birthday" v-model="user.birthday" />
             </div>
           </div>
         </div>
@@ -72,6 +67,7 @@
                 type="text"
                 placeholder="Enter your gender"
                 class="gender"
+                readonly="readonly"
                 v-model="input_gender"
               />
               <div class="select" @click="selectGender">
@@ -98,11 +94,21 @@
     <!-- 引入toast组件 -->
     <Toast :init="msg" v-if="isSave == true" />
   </div>
-  <div class="mask" v-if="isChange == true"></div>
+  <div class="mask" v-if="isChange == true" @click="isChangeImg_box"></div>
   <div class="changeImg_box" v-if="isChange == true">
     <div class="take_photo">
-      <img src="@/assets/photo_img.jpg" class="photo_img" />
-      <div class="photo_text">Take a photo</div>
+      <input
+        type="file"
+        accept="image/*"
+        capture="camera"
+        @change="takePhoto"
+        ref="cameraInput"
+        class="camera_input"
+      />
+      <div class="photo">
+        <img src="@/assets/photo_img.jpg" class="photo_img" />
+        <div class="photo_text">Take a photo</div>
+      </div>
     </div>
     <div class="picture_upload">
       <input type="file" @change="handleFileUpload" ref="uploadInput" class="upload_input" />
@@ -115,9 +121,10 @@
 </template>
 
 <script setup>
-import { ref, onUpdated, nextTick, unref, isReactive, isRef } from 'vue'
+import { ref, onUpdated, nextTick, unref, isReactive, isRef, onBeforeMount } from 'vue'
 import Toast from '../../components/toast.vue'
 import { useRouter, useRoute } from 'vue-router'
+import { reactive } from 'vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -129,16 +136,58 @@ const goBack = () => {
 
 // 修改头像
 const uploadInput = ref(null)
+const cameraInput = ref(null)
 const imgUrl = ref('src/assets/imgurl.jpg')
-// onUpdated(async () => {
-//   await nextTick()
-//   console.log(imgUrl)
-// })
 
+// 控制蒙层和changeImg_box的出现
 let isChange = ref(false)
 const changeImg = () => {
   isChange.value = true
 }
+const isChangeImg_box = (e) => {
+  // console.log(e.target)
+  isChange.value = false
+}
+
+// TODO:上传图片压缩，裁剪功能
+
+//获取摄像头功能
+const takePhoto = async () => {
+  isChange.value = false
+  console.log(cameraInput)
+
+  // 需要发送的数据
+  let formData1 = new FormData()
+  formData1.append('file', unref(cameraInput).files[0])
+
+  // post请求
+  const token_info = localStorage.getItem('token')
+  axios.defaults.headers.post['Content-Type'] = 'multipart/form-data'
+  axios.defaults.headers.post['Authorization'] = `Bearer ${token_info}`
+  axios
+    .post('http://192.168.100.7:7001/onlineShop/uploadImage', formData1)
+    .then(function ({ data: response }) {
+      console.log(response)
+      // 获取上传图片的路径
+      imgUrl.value = 'http://192.168.100.7:7001' + response.url
+      user.iconImage = 'http://192.168.100.7:7001' + response.url
+      console.log(imgUrl.value)
+      if (response.code == 1000) {
+      } else {
+        isActivedCreate.value = true
+        msg.value = response.errMsg
+        setTimeout(() => {
+          isActivedCreate.value = false
+        }, 4000)
+      }
+    })
+    .catch(function (error) {
+      console.log(error)
+    })
+}
+
+// 上传照片
+
 const handleFileUpload = async (file, fileList) => {
   isChange.value = false
   console.log(uploadInput)
@@ -158,8 +207,6 @@ const handleFileUpload = async (file, fileList) => {
       // 获取上传图片的路径
       imgUrl.value = 'http://192.168.100.7:7001' + response.url
       user.iconImage = 'http://192.168.100.7:7001' + response.url
-      // 存储修改过的用户数据
-      localStorage.setItem('imgupdated', JSON.stringify(imgUrl))
       console.log(imgUrl.value)
       if (response.code == 1000) {
       } else {
@@ -176,7 +223,7 @@ const handleFileUpload = async (file, fileList) => {
 }
 
 // 性别选择
-const input_gender = ref('')
+const input_gender = ref('Male')
 const isSelectGender = ref(false)
 let count = ref(0)
 const clickMale = (user) => {
@@ -201,38 +248,37 @@ const selectGender = () => {
 }
 
 // 用户信息
-const user_info = JSON.parse(localStorage.getItem('user'))
 // 获取存储的用户数据
+const user_info = JSON.parse(localStorage.getItem('user'))
 const user_details = JSON.parse(localStorage.getItem('user_details'))
-console.log(user_details)
-const imgupdated = JSON.parse(localStorage.getItem('imgupdated'))
 
-// const user = ref({
-//   name: user_details.name,
-//   phoneNumber: user_details.phoneNumber,
-//   pwd: user_info.pwd,
-//   email: user_details.email,
-//   address: '',
-//   birthday: user_details.birthday,
-//   cardNum: '',
-//   gender: user_details.gender,
-//   iconImage: imgupdated.value
-// })
-const user = ref({
-  name: user_info.name,
-  phoneNumber: user_info.phoneNumber,
-  pwd: user_info.pwd,
-  email: '',
+const user = reactive({
   address: '',
-  birthday: '',
   cardNum: '',
-  gender: '',
-  iconImage: ''
+  ...user_info,
+  ...user_details,
+  iconImage: 'src/assets/imgurl.jpg'
 })
 
-onUpdated(async () => {
-  await nextTick()
-  console.log(user)
+console.log(user)
+
+// 页面默认显示
+// get请求获取用户信息
+onBeforeMount(async () => {
+  const token_info = localStorage.getItem('token')
+  const { data: resp } = await axios({
+    method: 'get',
+    url: 'http://192.168.100.7:7001/onlineShop/getUserInfo',
+    params: {},
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'application/json; charset=utf-8'
+    }
+  })
+  Object.assign(user, resp.data)
+  // Reflect.set(user.value, 'id', resp.data.id)
+  console.log('resp', resp)
+  console.log('编辑页请求的数据：', user)
 })
 
 // 保存修改按钮
@@ -245,8 +291,17 @@ const save = () => {
     isSave.value = false
   }, 3000)
 
+  // 性别判断
+  if (input_gender.value == 'Male') {
+    user.gender = '0'
+  } else if (input_gender.value == 'Female') {
+    user.gender = '1'
+  }
+
+  console.log(user)
+
   // 需发送的数据
-  let obj = JSON.parse(JSON.stringify(user.value))
+  let obj = JSON.parse(JSON.stringify(user))
   console.log(obj)
 
   // 发送数据
@@ -276,10 +331,9 @@ const save = () => {
   // 跳转到profile页面
   router.push({
     path: '/profile'
-    // query: unref(user)
   })
 
-  console.log('修改过的数据：' + obj)
+  console.log('修改过的数据：', obj)
   console.log(obj)
 }
 </script>
@@ -665,19 +719,30 @@ input {
     width: 49%;
     height: 80px;
     border-right: 1px solid #c4c4c4;
-    // background-color: #a456dd;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    .photo_img {
-      width: 36px;
-      height: 36px;
+    .camera_input {
+      position: absolute;
+      width: 144px;
+      height: 80px;
+      opacity: 0;
     }
-    .photo_text {
-      font-size: 12px;
-      line-height: 26px;
-      font-weight: 700;
+    .photo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      .photo_img {
+        width: 36px;
+        height: 36px;
+      }
+      .photo_text {
+        font-size: 12px;
+        line-height: 26px;
+        font-weight: 700;
+      }
     }
   }
   .picture_upload {

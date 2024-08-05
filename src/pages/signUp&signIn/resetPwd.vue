@@ -28,10 +28,6 @@
           <div class="title">Confirm Password</div>
           <div class="form">
             <div class="main">
-              <!-- <i
-                class="iconfont icon-tel"
-                :class="isRightPhone == true ? 'icon-tel_purple' : 'icon-tel'"
-              ></i> -->
               <i
                 class="iconfont icon-lock"
                 :class="isRightComfirmPwd == true ? 'icon-lock_purple' : 'icon-lock'"
@@ -148,7 +144,7 @@ onUpdated(async () => {
   }
 })
 
-// TODO:重置密码
+// TODO:重置密码（因为密码不正确不能登陆获得token，所以发送不了get请求获得user数据去改变密码）
 // 重置密码按钮
 const reset = () => {
   isReset.value = true

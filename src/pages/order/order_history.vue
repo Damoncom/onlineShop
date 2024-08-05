@@ -55,7 +55,7 @@
     </div>
   </div>
 
-  <BottomNav :init_profile="isOrderPage" />
+  <BottomNav :init_order="isOrderPage" />
 </template>
 
 <script setup>

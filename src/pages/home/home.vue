@@ -8,7 +8,13 @@
       <div class="search">
         <div class="search_box">
           <i class="iconfont icon-sousuo"></i>
-          <input type="text" class="search_input" placeholder="Search..." v-model="inputText" />
+          <input
+            type="search"
+            name="q"
+            class="search_input"
+            placeholder="Search..."
+            v-model="inputText"
+          />
         </div>
         <div class="scan">
           <i class="iconfont icon-saoyisao"></i>

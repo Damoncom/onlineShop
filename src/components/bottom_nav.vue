@@ -6,9 +6,12 @@
       <div class="title" :class="props.init_home == true ? 'purple' : 'title'">Home</div>
     </div>
     <!-- search页面 -->
-    <div class="search">
-      <i class="iconfont icon-sousuo"></i>
-      <div class="title">Search</div>
+    <div class="search" @click="LinkToSearch">
+      <i
+        class="iconfont icon-sousuo"
+        :class="props.init_search == true ? 'purple' : 'icon-sousuo'"
+      ></i>
+      <div class="title" :class="props.init_search == true ? 'purple' : 'title'">Search</div>
     </div>
     <!-- cart页面 -->
     <div class="cart">
@@ -42,13 +45,19 @@ import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
 const route = useRoute()
 
-const props = defineProps(['init_home', 'init_order', 'init_profile'])
+// TODO:传参变色失败
+const props = defineProps(['init_home', 'init_search', 'init_order', 'init_profile'])
 console.log(props)
 
 // 跳转到页面
 const LinkToHome = () => {
   router.push({
     path: '/home'
+  })
+}
+const LinkToSearch = () => {
+  router.push({
+    path: '/search'
   })
 }
 const LinkToOrder = () => {

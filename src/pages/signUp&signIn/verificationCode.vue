@@ -235,7 +235,7 @@ const submit = (user) => {
         setTimeout(async () => {
           await nextTick()
           router.push({
-            path: '/signUp'
+            path: '/signIn'
           })
         }, 2000)
       } else if (response.errCode == 1002) {

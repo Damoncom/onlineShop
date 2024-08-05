@@ -54,7 +54,7 @@
                   :class="isRightPwd == true ? 'icon-lock_purple' : 'icon-lock'"
                 ></i>
                 <input
-                  type="text"
+                  type="password"
                   placeholder="Enter your password"
                   class="pwd"
                   v-model="user.pwd"

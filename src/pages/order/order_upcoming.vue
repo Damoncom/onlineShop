@@ -39,11 +39,11 @@
     </div>
   </div>
 
-  <BottomNav :init_profile="isOrderPage" />
+  <BottomNav :init_order="isOrderPage" />
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, nextTick, reactive, onBeforeMount } from 'vue'
 import BottomNav from '../../components/bottom_nav.vue'
 import { useRouter, useRoute } from 'vue-router'
 import order from '@/assets/prodoct_img.jpg'
@@ -68,7 +68,7 @@ const linkToHistory = () => {
 const isOrderPage = true
 
 // 商品列表信息
-const orderList = ref([
+const orderList = reactive([
   {
     id: 1,
     name: 'Givenchy L‘ intemporel Blossom',
@@ -94,15 +94,19 @@ const orderList = ref([
     state: 'Pending'
   }
 ])
-console.log(orderList)
-// 控制商品状态
+
+// TODO:注释上面的orderList数组 + 添加下面的三行后，可以实现upcoming页面的更新缓存。但是新用户登录第一次进入这个页面会因为找不到localstorage缓存的orderList_info数据而报错
+// const orderList_info = JSON.parse(localStorage.getItem('orderList'))
+// const orderList = reactive([...orderList_info])
+// console.log('upcoming列表状态:', orderList)
 
 // 从商品历史页面添加的商品
 const addOrder = route.query
-const count = ref(orderList.value.length)
+const count = ref(orderList.length)
+console.log(count.value)
 
 if (JSON.stringify(addOrder) != '{}') {
-  orderList.value.push({
+  orderList.push({
     id: count.value + 1,
     name: addOrder.name,
     brand: addOrder.brand,
@@ -110,15 +114,10 @@ if (JSON.stringify(addOrder) != '{}') {
     imgUrl: order2,
     state: 'Pending'
   })
+
+  // 存储商品列表
+  localStorage.setItem('orderList', JSON.stringify(orderList))
 }
-
-// 存储商品列表
-localStorage.setItem('orderList', JSON.stringify(orderList))
-
-// TODO:存储的最新商品列表orderList_info不知道怎么替换掉原本的orderList来显示
-// 渲染最新列表数据到页面
-const orderList_info = JSON.parse(localStorage.getItem('orderList'))
-console.log(orderList_info)
 </script>
 
 <style lang="scss" scoped>

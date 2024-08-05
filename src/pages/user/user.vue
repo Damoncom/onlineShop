@@ -73,6 +73,7 @@ import { ref, onMounted, onServerPrefetch, onBeforeUpdate } from 'vue'
 import BottomNav from '@/components/bottom_nav.vue'
 import { useRouter, useRoute } from 'vue-router'
 import { onBeforeMount } from 'vue'
+import { reactive } from 'vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -82,28 +83,17 @@ const goBack = () => {
   router.go(-1)
 }
 
-// TODO:返回的图片url赋值不到user当中去，导致照片显示不出来
-// const imgupdated = JSON.parse(localStorage.getItem('imgupdated'))
-// const iconImage = imgupdated.value
-// console.log(imgupdated)
-
-// 获取注册时的基础信息
 const user_info = JSON.parse(localStorage.getItem('user'))
-console.log(user_info)
+const user_details = JSON.parse(localStorage.getItem('user_details'))
 
 // 用户信息
-const user = ref({
-  name: user_info.name,
-  phoneNumber: user_info.phoneNumber,
-  pwd: user_info.pwd,
-  email: '',
-  address: '',
-  birthday: '',
-  cardNum: '',
+const user = reactive({
+  ...user_info,
+  ...user_details,
   iconImage: 'src/assets/imgurl.jpg'
 })
-console.log('profile本来的数据：')
-console.log(user)
+// console.log('profile本来的数据：', user)
+// console.log(user)
 
 // 获取用户信息
 onBeforeMount(async () => {
@@ -117,10 +107,10 @@ onBeforeMount(async () => {
       'Content-Type': 'application/json; charset=utf-8'
     }
   })
-  console.log(resp)
-  // user.value = resp.data
-  // console.log('profile更新过的数据：' + user)
-  // console.log(user)
+  Object.assign(user, resp.data)
+  // Reflect.set(user.value, 'id', resp.data.id)
+  console.log('resp', resp)
+  console.log('profile更新过的数据：', user)
 })
 
 // 跳转编辑个人信息页面
