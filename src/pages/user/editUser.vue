@@ -1,11 +1,6 @@
 <template>
   <div class="app">
-    <div class="bar">
-      <i class="iconfont icon-jiantou" @click="goBack"></i>
-      <div class="title">
-        <p class="text">Edit Profile</p>
-      </div>
-    </div>
+    <Nav :init_title="navTitle" />
     <div class="content">
       <div class="img_box" @click="changeImg">
         <img :src="user.iconImage" class="img" />
@@ -122,6 +117,7 @@
 
 <script setup>
 import { ref, onUpdated, nextTick, unref, isReactive, isRef, onBeforeMount } from 'vue'
+import Nav from '@/components/nav'
 import Toast from '../../components/toast.vue'
 import { useRouter, useRoute } from 'vue-router'
 import { reactive } from 'vue'
@@ -129,10 +125,8 @@ import { reactive } from 'vue'
 const router = useRouter()
 const route = useRoute()
 
-// 回退到上一页
-const goBack = () => {
-  router.go(-1)
-}
+// 导入导航栏
+const navTitle = 'Edit Profile'
 
 // 修改头像
 const uploadInput = ref(null)
@@ -701,6 +695,7 @@ input {
   background-color: rgba($color: #000000, $alpha: 0.5);
   position: absolute;
   top: 0;
+  z-index: 3;
 }
 .changeImg_box {
   width: 288px;

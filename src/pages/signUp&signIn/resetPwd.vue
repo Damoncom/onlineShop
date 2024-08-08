@@ -1,8 +1,6 @@
 <template>
   <div class="app">
-    <div class="bar">
-      <i class="iconfont icon-jiantou" @click="goBack"></i>
-    </div>
+    <Nav :init_title="navTitle" />
 
     <div class="content">
       <div class="header">
@@ -84,16 +82,15 @@
 
 <script setup>
 import { ref, onUpdated, nextTick, onMounted } from 'vue'
+import Nav from '@/components/nav'
 import Toast from '../../components/toast.vue'
 import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
 const route = useRoute()
 
-// 回退到上一页
-const goBack = () => {
-  router.go(-1)
-}
+// 导入导航栏
+const navTitle = ''
 
 // 用户信息
 const user = ref({
@@ -166,17 +163,6 @@ input {
   border: none;
 }
 .app {
-  .bar {
-    width: 275px;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    margin-left: 20px;
-    .icon-jiantou {
-      font-size: 16px;
-      color: #191d31;
-    }
-  }
   .content {
     display: flex;
     align-items: center;

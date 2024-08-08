@@ -106,12 +106,12 @@
       </div>
     </div>
   </div>
-  <BottomNav :init_search="isSearchPage" />
+  <TabBar :init_search="isSearchPage" />
 </template>
 
 <script setup>
 import { reactive, ref } from 'vue'
-import BottomNav from '@/components/bottom_nav.vue'
+import TabBar from '@/components/tabBar'
 import product from '@/assets/prodoct_img.jpg'
 
 // 确认是Home页面

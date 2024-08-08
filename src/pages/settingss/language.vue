@@ -1,11 +1,6 @@
 <template>
   <div class="app">
-    <div class="bar">
-      <i class="iconfont icon-jiantou" @click="goBack"></i>
-      <div class="title">
-        <p class="text">Language Settings</p>
-      </div>
-    </div>
+    <Nav :init_title="navTitle" />
     <div class="content">
       <ul class="language_list">
         <li
@@ -32,14 +27,13 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import Nav from '@/components/nav'
 
 const router = useRouter()
 const route = useRoute()
 
-// 回退到上一页
-const goBack = () => {
-  router.go(-1)
-}
+// 导入导航栏
+const navTitle = 'Language Settings'
 
 const languageList = reactive([
   {
@@ -93,31 +87,6 @@ const chooseLanguage = (e) => {
 
 <style lang="scss" scoped>
 .app {
-  .bar {
-    width: 375px;
-    height: 48px;
-    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    .icon-jiantou {
-      font-size: 16px;
-      color: #191d31;
-      margin-right: auto;
-      margin-left: 20px;
-    }
-    .title {
-      height: 24px;
-      margin-right: 118px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      .text {
-        font-size: 16px;
-        color: #374151;
-      }
-    }
-  }
   .content {
     display: flex;
     flex-direction: column;

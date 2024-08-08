@@ -1,6 +1,6 @@
 <template>
   <div class="app" :class="isActivedInfo == true ? 'app_regular' : 'app'">
-    <div class="bar">
+    <div class="nav">
       <i class="iconfont icon-mulu" @click="linkToInfo"></i>
       <i class="iconfont icon-ling" @click="linkToNotification"></i>
     </div>
@@ -161,7 +161,7 @@
       </div>
     </div>
   </div>
-  <BottomNav :init_home="isHomePage" />
+  <TabBar :init_home="isHomePage" />
   <div
     class="mask"
     v-if="isActivedInfo == true"
@@ -207,7 +207,7 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
-import BottomNav from '@/components/bottom_nav.vue'
+import TabBar from '@/components/tabBar'
 import product from '@/assets/prodoct_img.jpg'
 import product2 from '@/assets/popular_img1.jpg'
 import product3 from '@/assets/popular_img2.jpg'
@@ -542,7 +542,7 @@ const activeUse = (e) => {
 <style lang="scss" scoped>
 .app {
   //TODO:bar提取为组件
-  .bar {
+  .nav {
     width: 375px;
     height: 48px;
     box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;

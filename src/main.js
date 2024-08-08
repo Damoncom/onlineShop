@@ -23,6 +23,7 @@ import router from './router/index'
 // import App from './pages/imgTest'
 // import App from './pages/verticalcodeTest'
 // import App from './pages/cardtest'
+// import App from './components/nav'
 
 import VConsole from 'vconsole'
 if (process.env.NODE_ENV !== 'local') {

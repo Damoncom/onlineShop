@@ -1,11 +1,6 @@
 <template>
   <div class="app">
-    <div class="bar">
-      <i class="iconfont icon-jiantou" @click="goBack"></i>
-      <div class="title">
-        <p class="text">Category</p>
-      </div>
-    </div>
+    <Nav :init_title="navTitle" />
     <div class="content">
       <div class="product_card">
         <ul class="product_list">
@@ -43,19 +38,15 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-
+import Nav from '@/components/nav'
 import product from '@/assets/prodoct_img.jpg'
 
 const router = useRouter()
 const route = useRoute()
 
 //TODO:回退到具体页面
-// 回退到上一页
-const goBack = () => {
-  router.go(-1)
-}
-
-//TODO:提取顶部导航栏
+// 导入导航栏
+const navTitle = 'Category'
 
 //TODO:下拉刷新加载
 // 商品列表数据
@@ -178,31 +169,6 @@ const chooseProduct = (e) => {
 
 <style lang="scss" scoped>
 .app {
-  .bar {
-    width: 375px;
-    height: 48px;
-    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    .icon-jiantou {
-      font-size: 16px;
-      color: #191d31;
-      margin-right: auto;
-      margin-left: 20px;
-    }
-    .title {
-      height: 24px;
-      margin-right: 157px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      .text {
-        font-size: 16px;
-        color: #374151;
-      }
-    }
-  }
   .content {
     display: flex;
     flex-direction: column;

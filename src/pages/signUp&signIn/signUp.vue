@@ -1,9 +1,6 @@
 <template>
   <div class="app">
-    <!-- TODO:提取顶部导航栏 -->
-    <div class="bar">
-      <i class="iconfont icon-jiantou" @click="goBack"></i>
-    </div>
+    <Nav :init_title="navTitle" />
     <div class="content">
       <div class="header">
         <div class="title">Sign Up</div>
@@ -96,16 +93,15 @@
 <script setup>
 import { ref, unref, onUpdated, nextTick, onMounted } from 'vue'
 import signUP from './signUp'
+import Nav from '@/components/nav'
 import Toast from '../../components/toast.vue'
 import axios from 'axios'
 import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
 const route = useRoute()
 
-// 回退一页
-const goBack = () => {
-  router.go(-1)
-}
+// 导入导航栏
+const navTitle = ''
 
 // 切换到signIn页面
 const linkToSignIn = () => {
@@ -212,21 +208,6 @@ input {
   border: none;
 }
 .app {
-  .bar {
-    width: 275px;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    margin-left: 10px;
-    .link_home {
-      text-decoration: none;
-      padding: 10px;
-      .icon-jiantou {
-        font-size: 16px;
-        color: #191d31;
-      }
-    }
-  }
   .content {
     display: flex;
     align-items: center;

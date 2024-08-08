@@ -1,12 +1,6 @@
 <template>
   <div class="app">
-    <div class="bar">
-      <i class="iconfont icon-jiantou" @click="goBack"></i>
-      <div class="title">
-        <p class="text">Profile</p>
-      </div>
-      <i class="iconfont icon-bianji" @click="linkToEdit"></i>
-    </div>
+    <Nav :init_title="navTitle" />
     <div class="content">
       <div class="user">
         <div class="details">
@@ -66,11 +60,12 @@
       </div>
     </div>
   </div>
-  <BottomNav :init_profile="isProfilePage" />
+  <TabBar :init_profile="isProfilePage" />
 </template>
 <script setup>
 import { ref, onMounted, onServerPrefetch, onBeforeUpdate } from 'vue'
-import BottomNav from '@/components/bottom_nav.vue'
+import TabBar from '@/components/tabBar'
+import Nav from '@/components/nav'
 import { useRouter, useRoute } from 'vue-router'
 import { onBeforeMount } from 'vue'
 import { reactive } from 'vue'
@@ -78,10 +73,8 @@ import { reactive } from 'vue'
 const router = useRouter()
 const route = useRoute()
 
-// 回退到上一页
-const goBack = () => {
-  router.go(-1)
-}
+// 导入导航栏
+const navTitle = 'Profile'
 
 const user_info = JSON.parse(localStorage.getItem('user'))
 const user_details = JSON.parse(localStorage.getItem('user_details'))
@@ -133,38 +126,6 @@ const linkToLoaction = () => {
 
 <style lang="scss" scoped>
 .app {
-  .bar {
-    width: 375px;
-    height: 48px;
-    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    .icon-jiantou {
-      font-size: 16px;
-      color: #191d31;
-      margin-right: auto;
-      margin-left: 20px;
-    }
-    .title {
-      width: 48px;
-      height: 24px;
-      margin-left: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      .text {
-        font-size: 16px;
-        color: #374151;
-      }
-    }
-    .icon-bianji {
-      font-size: 24px;
-      color: #191d31;
-      margin-left: auto;
-      margin-right: 20px;
-    }
-  }
   .content {
     display: flex;
     flex-direction: column;

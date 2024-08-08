@@ -1,8 +1,6 @@
 <template>
   <div class="app">
-    <div class="bar">
-      <i class="iconfont icon-jiantou" @click="goBack"></i>
-    </div>
+    <Nav :init_title="navTitle" />
     <div class="content">
       <div class="header">
         <div class="title">Verification Code</div>
@@ -70,15 +68,14 @@
 
 <script setup>
 import { ref, onMounted, nextTick, onUpdated } from 'vue'
+import Nav from '@/components/nav'
 import Toast from '../../components/toast.vue'
 import axios from 'axios'
 import { useRouter, useRoute } from 'vue-router'
 import { reactive, isReactive } from 'vue'
 
-// 回退到上一页面
-const goBack = () => {
-  router.go(-1)
-}
+// 导入导航栏
+const navTitle = ''
 
 // 倒计时
 const fitZero = (num) => {
@@ -135,7 +132,7 @@ onMounted(async () => {
 })
 
 // 验证码框
-const verificationCodes = ref(['1', '2', '3', '4'])
+const verificationCodes = ref(['', '', '', ''])
 
 const handleInput = (index, event) => {
   const value = event.target.value

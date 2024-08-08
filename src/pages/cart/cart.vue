@@ -1,11 +1,6 @@
 <template>
   <div class="app">
-    <div class="bar">
-      <i class="iconfont icon-jiantou" @click="goBack"></i>
-      <div class="title">
-        <p class="text">Cart</p>
-      </div>
-    </div>
+    <Nav :init_title="navTitle" />
     <div class="content">
       <ul class="cart_list">
         <li class="cart_item" v-for="(cart, cart_index) of cartList" :key="cart_index">
@@ -56,14 +51,13 @@
 import { reactive, ref, toRaw } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import product from '@/assets/details_img.jpg'
+import Nav from '@/components/nav'
 
 const router = useRouter()
 const route = useRoute()
 
-// 回退到上一页
-const goBack = () => {
-  router.go(-1)
-}
+// 导入导航栏
+const navTitle = 'Cart'
 
 // 商品列表信息
 const cartList = reactive([

@@ -1,15 +1,10 @@
 <template>
   <div class="app">
-    <div class="bar">
-      <i class="iconfont icon-jiantou" @click="goBack"></i>
-      <div class="title">
-        <p class="text">Order{{ orderNum }}</p>
-      </div>
-    </div>
+    <Nav :init_title="navTitle" />
     <div class="content">
       <div class="box">
         <div class="img_box">
-          <img src="@/assets/walk1.jpg" class="img" />
+          <img src="@/assets/done.jpg" class="img" />
         </div>
         <div class="text_box">
           <div class="title">Your order has been successfully ordered now</div>
@@ -31,37 +26,16 @@
 
 <script setup>
 import { ref } from 'vue'
+import Nav from '@/components/nav'
+
+// 导入导航栏
+const navTitle = 'Order XY3843'
 
 const orderNum = ref()
 </script>
 
 <style lang="scss" scoped>
 .app {
-  .bar {
-    width: 375px;
-    height: 48px;
-    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    .icon-jiantou {
-      font-size: 16px;
-      color: #191d31;
-      margin-right: auto;
-      margin-left: 20px;
-    }
-    .title {
-      height: 24px;
-      margin-right: 170px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      .text {
-        font-size: 16px;
-        color: #374151;
-      }
-    }
-  }
   .content {
     display: flex;
     align-items: center;
@@ -79,7 +53,7 @@ const orderNum = ref()
         justify-content: center;
         .img {
           width: 288px;
-          height: 218px;
+          height: 215px;
         }
         .img3 {
           width: 202px;
