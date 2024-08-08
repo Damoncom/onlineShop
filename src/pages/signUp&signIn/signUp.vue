@@ -1,5 +1,6 @@
 <template>
   <div class="app">
+    <!-- TODO:提取顶部导航栏 -->
     <div class="bar">
       <i class="iconfont icon-jiantou" @click="goBack"></i>
     </div>
@@ -158,55 +159,25 @@ onUpdated(async () => {
 // 创建账户按钮
 const createAccount = async () => {
   isActivedCreate.value = true
+  setTimeout(() => {
+    isActivedCreate.value = false
+  }, 3900)
 
-  // 综合判断
-  if (isRightPhone.value === false && isRightPwd.value === false && isRightName.value === false) {
-    msg.value = 'Input error'
-  } else if (
-    isRightPhone.value === true &&
-    isRightPwd.value === false &&
-    isRightName.value === false
-  ) {
-    msg.value = 'Incorrect name and password input'
-  } else if (
-    isRightPhone.value === false &&
-    isRightPwd.value === true &&
-    isRightName.value === false
-  ) {
-    msg.value = 'Incorrect name and phone number input'
-  } else if (
-    isRightPhone.value === false &&
-    isRightPwd.value === false &&
-    isRightName.value === true
-  ) {
-    msg.value = 'Incorrect phone number and password input'
-  } else if (
-    isRightPhone.value === true &&
-    isRightPwd.value === true &&
-    isRightName.value === false
-  ) {
+  if (isRightName.value === false) {
     msg.value = 'Name cannot be empty'
-  } else if (
-    isRightPhone.value === true &&
-    isRightPwd.value === false &&
-    isRightName.value === true
-  ) {
-    msg.value =
-      'Starting with a letter, with a length between 6-18, can only contain characters, numbers, and underscores'
-  } else if (
-    isRightPhone.value === false &&
-    isRightPwd.value === true &&
-    isRightName.value === true
-  ) {
+    return
+  }
+  if (isRightPhone.value === false) {
     msg.value = 'Incorrect phone number input'
-  } else if (
-    isRightPhone.value === true &&
-    isRightPwd.value === true &&
-    isRightName.value === true
-  ) {
+    return
+  }
+  if (isRightPwd.value === false) {
+    ;('Incorrect password input')
+    return
+  }
+  if (isRightPhone.value === true && isRightPwd.value === true && isRightName.value === true) {
     msg.value = 'Successfully!'
     create.value = true
-    // console.log('create的值：' + create.value)
     console.log(
       '名字：' + user.value.name + '手机号：' + user.value.phoneNumber + ' 密码：' + user.value.pwd
     )
@@ -217,9 +188,6 @@ const createAccount = async () => {
       query: unref(user)
     })
   }
-  setTimeout(() => {
-    isActivedCreate.value = false
-  }, 4000)
 }
 
 // 其他渠道注册

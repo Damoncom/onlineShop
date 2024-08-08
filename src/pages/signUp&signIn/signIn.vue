@@ -126,7 +126,6 @@ console.log(user)
 
 // TODO:密码md5加密传输
 
-// TODO:忘记密码功能
 const linkToReset = () => {
   router.push({
     path: '/resetPwd'

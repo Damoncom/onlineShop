@@ -144,7 +144,6 @@ onUpdated(async () => {
   }
 })
 
-// TODO:重置密码（因为密码不正确不能登陆获得token，所以发送不了get请求获得user数据去改变密码）
 // 重置密码按钮
 const reset = () => {
   isReset.value = true

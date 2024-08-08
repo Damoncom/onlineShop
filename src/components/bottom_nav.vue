@@ -14,7 +14,7 @@
       <div class="title" :class="props.init_search == true ? 'purple' : 'title'">Search</div>
     </div>
     <!-- cart页面 -->
-    <div class="cart">
+    <div class="cart" @click="LinkToCart">
       <i class="iconfont icon-yuan">
         <i class="iconfont icon-gouwudai"></i>
       </i>
@@ -45,7 +45,6 @@ import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
 const route = useRoute()
 
-// TODO:传参变色失败
 const props = defineProps(['init_home', 'init_search', 'init_order', 'init_profile'])
 console.log(props)
 
@@ -58,6 +57,11 @@ const LinkToHome = () => {
 const LinkToSearch = () => {
   router.push({
     path: '/search'
+  })
+}
+const LinkToCart = () => {
+  router.push({
+    path: '/cart'
   })
 }
 const LinkToOrder = () => {
@@ -81,7 +85,7 @@ const LinkToProfile = () => {
   align-items: center;
   justify-content: center;
   background-color: white;
-  z-index: 999;
+  z-index: 1;
   .home {
     height: 40px;
     padding: 0 20px;

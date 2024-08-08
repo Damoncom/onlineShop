@@ -1,0 +1,279 @@
+<template>
+  <div class="app">
+    <div class="bar">
+      <i class="iconfont icon-jiantou" @click="goBack"></i>
+      <div class="title">
+        <p class="text">Category</p>
+      </div>
+    </div>
+    <div class="content">
+      <div class="product_card">
+        <ul class="product_list">
+          <li
+            class="product_item"
+            v-for="(product, product_index) of productList"
+            :key="product_index"
+            :data-index="product_index"
+            :data-name="product.name"
+            :data-brand="product.brand"
+            :data-price="product.price"
+            @click="chooseProduct"
+          >
+            <div class="img_box">
+              <img :src="product.img" class="product_img" />
+            </div>
+            <div class="text_box">
+              <div class="title">{{ product.name }}</div>
+              <div class="brand">{{ product.brand }}</div>
+              <div class="price">{{ product.price }}</div>
+              <div class="card_cart" @click="addToCart">
+                <i
+                  class="iconfont icon-gouwudai"
+                  :class="actived_index == product_index ? 'icon-gouwudai_purple' : 'icon-gouwudai'"
+                ></i>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { reactive, ref } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+
+import product from '@/assets/prodoct_img.jpg'
+
+const router = useRouter()
+const route = useRoute()
+
+//TODO:回退到具体页面
+// 回退到上一页
+const goBack = () => {
+  router.go(-1)
+}
+
+//TODO:提取顶部导航栏
+
+//TODO:下拉刷新加载
+// 商品列表数据
+const productList = reactive([
+  {
+    id: '1',
+    name: 'Givenchy Blossom',
+    brand: 'Givenchy',
+    price: '$29.00',
+    img: product,
+    isAdd: false
+  },
+  {
+    id: '2',
+    name: 'Givenchy Blossom',
+    brand: 'Givenchy',
+    price: '$29.00',
+    img: product,
+    isAdd: false
+  },
+  {
+    id: '3',
+    name: 'Givenchy Blossom',
+    brand: 'Givenchy',
+    price: '$29.00',
+    img: product,
+    isAdd: false
+  },
+  {
+    id: '4',
+    name: 'Givenchy Blossom',
+    brand: 'Givenchy',
+    price: '$29.00',
+    img: product,
+    isAdd: false
+  },
+  {
+    id: '5',
+    name: 'Givenchy Blossom',
+    brand: 'Givenchy',
+    price: '$29.00',
+    img: product,
+    isAdd: false
+  },
+  {
+    id: '6',
+    name: 'Givenchy Blossom',
+    brand: 'Givenchy',
+    price: '$29.00',
+    img: product,
+    isAdd: false
+  },
+  {
+    id: '7',
+    name: 'Givenchy Blossom',
+    brand: 'Givenchy',
+    price: '$29.00',
+    img: product,
+    isAdd: false
+  },
+  {
+    id: '8',
+    name: 'Givenchy Blossom',
+    brand: 'Givenchy',
+    price: '$29.00',
+    img: product,
+    isAdd: false
+  },
+  {
+    id: '9',
+    name: 'Givenchy Blossom',
+    brand: 'Givenchy',
+    price: '$29.00',
+    img: product,
+    isAdd: false
+  },
+  {
+    id: '10',
+    name: 'Givenchy Blossom',
+    brand: 'Givenchy',
+    price: '$29.00',
+    img: product,
+    isAdd: false
+  },
+  {
+    id: '11',
+    name: 'Givenchy Blossom',
+    brand: 'Givenchy',
+    price: '$29.00',
+    img: product,
+    isAdd: false
+  }
+])
+
+// TODO:点击一次选择，点击两次取消选择
+// 将商品添加至cart
+const actived_index = ref('')
+const isAdd = ref(false)
+const addToCart = () => {
+  isAdd.value = true
+}
+const chooseProduct = (e) => {
+  if (isAdd.value == true) {
+    actived_index.value = e.currentTarget.dataset.index
+  }
+
+  const detail = ref({
+    name: e.currentTarget.dataset.name,
+    brand: e.currentTarget.dataset.brand,
+    price: e.currentTarget.dataset.price
+  })
+
+  //   跳转到productDetail页面
+  router.push({
+    path: '/product_details',
+    query: detail.value
+  })
+}
+</script>
+
+<style lang="scss" scoped>
+.app {
+  .bar {
+    width: 375px;
+    height: 48px;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .icon-jiantou {
+      font-size: 16px;
+      color: #191d31;
+      margin-right: auto;
+      margin-left: 20px;
+    }
+    .title {
+      height: 24px;
+      margin-right: 157px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      .text {
+        font-size: 16px;
+        color: #374151;
+      }
+    }
+  }
+  .content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    .product_card {
+      width: 350px;
+      margin-top: 16px;
+      padding-bottom: 70px;
+      // ul
+      .product_list {
+        display: flex;
+        flex-wrap: wrap;
+        // li
+        .product_item {
+          width: 160px;
+          height: 198px;
+          border-radius: 8px;
+          background-color: #f9f9fb;
+          padding-bottom: 8px;
+          margin: 0 7.5px 16px 7.5px;
+          .img_box {
+            .product_img {
+              width: 160px;
+              height: 112px;
+              border-radius: 8px;
+            }
+          }
+          .text_box {
+            width: 136px;
+            height: 63px;
+            margin: 12px 0 12px 12px;
+            position: relative;
+            .title {
+              font-size: 15px;
+              color: #001c33;
+            }
+            .brand {
+              font-size: 12px;
+              line-height: 28px;
+              color: #a2a2a3;
+            }
+            .price {
+              font-size: 17px;
+              color: #001c33;
+              margin-top: 5px;
+            }
+            .card_cart {
+              width: 32px;
+              height: 32px;
+              border-radius: 50px;
+              background-color: #f2f4f5;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              position: absolute;
+              right: -2px;
+              bottom: -8px;
+              .icon-gouwudai {
+                font-size: 17px;
+                margin-top: -2px;
+              }
+              .icon-gouwudai_purple {
+                color: #a456dd;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+</style>

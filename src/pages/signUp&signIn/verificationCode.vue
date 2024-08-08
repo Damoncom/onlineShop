@@ -23,7 +23,7 @@
         />
       </div>
       <div class="countdown">
-        <p class="time">{{ m + ':' + s }}</p>
+        <p class="time">{{ timeshow }}</p>
       </div>
       <div class="button_box">
         <div class="create_button" @click="submit(user)">
@@ -80,33 +80,26 @@ const goBack = () => {
   router.go(-1)
 }
 
-//TODO:保0操作
 // 倒计时
-let m = ref(2)
-let s = ref(59)
+const fitZero = (num) => {
+  return +num >= 10 ? num : '0' + num
+}
+const getMinute = (t) => {
+  return fitZero(Math.floor(+t / 60))
+}
+const getSecond = (t) => {
+  return fitZero(+t % 60)
+}
+let timeshow = ref('')
 onMounted(async () => {
-  await nextTick()
-  const timer2 = setInterval(() => {
-    m.value--
-    if (m.value < 0) {
-      clearInterval(timer2)
-      m.value = 0
-    }
-  }, 59000)
-})
-let count_s = ref(0)
-onMounted(async () => {
-  await nextTick()
+  let t = 180
   const timer = setInterval(() => {
-    s.value--
-    if (s.value == 0) {
-      s.value = 59
-      count_s.value++
-    }
-    if (count_s.value == 3) {
+    t--
+    if (t == 0) {
       clearInterval(timer)
-      s.value = '00'
+      t = 180
     }
+    timeshow.value = `${getMinute(t)}:${getSecond(t)}`
   }, 1000)
 })
 
@@ -138,11 +131,11 @@ onMounted(async () => {
     }
   })
   console.log(resp)
-  alert(resp.verificationCode)
+  // alert(resp.verificationCode)
 })
 
 // 验证码框
-const verificationCodes = ref(['', '', '', ''])
+const verificationCodes = ref(['1', '2', '3', '4'])
 
 const handleInput = (index, event) => {
   const value = event.target.value
@@ -179,6 +172,7 @@ const submit = (user) => {
     isRecend.value = false
   }, 4000)
 
+  // TODO:转成数字，用join()
   const sum =
     verificationCodes.value[0] +
     verificationCodes.value[1] +

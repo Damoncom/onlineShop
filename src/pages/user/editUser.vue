@@ -312,7 +312,14 @@ const save = () => {
     .put('http://192.168.100.7:7001/onlineShop/updateUserInfo', obj)
     .then(function ({ data: response }) {
       console.log(response)
-      if (response.code == 1000) {
+      if (response.errCode == 1000) {
+        // 存储修改过的用户数据
+        localStorage.setItem('user_details', JSON.stringify(obj))
+
+        // 跳转到profile页面
+        router.push({
+          path: '/profile'
+        })
       } else {
         isActivedCreate.value = true
         msg.value = response.errMsg
@@ -324,14 +331,6 @@ const save = () => {
     .catch(function (error) {
       console.log(error)
     })
-
-  // 存储修改过的用户数据
-  localStorage.setItem('user_details', JSON.stringify(obj))
-
-  // 跳转到profile页面
-  router.push({
-    path: '/profile'
-  })
 
   console.log('修改过的数据：', obj)
   console.log(obj)

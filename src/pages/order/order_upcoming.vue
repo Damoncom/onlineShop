@@ -67,6 +67,8 @@ const linkToHistory = () => {
 // 确认是Order页面
 const isOrderPage = true
 
+
+//TODO:不同状态不同颜色
 // 商品列表信息
 const orderList = reactive([
   {

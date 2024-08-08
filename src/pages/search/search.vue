@@ -65,7 +65,7 @@
               <div class="title">{{ product.name }}</div>
               <div class="brand">{{ product.brand }}</div>
               <div class="price">{{ product.price }}</div>
-              <div class="card_cart" @click="addToCart">
+              <div class="card_cart" @click="addToCart(product)">
                 <i
                   class="iconfont icon-gouwudai"
                   :class="actived_index == product_index ? 'icon-gouwudai_purple' : 'icon-gouwudai'"
@@ -129,6 +129,7 @@ const historyList = reactive([
   }
 ])
 
+//TODO:搜索功能
 // 搜索功能(回车后添加li)
 const inputText = ref('')
 const count = ref(historyList.length)
@@ -144,8 +145,9 @@ const cancel = () => {
   inputText.value = ''
 }
 
+// TODO:取非值
 // 商品显示方式选择
-const isTwoShow = ref(false)
+const isTwoShow = ref(true)
 const isOneShow = ref(false)
 const twoShow = () => {
   isTwoShow.value = true
@@ -155,7 +157,9 @@ const oneShow = () => {
   isTwoShow.value = false
   isOneShow.value = true
 }
+//TODO:提取顶部导航栏
 
+//TODO:下拉刷新加载
 // 商品列表数据
 const productList = reactive([
   {
@@ -163,77 +167,88 @@ const productList = reactive([
     name: 'Givenchy Blossom',
     brand: 'Givenchy',
     price: '$29.00',
-    img: product
+    img: product,
+    isAdd: false
   },
   {
     id: '2',
     name: 'Givenchy Blossom',
     brand: 'Givenchy',
     price: '$29.00',
-    img: product
+    img: product,
+    isAdd: false
   },
   {
     id: '3',
     name: 'Givenchy Blossom',
     brand: 'Givenchy',
     price: '$29.00',
-    img: product
+    img: product,
+    isAdd: false
   },
   {
     id: '4',
     name: 'Givenchy Blossom',
     brand: 'Givenchy',
     price: '$29.00',
-    img: product
+    img: product,
+    isAdd: false
   },
   {
     id: '5',
     name: 'Givenchy Blossom',
     brand: 'Givenchy',
     price: '$29.00',
-    img: product
+    img: product,
+    isAdd: false
   },
   {
     id: '6',
     name: 'Givenchy Blossom',
     brand: 'Givenchy',
     price: '$29.00',
-    img: product
+    img: product,
+    isAdd: false
   },
   {
     id: '7',
     name: 'Givenchy Blossom',
     brand: 'Givenchy',
     price: '$29.00',
-    img: product
+    img: product,
+    isAdd: false
   },
   {
     id: '8',
     name: 'Givenchy Blossom',
     brand: 'Givenchy',
     price: '$29.00',
-    img: product
+    img: product,
+    isAdd: false
   },
   {
     id: '9',
     name: 'Givenchy Blossom',
     brand: 'Givenchy',
     price: '$29.00',
-    img: product
+    img: product,
+    isAdd: false
   },
   {
     id: '10',
     name: 'Givenchy Blossom',
     brand: 'Givenchy',
     price: '$29.00',
-    img: product
+    img: product,
+    isAdd: false
   },
   {
     id: '11',
     name: 'Givenchy Blossom',
     brand: 'Givenchy',
     price: '$29.00',
-    img: product
+    img: product,
+    isAdd: false
   }
 ])
 
@@ -244,14 +259,8 @@ const count_product = ref(productList.length)
 const actived_index = ref('')
 const isAdd = ref(false)
 // const times = ref(0)
-const addToCart = () => {
-  //   times.value++
-  //   if (times.value % 2 == 0) {
-  //     isAdd.value = false
-  //   } else {
-  //     isAdd.value = true
-  //   }
-  isAdd.value = true
+const addToCart = (product) => {
+  //   isAdd.value !=
 }
 const chooseProduct = (e) => {
   if (isAdd.value == true) {
@@ -471,17 +480,17 @@ const chooseProduct = (e) => {
         // li
         .product_item {
           width: 335px;
-          height: 120px;
+          height: 100px;
           border-radius: 8px;
           background-color: #f9f9fb;
-          padding-bottom: 8px;
           margin: 0 7.5px 16px 7.5px;
           display: flex;
+          position: relative;
 
           .img_box {
             .product_img {
-              width: 120px;
-              height: 120px;
+              width: 100px;
+              height: 100px;
               border-radius: 8px;
             }
           }
@@ -489,9 +498,8 @@ const chooseProduct = (e) => {
             width: 136px;
             height: 63px;
             margin: 12px 0 12px 12px;
-            position: relative;
             .title {
-              font-size: 15px;
+              font-size: 16px;
               color: #001c33;
             }
             .brand {
@@ -502,7 +510,7 @@ const chooseProduct = (e) => {
             .price {
               font-size: 17px;
               color: #001c33;
-              margin-top: 5px;
+              margin-top: 15px;
             }
             .card_cart {
               width: 32px;
@@ -513,8 +521,8 @@ const chooseProduct = (e) => {
               align-items: center;
               justify-content: center;
               position: absolute;
-              right: -2px;
-              bottom: -8px;
+              right: 15px;
+              bottom: 10px;
               .icon-gouwudai {
                 font-size: 17px;
                 margin-top: -2px;
