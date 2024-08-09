@@ -11,7 +11,7 @@
               <div class="price">${{ cart.price }}</div>
             </div>
           </div>
-          <div class="edit">
+          <div class="edit" @click="linkToCart">
             <p class="edit_text">Edit</p>
           </div>
         </li>
@@ -22,7 +22,7 @@
             <div class="title">Delivery Location</div>
           </div>
         </div>
-        <div class="location_bottom">
+        <div class="location_bottom" @click="linkToLocation">
           <div class="location_img">
             <img src="@/assets/review.jpg" class="img" />
             <i class="iconfont icon-dingwei"></i>
@@ -31,7 +31,7 @@
             <p class="text">{{ location }}</p>
           </div>
           <div class="jump">
-            <i class="iconfont icon-jiantou" @click="linkToLocation"></i>
+            <i class="iconfont icon-jiantou"></i>
           </div>
         </div>
       </div>
@@ -41,19 +41,19 @@
       <div class="caculate">
         <div class="subtotal">
           <p class="name">Subtotal</p>
-          <p class="num">${{ subtotal }}</p>
+          <p class="num">$ {{ subtotal }}</p>
         </div>
         <div class="shipping_and_handing">
           <p class="name">Shipping & Handing</p>
-          <p class="num">${{ shipping }}</p>
+          <p class="num">$ {{ shipping }}</p>
         </div>
         <div class="Tax">
           <p class="name">Tax</p>
-          <p class="num">${{ tax }}</p>
+          <p class="num">$ {{ tax }}</p>
         </div>
         <div class="total">
           <p class="name">Total</p>
-          <p class="num">${{ total }}</p>
+          <p class="num">$ {{ total }}</p>
         </div>
       </div>
     </div>
@@ -74,6 +74,7 @@ import { reactive, ref, toRaw } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import product from '@/assets/details_img.jpg'
 import Nav from '@/components/nav'
+import currency from 'currency.js'
 
 const router = useRouter()
 const route = useRoute()
@@ -86,7 +87,7 @@ const cartList = reactive([
   {
     id: '1',
     name: 'Gienchy L’  intemprorel Blossom',
-    price: '29.00',
+    price: '29.33',
     img: product,
     num: 1,
     isChosen: true
@@ -94,21 +95,30 @@ const cartList = reactive([
   {
     id: '2',
     name: 'Gienchy L’  intemprorel Blossom',
-    price: '29.00',
+    price: '29.99',
     img: product,
     num: 1,
     isChosen: true
   }
 ])
 
+// edit按钮
+const linkToCart = () => {
+  router.push({
+    path: '/cart'
+  })
+}
+
 const location = ref('Preston Rd. inglewood St. Maine 98380')
+
 // TODO:计算总数
-// console.log(toRaw(cartList))
-// const sumShow = sum.value.toFixed(2)
-const subtotal = ref()
-const shipping = ref()
-const tax = ref()
+const pre = route.query
+const subtotal = ref(pre.sum)
+const shipping = ref(19.99)
+const tax = ref(4.0)
 const total = ref()
+
+total.value = currency(pre.sum).add(currency(shipping.value)).add(currency(tax.value))
 
 // 跳转到location页面
 const linkToLocation = () => {
@@ -120,7 +130,10 @@ const linkToLocation = () => {
 // 跳转到Payment页面
 const linkToPayment = () => {
   router.push({
-    path: '/payment'
+    path: '/payment',
+    query: {
+      total: total.value
+    }
   })
 }
 </script>

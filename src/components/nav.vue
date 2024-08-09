@@ -18,7 +18,7 @@
 import { useRouter, useRoute } from 'vue-router'
 
 const props = defineProps(['init_title'])
-console.log(props)
+// console.log(props)
 
 const router = useRouter()
 const route = useRoute()

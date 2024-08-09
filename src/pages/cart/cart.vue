@@ -3,7 +3,15 @@
     <Nav :init_title="navTitle" />
     <div class="content">
       <ul class="cart_list">
-        <li class="cart_item" v-for="(cart, cart_index) of cartList" :key="cart_index">
+        <li
+          class="cart_item"
+          v-for="(cart, cart_index) of cartList"
+          :key="cart_index"
+          :data-index="cart_index"
+          :data-name="cart.name"
+          :data-price="cart.price"
+          :data-num="cart.num"
+        >
           <i
             class="iconfont icon-xuanzhong"
             :class="cart.isChosen == true ? 'icon-xuanzhong_purple' : 'icon-xuanzhong'"
@@ -16,14 +24,14 @@
             </div>
           </div>
           <div class="number">
-            <div class="minus">
+            <div class="minus" @click.stop="minus(cart, arr)">
               <p class="text">—</p>
             </div>
             <div class="num_text">
               <p class="text">{{ cart.num }}</p>
             </div>
             <div class="add">
-              <p class="text">+</p>
+              <p class="text" @click="add(cart, arr)">+</p>
             </div>
           </div>
         </li>
@@ -37,7 +45,7 @@
         <i class="iconfont icon-gouwudai"></i>
       </div>
       <div class="sum">
-        <p class="sum_text">${{ sumShow }}</p>
+        <p class="sum_text">$ {{ sumShow }}</p>
       </div>
       <div class="button_box" @click="linkToReviewPurchase">
         <div class="create_button">
@@ -48,10 +56,11 @@
   </div>
 </template>
 <script setup>
-import { reactive, ref, toRaw } from 'vue'
+import { onUnmounted, reactive, ref, toRaw, onUpdated, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import product from '@/assets/details_img.jpg'
 import Nav from '@/components/nav'
+import currency from 'currency.js'
 
 const router = useRouter()
 const route = useRoute()
@@ -64,7 +73,7 @@ const cartList = reactive([
   {
     id: '1',
     name: 'Gienchy L’  intemprorel Blossom',
-    price: '29.00',
+    price: '29.33',
     img: product,
     num: 1,
     isChosen: true
@@ -72,7 +81,7 @@ const cartList = reactive([
   {
     id: '2',
     name: 'Gienchy L’  intemprorel Blossom',
-    price: '29.00',
+    price: '29.99',
     img: product,
     num: 1,
     isChosen: true
@@ -80,23 +89,42 @@ const cartList = reactive([
 ])
 
 // 计算总数
-const sum = ref(120.0)
+const sum = ref(0.0)
+let sumShow = ref()
 const arr = toRaw(cartList)
-// console.log(toRaw(cartList))
+
 arr.forEach((item, index) => {
-  const sumPrice = 0
-  //TODO: 浮点型数据相加
-  //   sumPrice += Number(item.price)
-  console.log(sumPrice)
-  console.log(Number(item.price))
-  console.log(index)
+  sum.value = currency(item.price).multiply(item.num).add(currency(sum.value))
+  sumShow.value = currency(sum.value).value
 })
-const sumShow = sum.value.toFixed(2)
+
+const minus = (cart) => {
+  cart.num--
+  if (cart.num <= 0) {
+    cart.num = 0
+  }
+  sum.value = 0.0
+  arr.forEach((item, index) => {
+    sum.value = currency(item.price).multiply(item.num).add(currency(sum.value))
+    sumShow.value = currency(sum.value).value
+  })
+}
+const add = (cart, arr) => {
+  cart.num++
+  sum.value = 0.0
+  arr.forEach((item, index) => {
+    sum.value = currency(item.price).multiply(item.num).add(currency(sum.value))
+    sumShow.value = currency(sum.value).value
+  })
+}
 
 // 跳转到reviewPurchase页面
 const linkToReviewPurchase = () => {
   router.push({
-    path: '/reviewPurchase'
+    path: '/reviewPurchase',
+    query: {
+      sum: sumShow.value
+    }
   })
 }
 </script>

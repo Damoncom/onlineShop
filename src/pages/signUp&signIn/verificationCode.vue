@@ -67,7 +67,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick, onUpdated } from 'vue'
+import { ref, onMounted, nextTick, onUpdated, toRaw } from 'vue'
 import Nav from '@/components/nav'
 import Toast from '../../components/toast.vue'
 import axios from 'axios'
@@ -169,15 +169,8 @@ const submit = (user) => {
     isRecend.value = false
   }, 4000)
 
-  // TODO:转成数字，用join()
-  const sum =
-    verificationCodes.value[0] +
-    verificationCodes.value[1] +
-    verificationCodes.value[2] +
-    verificationCodes.value[3]
-
-  console.log(sum)
-
+  const arr = toRaw(verificationCodes.value)
+  const sum = arr.join('')
   Reflect.set(user, 'verificationCode', sum)
   console.log(user)
 

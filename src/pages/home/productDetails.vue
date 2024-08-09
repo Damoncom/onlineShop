@@ -4,8 +4,11 @@
       <div class="left">
         <i class="iconfont icon-jiantou" @click="goBack"></i>
       </div>
-      <div class="right">
-        <i class="iconfont icon-gouwudai"></i>
+      <div class="right" @click="add">
+        <i
+          class="iconfont icon-gouwudai"
+          :class="isAdd == true ? 'icon-gouwudai_purple' : 'icon-gouwudai'"
+        ></i>
       </div>
     </div>
     <div class="content">
@@ -34,7 +37,8 @@
     </div>
     <div class="buttom">
       <div class="like">
-        <i class="iconfont icon-aixin"></i>
+        <i class="iconfont icon-aixin" @click="comfirmShouCang" v-if="isShoucang == false"></i>
+        <i class="iconfont icon-aixin1" @click="cancelShouCang" v-if="isShoucang == true"></i>
       </div>
       <div class="add_button" @click="addToCart">
         <p class="text">Add To Cart</p>
@@ -44,6 +48,7 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import product from '@/assets/details_img.jpg'
 const router = useRouter()
@@ -54,6 +59,12 @@ const goBack = () => {
   router.go(-1)
 }
 
+// 是否加入购物车右上角图标
+const isAdd = ref(false)
+const add = () => {
+  isAdd.value = !isAdd.value
+}
+
 // 获取传参信息
 const details = route.query
 const disText =
@@ -61,6 +72,16 @@ const disText =
 Reflect.set(details, 'discription', disText)
 Reflect.set(details, 'img', product)
 console.log(details)
+
+// 收藏
+let isShoucang = ref(false)
+const comfirmShouCang = () => {
+  isShoucang.value = true
+  console.log(isShoucang.value)
+}
+const cancelShouCang = () => {
+  isShoucang.value = false
+}
 
 // 跳转cart页面
 const addToCart = () => {
@@ -109,6 +130,9 @@ const addToCart = () => {
         font-weight: 600px;
         color: white;
         text-align: center;
+      }
+      .icon-gouwudai_purple {
+        color: #a456dd;
       }
     }
   }
@@ -179,6 +203,10 @@ const addToCart = () => {
       align-items: center;
       justify-content: center;
       .icon-aixin {
+        font-size: 25px;
+        color: #a456dd;
+      }
+      .icon-aixin1 {
         font-size: 25px;
         color: #a456dd;
       }

@@ -95,7 +95,8 @@ const route = useRoute()
 // 导入导航栏
 const navTitle = 'Payment'
 
-const balance = ref(66.0)
+// 余额
+const balance = ref(3700.0)
 
 const logo = ref('src/assets/visa_bottom.jpg')
 
@@ -122,6 +123,7 @@ const chooseChange = () => {
   logo.value = 'src/assets/change.jpg'
 }
 
+//TODO:银行卡4位数一组的输入
 // 银行卡的输入
 const card = ref()
 const onInput = () => {

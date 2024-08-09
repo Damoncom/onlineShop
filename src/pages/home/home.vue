@@ -1042,7 +1042,6 @@ const linkToSignIn = () => {
 }
 
 // 蒙层
-//TODO:mask提取为组件
 .mask {
   width: 375px;
   height: 812px;

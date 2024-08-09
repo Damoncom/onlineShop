@@ -46,7 +46,7 @@ const router = useRouter()
 const route = useRoute()
 
 const props = defineProps(['init_home', 'init_search', 'init_order', 'init_profile'])
-console.log(props)
+// console.log(props)
 
 // 跳转到页面
 const LinkToHome = () => {

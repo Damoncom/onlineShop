@@ -21,10 +21,14 @@
               <div class="title">{{ product.name }}</div>
               <div class="brand">{{ product.brand }}</div>
               <div class="price">{{ product.price }}</div>
-              <div class="card_cart" @click="addToCart">
+              <div class="card_cart" @click.stop="addToCart">
                 <i
                   class="iconfont icon-gouwudai"
-                  :class="actived_index == product_index ? 'icon-gouwudai_purple' : 'icon-gouwudai'"
+                  :class="
+                    isAdd == true && actived_cardIndex == product_index
+                      ? 'icon-gouwudai_purple'
+                      : 'icon-gouwudai'
+                  "
                 ></i>
               </div>
             </div>
@@ -141,17 +145,12 @@ const productList = reactive([
   }
 ])
 
-// TODO:点击一次选择，点击两次取消选择
 // 将商品添加至cart
 const actived_index = ref('')
 const isAdd = ref(false)
-const addToCart = () => {
-  isAdd.value = true
-}
+
 const chooseProduct = (e) => {
-  if (isAdd.value == true) {
-    actived_index.value = e.currentTarget.dataset.index
-  }
+  actived_index.value = e.currentTarget.dataset.index
 
   const detail = ref({
     name: e.currentTarget.dataset.name,
@@ -164,6 +163,12 @@ const chooseProduct = (e) => {
     path: '/product_details',
     query: detail.value
   })
+}
+
+const actived_cardIndex = ref('')
+const addToCart = (e) => {
+  actived_cardIndex.value = e.currentTarget.parentElement.parentElement.dataset.index
+  isAdd.value = !isAdd.value
 }
 </script>
 

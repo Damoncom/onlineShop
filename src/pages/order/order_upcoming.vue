@@ -132,7 +132,8 @@ if (JSON.stringify(addOrder) != '{}') {
       align-items: center;
       justify-content: center;
       .upcoming {
-        width: 49.5%;
+        width: 49.3%;
+        height: 29px;
         background-color: white;
         border-radius: 7px;
         display: flex;
@@ -145,7 +146,8 @@ if (JSON.stringify(addOrder) != '{}') {
         }
       }
       .history {
-        width: 49.5%;
+        width: 49.3%;
+        height: 29px;
         border-radius: 7px;
         display: flex;
         align-items: center;

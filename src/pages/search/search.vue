@@ -40,16 +40,16 @@
           <i
             class="iconfont icon-mulu1"
             @click="twoShow"
-            :class="isTwoShow == true ? 'icon-mulu1_purple' : 'icon-mulu1'"
+            :class="isShow == true ? 'icon-mulu1_purple' : 'icon-mulu1'"
           ></i>
           <i
             class="iconfont icon-mulu2"
             @click="oneShow"
-            :class="isOneShow == true ? 'icon-mulu2_purple' : 'icon-mulu2'"
+            :class="isShow == false ? 'icon-mulu2_purple' : 'icon-mulu2'"
           ></i>
         </div>
       </div>
-      <div class="product_card" v-if="isTwoShow == true">
+      <div class="product_card" v-if="isShow == true">
         <ul class="product_list">
           <li
             class="product_item"
@@ -68,17 +68,21 @@
               <div class="title">{{ product.name }}</div>
               <div class="brand">{{ product.brand }}</div>
               <div class="price">{{ product.price }}</div>
-              <div class="card_cart" @click="addToCart(product)">
+              <div class="card_cart" @click.stop="addToCart">
                 <i
                   class="iconfont icon-gouwudai"
-                  :class="actived_index == product_index ? 'icon-gouwudai_purple' : 'icon-gouwudai'"
+                  :class="
+                    isAdd == true && actived_cardIndex == product_index
+                      ? 'icon-gouwudai_purple'
+                      : 'icon-gouwudai'
+                  "
                 ></i>
               </div>
             </div>
           </li>
         </ul>
       </div>
-      <div class="product_card2" v-if="isOneShow == true">
+      <div class="product_card2" v-if="isShow == false">
         <ul class="product_list">
           <li
             class="product_item"
@@ -97,10 +101,14 @@
               <div class="title">{{ product.name }}</div>
               <div class="brand">{{ product.brand }}</div>
               <div class="price">{{ product.price }}</div>
-              <div class="card_cart" @click="addToCart">
+              <div class="card_cart" @click.stop="addToCart">
                 <i
                   class="iconfont icon-gouwudai"
-                  :class="actived_index == product_index ? 'icon-gouwudai_purple' : 'icon-gouwudai'"
+                  :class="
+                    isAdd == true && actived_cardIndex == product_index
+                      ? 'icon-gouwudai_purple'
+                      : 'icon-gouwudai'
+                  "
                 ></i>
               </div>
             </div>
@@ -116,6 +124,10 @@
 import { reactive, ref } from 'vue'
 import TabBar from '@/components/tabBar'
 import product from '@/assets/prodoct_img.jpg'
+import { useRouter, useRoute } from 'vue-router'
+
+const router = useRouter()
+const route = useRoute()
 
 // 确认是Home页面
 const isSearchPage = true
@@ -148,17 +160,13 @@ const cancel = () => {
   inputText.value = ''
 }
 
-// TODO:取非值
 // 商品显示方式选择
-const isTwoShow = ref(true)
-const isOneShow = ref(false)
+const isShow = ref(true)
 const twoShow = () => {
-  isTwoShow.value = true
-  isOneShow.value = false
+  isShow.value = true
 }
 const oneShow = () => {
-  isTwoShow.value = false
-  isOneShow.value = true
+  isShow.value = false
 }
 
 //TODO:下拉刷新加载
@@ -256,18 +264,30 @@ const productList = reactive([
 
 const count_product = ref(productList.length)
 
-// TODO:点击一次选择，点击两次取消选择
 // 将商品添加至cart
 const actived_index = ref('')
 const isAdd = ref(false)
-// const times = ref(0)
-const addToCart = (product) => {
-  //   isAdd.value !=
-}
+
 const chooseProduct = (e) => {
-  if (isAdd.value == true) {
-    actived_index.value = e.currentTarget.dataset.index
-  }
+  actived_index.value = e.currentTarget.dataset.index
+
+  const detail = ref({
+    name: e.currentTarget.dataset.name,
+    brand: e.currentTarget.dataset.brand,
+    price: e.currentTarget.dataset.price
+  })
+
+  //   跳转到productDetail页面
+  router.push({
+    path: '/product_details',
+    query: detail.value
+  })
+}
+
+const actived_cardIndex = ref('')
+const addToCart = (e) => {
+  actived_cardIndex.value = e.currentTarget.parentElement.parentElement.dataset.index
+  isAdd.value = !isAdd.value
 }
 </script>
 
