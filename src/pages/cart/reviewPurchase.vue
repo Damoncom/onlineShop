@@ -111,7 +111,7 @@ const linkToCart = () => {
 
 const location = ref('Preston Rd. inglewood St. Maine 98380')
 
-// TODO:计算总数
+//最终价格
 const pre = route.query
 const subtotal = ref(pre.sum)
 const shipping = ref(19.99)

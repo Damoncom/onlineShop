@@ -40,6 +40,7 @@
       </div>
       <div class="details">
         <div class="title">Update payment method</div>
+        {{ onInput(card) }}
         <div class="middlde">
           <div class="middlde_left">
             <p class="left_title">Name on card</p>
@@ -75,6 +76,7 @@
         </div>
       </div>
     </div>
+
     <div class="bottom">
       <div class="button_box" @click="linkToDone">
         <div class="create_button">
@@ -125,18 +127,10 @@ const chooseChange = () => {
 
 //TODO:银行卡4位数一组的输入
 // 银行卡的输入
-const card = ref()
-const onInput = () => {
-  const a = card.replace(/\D/g, '') // 不允许输入非数字字符
-  const b = card.replace(/(\d{4})(?=\d)/g, '$1 ') // 4位
-  console.log(b)
-}
-
-// 跳转到done页面
-const linkToDone = () => {
-  router.push({
-    path: '/done'
-  })
+const card = ref('1234123412341234')
+const onInput = (aaa) => {
+  // return card.replace(/\D/g, '') // 不允许输入非数字字符
+  return aaa.replace(/(\d{4})(?=\d)/g, '$1 ') // 4位
 }
 </script>
 <style lang="scss" scoped>
