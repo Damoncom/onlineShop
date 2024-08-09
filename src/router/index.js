@@ -102,11 +102,6 @@ const router = createRouter({
       name: 'order_history',
       component: () => import('../pages/order/order_history')
     },
-    {
-      path: '/order_tracking',
-      name: 'order_tracking',
-      component: () => import('../pages/order/order_tracking')
-    },
 
     // profile页面
     {
@@ -120,26 +115,26 @@ const router = createRouter({
       component: () => import('../pages/user/editUser.vue')
     },
 
-    //home_info页面
+    //sideBar页面
     {
       path: '/notification',
       name: 'notification',
-      component: () => import('../pages/home_info/notification')
+      component: () => import('../pages/sideBar/notification')
     },
     {
       path: '/whishlist',
       name: 'whishlist',
-      component: () => import('../pages/home_info/whishlist')
+      component: () => import('../pages/sideBar/whishlist')
     },
     {
       path: '/payment_history',
       name: 'payment_history',
-      component: () => import('../pages/home_info/payment_history')
+      component: () => import('../pages/sideBar/payment_history')
     },
     {
       path: '/setting',
       name: 'setting',
-      component: () => import('../pages/home_info/setting')
+      component: () => import('../pages/sideBar/setting')
     },
 
     //setting页面
@@ -149,6 +144,13 @@ const router = createRouter({
       component: () => import('../pages/settingss/language')
     }
   ]
+})
+
+const isRemember_info = JSON.parse(localStorage.getItem('isRemember'))
+// 全局前置守卫
+router.beforeEach((to, from, next) => {
+  if (to.name == 'walkthrough' && isRemember_info == true) next({ name: 'home' })
+  else next()
 })
 
 export default router

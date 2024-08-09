@@ -5,7 +5,11 @@
       <div class="title">
         <p class="text">{{ props.init_title }}</p>
       </div>
-      <i class="iconfont icon-bianji" v-if="props.init_title == 'Profile'"></i>
+      <i
+        class="iconfont icon-bianji"
+        v-if="props.init_title == 'Profile'"
+        @click="linkToEditUser"
+      ></i>
     </div>
   </div>
 </template>
@@ -22,6 +26,13 @@ const route = useRoute()
 // 回退到上一页
 const goBack = () => {
   router.go(-1)
+}
+
+// 跳转到编辑页面
+const linkToEditUser = () => {
+  router.push({
+    path: '/editUser'
+  })
 }
 </script>
 

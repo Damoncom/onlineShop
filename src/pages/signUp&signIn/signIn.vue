@@ -129,7 +129,6 @@ const linkToReset = () => {
   })
 }
 
-// TODO:记住密码功能(完成一半。问题：原本是user1的数据，新的user2登录，并选择了不记住登录信息，下一个user登录的时候已经清空了缓存，可以正常登录使用，但是user2的登录显示的还是user1的数据，因为user1的缓存没有清空)
 onBeforeMount(async () => {
   await nextTick()
   const isRemember_info = JSON.parse(localStorage.getItem('isRemember'))

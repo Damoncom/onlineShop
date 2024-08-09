@@ -1,22 +1,25 @@
 <template>
   <div class="app">
     <div class="content">
-      <div class="search">
-        <div class="search_box">
-          <i class="iconfont icon-sousuo" @click="search"></i>
-          <input
-            type="search"
-            name="q"
-            class="search_input"
-            placeholder="Search..."
-            v-model="inputText"
-            @keyup.enter="search"
-          />
-        </div>
-        <div class="scan" @click="cancel">
-          <p class="scan_text">Cancel</p>
+      <div class="nav">
+        <div class="search">
+          <div class="search_box">
+            <i class="iconfont icon-sousuo" @click="search"></i>
+            <input
+              type="search"
+              name="q"
+              class="search_input"
+              placeholder="Search..."
+              v-model="inputText"
+              @keyup.enter="search"
+            />
+          </div>
+          <div class="scan" @click="cancel">
+            <p class="scan_text">Cancel</p>
+          </div>
         </div>
       </div>
+
       <!-- <div class="search_history">
         <ul class="history_list">
           <li
@@ -157,7 +160,6 @@ const oneShow = () => {
   isTwoShow.value = false
   isOneShow.value = true
 }
-//TODO:提取顶部导航栏
 
 //TODO:下拉刷新加载
 // 商品列表数据
@@ -276,62 +278,71 @@ const chooseProduct = (e) => {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    .search {
+    .nav {
       width: 375px;
       height: 52px;
-      margin-top: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      .search_box {
-        width: 258px;
-        height: 36px;
-        margin-left: -5px;
-        // border: 1px solid #d9d9d9;
-        border-radius: 8px;
-        background-color: #f2f4f5;
-        display: flex;
-        align-items: center;
-        .icon-sousuo {
-          font-size: 18px;
-          color: #090a0a;
-          margin-left: 10px;
-        }
-        .search_input {
-          width: 200px;
-          font-size: 16px;
-          line-height: 16px;
-          margin-left: 10px;
-        }
-        .search_input::-webkit-input-placeholder {
-          font-size: 14px;
-          line-height: 18px;
-          color: #bdbdbd;
-        }
-        .search_input:focus ~ .icon-sousuo {
-          color: #a456dd;
-        }
-      }
-
-      .scan {
-        width: 44px;
-        height: 44px;
-        // border: 1px solid #d9d9d9;
-        // border-radius: 10px;
-        margin: 0 -5px 0 15px;
+      .search {
+        width: 375px;
+        height: 52px;
+        padding-top: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
-        .scan_text {
-          font-size: 16px;
-          line-height: 16px;
-          color: #090a0a;
+        background-color: white;
+        position: fixed;
+        top: 0;
+        z-index: 2;
+        .search_box {
+          width: 258px;
+          height: 36px;
+          margin-left: -5px;
+          // border: 1px solid #d9d9d9;
+          border-radius: 8px;
+          background-color: #f2f4f5;
+          display: flex;
+          align-items: center;
+          .icon-sousuo {
+            font-size: 18px;
+            color: #090a0a;
+            margin-left: 10px;
+          }
+          .search_input {
+            width: 200px;
+            font-size: 16px;
+            line-height: 16px;
+            margin-left: 10px;
+          }
+          .search_input::-webkit-input-placeholder {
+            font-size: 14px;
+            line-height: 18px;
+            color: #bdbdbd;
+          }
+          .search_input:focus ~ .icon-sousuo {
+            color: #a456dd;
+          }
         }
-        .scan_text:active {
-          color: #a456dd;
+
+        .scan {
+          width: 44px;
+          height: 44px;
+          // border: 1px solid #d9d9d9;
+          // border-radius: 10px;
+          margin: 0 -5px 0 15px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          .scan_text {
+            font-size: 16px;
+            line-height: 16px;
+            color: #090a0a;
+          }
+          .scan_text:active {
+            color: #a456dd;
+          }
         }
       }
     }
+
     .search_history {
       margin: 23px 0 0 28px;
       align-self: flex-start;
