@@ -52,7 +52,6 @@ const route = useRoute()
 // 导入导航栏
 const navTitle = 'Category'
 
-//TODO:下拉刷新加载
 // 商品列表数据
 const productList = reactive([
   {

@@ -52,6 +52,7 @@
         </div>
       </div>
       <!-- type1商品列表 -->
+      <i class="iconfont icon-jiazaizhong2 icon_top" v-if="top && isShow == true"></i>
       <div class="product_card" v-if="isShow == true" ref="card" @scroll="doScroll">
         <ul class="product_list">
           <li
@@ -85,8 +86,9 @@
           </li>
         </ul>
       </div>
-      <i class="iconfont icon-jiazaizhong2" v-if="bottom && isShow == true"></i>
+      <i class="iconfont icon-jiazaizhong2 icon_bottom" v-if="bottom && isShow == true"></i>
       <!-- type2商品列表 -->
+      <i class="iconfont icon-jiazaizhong2 icon_top" v-if="top && isShow == false"></i>
       <div class="product_card2" v-if="isShow == false" ref="card" @scroll="doScroll">
         <ul class="product_list">
           <li
@@ -120,7 +122,7 @@
           </li>
         </ul>
       </div>
-      <i class="iconfont icon-jiazaizhong2" v-if="bottom && isShow == false"></i>
+      <i class="iconfont icon-jiazaizhong2 icon_bottom" v-if="bottom && isShow == false"></i>
     </div>
   </div>
   <TabBar :init_search="isSearchPage" />
@@ -385,15 +387,16 @@ const addToCart = (e) => {
   isAdd.value = !isAdd.value
 }
 
+// TODO:上拉加载
 // 下拉刷新
 const card = ref()
+const top = ref(false)
 const bottom = ref(false)
 
 const doScroll = (event) => {
   const scrollHeight = event.target.scrollHeight
   const scrollTop = event.target.scrollTop
   const clientHeight = event.target.clientHeight
-
   if (scrollTop + clientHeight >= scrollHeight) {
     console.log('到底了!')
     bottom.value = true
@@ -406,6 +409,17 @@ const doScroll = (event) => {
     }, 1000)
   } else {
     bottom.value = false
+  }
+
+  if (scrollTop <= 0) {
+    console.log('顶部!')
+    top.value = true
+    setTimeout(async () => {
+      // Object.assign(productList, productList_more)
+      // console.log(productList)
+      // count_product.value = productList.length
+      top.value = false
+    }, 1000)
   }
 }
 </script>
@@ -624,7 +638,7 @@ const doScroll = (event) => {
     .product_card::-webkit-scrollbar {
       display: none;
     }
-    .icon-jiazaizhong2 {
+    .icon_bottom {
       display: inline-block; /*需要设置为行内块元素动画才会生效*/
       font-size: 26px;
       color: #a456dd;
@@ -713,6 +727,24 @@ const doScroll = (event) => {
     }
     .product_card2::-webkit-scrollbar {
       display: none;
+    }
+    .icon_top {
+      display: inline-block;
+      font-size: 26px;
+      color: #a456dd;
+      position: absolute;
+      top: 70px;
+      z-index: 3;
+      animation: rotating2 1s infinite linear;
+    }
+    @keyframes rotating2 {
+      0% {
+        transform: rotate(0deg); /*动画起始位置为旋转0度*/
+      }
+
+      to {
+        transform: rotate(1turn); /*动画结束位置为旋转1圈*/
+      }
     }
   }
 }
