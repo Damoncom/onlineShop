@@ -18,7 +18,7 @@
             v-model="inputText"
           />
         </div>
-        <div class="scan">
+        <div class="scan" @click="linkToTest">
           <i class="iconfont icon-saoyisao"></i>
         </div>
       </div>
@@ -184,8 +184,8 @@
       <img src="@/assets/info_logo.jpg" class="img" />
     </div>
     <div class="user_info">
-      <div class="user_name">Demo</div>
-      <div class="user_phone">17777777777</div>
+      <div class="user_name">{{ user.name }}</div>
+      <div class="user_phone">{{ user.phoneNumber }}</div>
       <div class="user_score">
         <i class="iconfont icon-shoucang"></i>
         <p class="score_text">4.8 (231)</p>
@@ -237,7 +237,7 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onBeforeMount } from 'vue'
 import TabBar from '@/components/tabBar'
 import product from '@/assets/prodoct_img.jpg'
 import product2 from '@/assets/popular_img1.jpg'
@@ -517,6 +517,24 @@ const addToCart = (e) => {
   isAdd.value = !isAdd.value
 }
 
+const user = reactive({})
+
+// 获取用户信息
+onBeforeMount(async () => {
+  const token_info = localStorage.getItem('token')
+  const { data: resp } = await axios({
+    method: 'get',
+    url: 'http://192.168.100.7:7001/onlineShop/getUserInfo',
+    params: {},
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'application/json; charset=utf-8'
+    }
+  })
+  Object.assign(user, resp.data)
+  console.log('resp', resp)
+})
+
 // sideBar页面
 const useList = ref([
   {
@@ -596,6 +614,12 @@ const activeUse = (e) => {
 const linkToSignIn = () => {
   router.push({
     path: '/signIn'
+  })
+}
+
+const linkToTest = () => {
+  router.push({
+    path: '/test'
   })
 }
 </script>

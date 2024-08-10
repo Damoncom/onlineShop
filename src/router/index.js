@@ -142,6 +142,12 @@ const router = createRouter({
       path: '/language',
       name: 'language',
       component: () => import('../pages/settingss/language')
+    },
+
+    {
+      path: '/test',
+      name: 'test',
+      component: () => import('../pages/beterScroll')
     }
   ]
 })

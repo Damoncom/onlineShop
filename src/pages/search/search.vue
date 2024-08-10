@@ -1,6 +1,7 @@
 <template>
   <div class="app">
     <div class="content">
+      <!-- 导航栏 -->
       <div class="nav">
         <div class="search">
           <div class="search_box">
@@ -19,7 +20,7 @@
           </div>
         </div>
       </div>
-
+      <!-- 搜索历史 -->
       <!-- <div class="search_history">
         <ul class="history_list">
           <li
@@ -31,6 +32,7 @@
           </li>
         </ul>
       </div> -->
+      <!-- 信息栏 -->
       <div class="info_block">
         <div class="result">
           <p class="result_num">{{ count_product }}</p>
@@ -49,7 +51,8 @@
           ></i>
         </div>
       </div>
-      <div class="product_card" v-if="isShow == true">
+      <!-- type1商品列表 -->
+      <div class="product_card" v-if="isShow == true" ref="card" @scroll="doScroll">
         <ul class="product_list">
           <li
             class="product_item"
@@ -82,7 +85,9 @@
           </li>
         </ul>
       </div>
-      <div class="product_card2" v-if="isShow == false">
+      <i class="iconfont icon-jiazaizhong2" v-if="bottom && isShow == true"></i>
+      <!-- type2商品列表 -->
+      <div class="product_card2" v-if="isShow == false" ref="card" @scroll="doScroll">
         <ul class="product_list">
           <li
             class="product_item"
@@ -115,13 +120,14 @@
           </li>
         </ul>
       </div>
+      <i class="iconfont icon-jiazaizhong2" v-if="bottom && isShow == false"></i>
     </div>
   </div>
   <TabBar :init_search="isSearchPage" />
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue'
+import { reactive, ref, onMounted, onUnmounted } from 'vue'
 import TabBar from '@/components/tabBar'
 import product from '@/assets/prodoct_img.jpg'
 import { useRouter, useRoute } from 'vue-router'
@@ -169,9 +175,98 @@ const oneShow = () => {
   isShow.value = false
 }
 
-//TODO:下拉刷新加载
 // 商品列表数据
 const productList = reactive([
+  {
+    id: '1',
+    name: 'Givenchy Blossom',
+    brand: 'Givenchy',
+    price: '$29.00',
+    img: product,
+    isAdd: false
+  },
+  {
+    id: '2',
+    name: 'Givenchy Blossom',
+    brand: 'Givenchy',
+    price: '$29.00',
+    img: product,
+    isAdd: false
+  },
+  {
+    id: '3',
+    name: 'Givenchy Blossom',
+    brand: 'Givenchy',
+    price: '$29.00',
+    img: product,
+    isAdd: false
+  },
+  {
+    id: '4',
+    name: 'Givenchy Blossom',
+    brand: 'Givenchy',
+    price: '$29.00',
+    img: product,
+    isAdd: false
+  },
+  {
+    id: '5',
+    name: 'Givenchy Blossom',
+    brand: 'Givenchy',
+    price: '$29.00',
+    img: product,
+    isAdd: false
+  },
+  {
+    id: '6',
+    name: 'Givenchy Blossom',
+    brand: 'Givenchy',
+    price: '$29.00',
+    img: product,
+    isAdd: false
+  }
+  // {
+  //   id: '7',
+  //   name: 'Givenchy Blossom',
+  //   brand: 'Givenchy',
+  //   price: '$29.00',
+  //   img: product,
+  //   isAdd: false
+  // },
+  // {
+  //   id: '8',
+  //   name: 'Givenchy Blossom',
+  //   brand: 'Givenchy',
+  //   price: '$29.00',
+  //   img: product,
+  //   isAdd: false
+  // },
+  // {
+  //   id: '9',
+  //   name: 'Givenchy Blossom',
+  //   brand: 'Givenchy',
+  //   price: '$29.00',
+  //   img: product,
+  //   isAdd: false
+  // },
+  // {
+  //   id: '10',
+  //   name: 'Givenchy Blossom',
+  //   brand: 'Givenchy',
+  //   price: '$29.00',
+  //   img: product,
+  //   isAdd: false
+  // },
+  // {
+  //   id: '11',
+  //   name: 'Givenchy Blossom',
+  //   brand: 'Givenchy',
+  //   price: '$29.00',
+  //   img: product,
+  //   isAdd: false
+  // }
+])
+const productList_more = reactive([
   {
     id: '1',
     name: 'Givenchy Blossom',
@@ -289,6 +384,30 @@ const addToCart = (e) => {
   actived_cardIndex.value = e.currentTarget.parentElement.parentElement.dataset.index
   isAdd.value = !isAdd.value
 }
+
+// 下拉刷新
+const card = ref()
+const bottom = ref(false)
+
+const doScroll = (event) => {
+  const scrollHeight = event.target.scrollHeight
+  const scrollTop = event.target.scrollTop
+  const clientHeight = event.target.clientHeight
+
+  if (scrollTop + clientHeight >= scrollHeight) {
+    console.log('到底了!')
+    bottom.value = true
+
+    setTimeout(async () => {
+      Object.assign(productList, productList_more)
+      console.log(productList)
+      count_product.value = productList.length
+      bottom.value = false
+    }, 1000)
+  } else {
+    bottom.value = false
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -298,6 +417,7 @@ const addToCart = (e) => {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    position: relative;
     .nav {
       width: 375px;
       height: 52px;
@@ -437,8 +557,9 @@ const addToCart = (e) => {
     }
     .product_card {
       width: 350px;
+      height: 500px;
+      overflow: auto;
       margin-top: 16px;
-      padding-bottom: 70px;
       // ul
       .product_list {
         display: flex;
@@ -500,10 +621,34 @@ const addToCart = (e) => {
         }
       }
     }
+    .product_card::-webkit-scrollbar {
+      display: none;
+    }
+    .icon-jiazaizhong2 {
+      display: inline-block; /*需要设置为行内块元素动画才会生效*/
+      font-size: 26px;
+      color: #a456dd;
+      position: absolute;
+      bottom: 0px;
+      z-index: 3;
+      animation: rotating 1s infinite linear;
+    }
+    @keyframes rotating {
+      0% {
+        transform: rotate(0deg); /*动画起始位置为旋转0度*/
+      }
+
+      to {
+        transform: rotate(1turn); /*动画结束位置为旋转1圈*/
+      }
+    }
+
     .product_card2 {
       width: 335px;
+      // height: 467px;
+      height: 499px;
+      overflow: auto;
       margin-top: 16px;
-      padding-bottom: 70px;
       // ul
       .product_list {
         display: flex;
@@ -565,6 +710,9 @@ const addToCart = (e) => {
           }
         }
       }
+    }
+    .product_card2::-webkit-scrollbar {
+      display: none;
     }
   }
 }

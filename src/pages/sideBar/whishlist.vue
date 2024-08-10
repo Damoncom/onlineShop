@@ -96,6 +96,7 @@ const whishlistList = reactive([
         box-shadow: rgba(149, 157, 165, 0.109) 0px 0px 24px;
         display: flex;
         align-items: center;
+        position: relative;
         .img {
           width: 64px;
           height: 64px;
@@ -123,8 +124,9 @@ const whishlistList = reactive([
           height: 24px;
           border-radius: 5px;
           background-color: #fff5f9;
-          align-self: flex-end;
-          margin-bottom: 10px;
+          position: absolute;
+          right: 10px;
+          bottom: 10px;
           display: flex;
           align-items: center;
           justify-content: center;

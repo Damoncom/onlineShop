@@ -15,7 +15,7 @@
       </div>
     </div>
     <div class="bottom">
-      <div class="button_box" @click="linkToDone">
+      <div class="button_box" @click="linkToHome">
         <div class="create_button">
           <p class="text">Explore More!</p>
         </div>
@@ -27,11 +27,21 @@
 <script setup>
 import { ref } from 'vue'
 import Nav from '@/components/nav'
+import { useRouter, useRoute } from 'vue-router'
+
+const router = useRouter()
+const route = useRoute()
 
 // 导入导航栏
 const navTitle = 'Order XY3843'
 
 const orderNum = ref()
+
+const linkToHome = () => {
+  router.push({
+    path: '/home'
+  })
+}
 </script>
 
 <style lang="scss" scoped>

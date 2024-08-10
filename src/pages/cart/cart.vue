@@ -100,8 +100,8 @@ arr.forEach((item, index) => {
 
 const minus = (cart) => {
   cart.num--
-  if (cart.num <= 0) {
-    cart.num = 0
+  if (cart.num <= 1) {
+    cart.num = 1
   }
   sum.value = 0.0
   arr.forEach((item, index) => {
