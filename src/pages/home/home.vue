@@ -99,7 +99,6 @@
         <div class="popular_title">
           <p class="title_text">POPULAR</p>
         </div>
-        <!-- TODO:写成二级导航栏 + 点击添加至购物车-->
         <div class="product_card">
           <ul class="product_list">
             <li
@@ -214,6 +213,7 @@
     </div>
     <div class="info_version">Version 1.0.0</div>
   </div>
+
   <!-- 退出登录面板 -->
   <div class="logout" v-if="isLogOut == true">
     <div class="line_box">
@@ -1199,7 +1199,7 @@ const linkToTest = () => {
     color: #a7a7a7;
   }
 }
-//TODO:退出动画
+
 @keyframes sideBar {
   from {
     width: 0;
