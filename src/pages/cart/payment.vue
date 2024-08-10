@@ -59,7 +59,7 @@
             <div class="card">
               <img :src="logo" class="card_logo" />
               <input
-                type="number"
+                type="text"
                 v-model="card"
                 class="cardnum_input"
                 @keyup="onInput"
@@ -85,11 +85,15 @@
       </div>
     </div>
   </div>
+
+  <!-- 引入toast组件 -->
+  <Toast :init="msg" v-if="isShowToast == true" />
 </template>
 <script setup>
 import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
+import Toast from '@/components/toast'
 
 const router = useRouter()
 const route = useRoute()
@@ -125,12 +129,35 @@ const chooseChange = () => {
   logo.value = 'src/assets/change.jpg'
 }
 
-//TODO:银行卡4位数一组的输入
+//TODO:银行卡判断非数字输入
 // 银行卡的输入
-const card = ref('1234123412341234')
-const onInput = (aaa) => {
+const isShowToast = ref(false)
+const msg = ref('')
+const card = ref('')
+const onInput = () => {
+  const digit = card.value.toString().length
+  if (digit == 4 || digit == 9 || digit == 14) {
+    card.value = card.value + ' '
+  }
+
+  // const str = card.value.replace(/\s*/g, '')
+  // const panduan = ref(Number(str))
+  // // console.log(panduan)
+
+  // if (panduan.value == NaN) {
+  //   isShowToast.value = true
+  //   setTimeout(async () => {
+  //     await nextTick()
+  //     isShowToast.value = false
+  //   }, 4000)
+  //   msg.value = '银行卡格式有误'
+  //   console.log(isShowToast.value)
+  // } else {
+  //   console.log(panduan.value)
+  // }
+
   // return card.replace(/\D/g, '') // 不允许输入非数字字符
-  return aaa.replace(/(\d{4})(?=\d)/g, '$1 ') // 4位
+  // return aaa.replace(/(\d{4})(?=\d)/g, '$1 ') // 4位
 }
 
 const linkToDone = () => {
@@ -367,6 +394,7 @@ const linkToDone = () => {
               margin-left: 10px;
             }
             .cardnum_input {
+              font-size: 14px;
               width: 150px;
               margin-left: 40px;
             }

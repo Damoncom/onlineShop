@@ -143,7 +143,7 @@ const isChangeImg_box = (e) => {
   isChange.value = false
 }
 
-// TODO:上传图片压缩，裁剪功能
+// TODO:裁剪功能
 
 //获取摄像头功能
 const takePhoto = async () => {
@@ -189,6 +189,22 @@ const handleFileUpload = async (file, fileList) => {
   // 需要发送的数据
   let formData = new FormData()
   formData.append('file', unref(uploadInput).files[0])
+
+  // 压缩图片
+  const beforeUpload = async (file) => {
+    let fileName = file[0].name
+    const canvas = document.createElement('canvas')
+    const context = canvas.getContext('2d')
+    const base64 = await fileToDataURL(file[0])
+    const img = await dataURLToImage(base64)
+    canvas.width = img.width
+    canvas.height = img.height
+    context.clearRect(0, 0, img.width, img.height)
+    context.drawImage(img, 0, 0, img.width, img.height)
+    let blob = await canvastoFile(canvas, 'image/jpeg', 0.5) //quality:0.5可根据实际情况计算
+    const f = await new File([blob], fileName)
+    return [f]
+  }
 
   // post请求
   const token_info = localStorage.getItem('token')

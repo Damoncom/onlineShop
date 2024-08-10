@@ -121,8 +121,6 @@ const user = reactive({
 })
 console.log(user)
 
-// TODO:密码md5加密传输
-
 const linkToReset = () => {
   router.push({
     path: '/resetPwd'

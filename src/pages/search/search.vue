@@ -387,7 +387,6 @@ const addToCart = (e) => {
   isAdd.value = !isAdd.value
 }
 
-// TODO:上拉加载
 // 下拉刷新
 const card = ref()
 const top = ref(false)

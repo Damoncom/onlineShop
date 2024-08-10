@@ -48,7 +48,6 @@ import product from '@/assets/prodoct_img.jpg'
 const router = useRouter()
 const route = useRoute()
 
-//TODO:回退到具体页面
 // 导入导航栏
 const navTitle = 'Category'
 

@@ -97,6 +97,8 @@ import Nav from '@/components/nav'
 import Toast from '../../components/toast.vue'
 import axios from 'axios'
 import { useRouter, useRoute } from 'vue-router'
+import md5 from 'js-md5'
+
 const router = useRouter()
 const route = useRoute()
 
@@ -168,7 +170,7 @@ const createAccount = async () => {
     return
   }
   if (isRightPwd.value === false) {
-    ;('Incorrect password input')
+    msg.value = 'Incorrect password input'
     return
   }
   if (isRightPhone.value === true && isRightPwd.value === true && isRightName.value === true) {
@@ -178,6 +180,8 @@ const createAccount = async () => {
       '名字：' + user.value.name + '手机号：' + user.value.phoneNumber + ' 密码：' + user.value.pwd
     )
 
+    user.value.pwd = md5(user.value.pwd)
+    // Object.assign(user.value.pwd, md5(user.value.pwd))
     // 跳转到验证码页面
     router.push({
       path: '/verificationCode',
