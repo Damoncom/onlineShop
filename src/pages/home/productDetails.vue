@@ -13,32 +13,40 @@
     </div>
     <div class="content">
       <div class="img_box">
-        <img :src="details.img" class="img" />
+        <img :src="details.image" class="img" />
       </div>
       <div class="info">
         <div class="info_title">
           {{ details.name }}
         </div>
         <div class="info_brand">
-          {{ details.brand }}
+          {{ details.origin }}
         </div>
         <div class="score">
           <i class="iconfont icon-shoucang"></i>
-          <i class="iconfont icon-shoucang"></i>
-          <i class="iconfont icon-shoucang"></i>
-          <i class="iconfont icon-shoucang"></i>
-          <i class="iconfont icon-shoucang"></i>
-          <p class="score_text">4.8</p>
+          <i class="iconfont icon-shoucang" v-if="details.score > 2"></i>
+          <i class="iconfont icon-shoucang" v-if="details.score > 4"></i>
+          <i class="iconfont icon-shoucang" v-if="details.score > 6"></i>
+          <i class="iconfont icon-shoucang" v-if="details.score > 8"></i>
+          <p class="score_text">{{ details.score }}</p>
         </div>
         <div class="info_discription">
-          {{ details.discription }}
+          {{ details.introduction }}
         </div>
       </div>
     </div>
     <div class="buttom">
       <div class="like">
-        <i class="iconfont icon-aixin" @click="comfirmShouCang" v-if="isShoucang == false"></i>
-        <i class="iconfont icon-aixin1" @click="cancelShouCang" v-if="isShoucang == true"></i>
+        <i
+          class="iconfont icon-aixin"
+          @click="comfirmShouCang"
+          v-if="details.inWishlist == false"
+        ></i>
+        <i
+          class="iconfont icon-aixin1"
+          @click="cancelShouCang"
+          v-if="details.inWishlist == true"
+        ></i>
       </div>
       <div class="add_button" @click="addToCart">
         <p class="text">Add To Cart</p>
@@ -48,9 +56,10 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { onBeforeMount, reactive, ref, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import product from '@/assets/details_img.jpg'
+import axios from 'axios'
 const router = useRouter()
 const route = useRoute()
 
@@ -66,21 +75,85 @@ const add = () => {
 }
 
 // 获取传参信息
-const details = route.query
-const disText =
-  'A unique light bi-phase formula to hydrate & prepare theskin to receive the following skincare steps.Visibly like energized and smoothed, the skin isenhanced with a rosy glow. Awaken your senses withSkin Perfecto, an invigorating skincare experience. Witha fluid texture formulated in high affinity with the skins barrier, Skin Perfecto Vitamin Blend Glow Serumdelivers immediate hydration that melts into your skin,for an instantly smoothed and plumped.'
-Reflect.set(details, 'discription', disText)
-Reflect.set(details, 'img', product)
-console.log(details)
+const productId = route.query
+console.log('传参的数据', productId)
+
+const details = reactive({})
+const token_info = localStorage.getItem('token')
+
+// 获取商品详情信息
+onBeforeMount(async () => {
+  await nextTick()
+
+  const { data: resp_product_details } = await axios({
+    method: 'get',
+    url: 'http://192.168.100.7:7001/onlineShop/getGoodsDetail',
+    params: {
+      id: productId.productId
+    },
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'application/json; charset=utf-8'
+    }
+  })
+  if (resp_product_details.errCode == 1000) {
+    Object.assign(details, resp_product_details.data)
+  } else {
+  }
+
+  console.log('获取商品详情数据:', resp_product_details)
+})
+
+const postData = reactive({
+  id: productId.productId
+})
 
 // 收藏
-let isShoucang = ref(false)
-const comfirmShouCang = () => {
-  isShoucang.value = true
-  console.log(isShoucang.value)
+const comfirmShouCang = async () => {
+  await nextTick()
+
+  details.inWishlist = true
+
+  // post请求
+  const { data: resp_notification } = await axios({
+    method: 'post',
+    url: 'http://192.168.100.7:7001/onlineShop/createWishlist',
+    data: postData,
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+  if (resp_notification.errCode == 1000) {
+    details.inWishlist = true
+  } else {
+    details.inWishlist = false
+  }
+  console.log('post请求收藏：', resp_notification)
 }
-const cancelShouCang = () => {
-  isShoucang.value = false
+
+// 取消收藏
+const cancelShouCang = async () => {
+  await nextTick()
+
+  details.inWishlist = false
+
+  // delete请求
+  const { data: resp_cancelNotidication } = await axios({
+    method: 'delete',
+    url: 'http://192.168.100.7:7001/onlineShop/deleteWishlist',
+    data: postData,
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'application/json; charset=utf-8'
+    }
+  })
+  if (resp_cancelNotidication.errCode == 1000) {
+    details.inWishlist = false
+  } else {
+    details.inWishlist = true
+  }
+  console.log('delete请求取消收藏：', resp_cancelNotidication)
 }
 
 // 跳转cart页面

@@ -25,7 +25,7 @@
       </RouterLink>
     </div>
   </div>
-  <div class="mask" v-if="isActivedCurrent == true"></div>
+  <div class="mask" v-if="isActivedCurrent == true" @click="activedMask"></div>
   <div class="location_current_box" v-if="isActivedCurrent == true">
     <div class="current_box_title">Comfirm your Location</div>
     <i class="iconfont icon-dingwei"></i>
@@ -48,28 +48,41 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+// import { location } from '@/utils/Location'
+import MapLoader from '../../utils/unti'
 
 const router = useRouter()
 const route = useRoute()
-
-// 回退到上一页
-const goBack = () => {
-  router.go(-1)
-}
 
 // 控制蒙层
 let isActivedCurrent = ref(false)
 const getCurrentLocation = () => {
   isActivedCurrent.value = true
+
+  MapLoader()
+  //   let _that = this
+  //   let geolocation = location.initMap('map-container') //定位
+  //   AMap.event.addListener(geolocation, 'complete', (result) => {
+  //     console.log(result)
+  //     _that.lat = result.position.lat
+  //     _that.lng = result.position.lng
+  //     _that.province = result.addressComponent.province
+  //     _that.city = result.addressComponent.city
+  //     _that.district = result.addressComponent.district
+  //   })
 }
 
 // 位置数据
-let location = ref(
-  'Body 2: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,'
-)
+// let location = ref(
+//   'Body 2: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,'
+// )
 
 // 取消
 const cancel = () => {
+  isActivedCurrent.value = false
+}
+
+const activedMask = () => {
   isActivedCurrent.value = false
 }
 </script>

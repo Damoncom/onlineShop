@@ -20,6 +20,7 @@
           </div>
         </div>
       </div>
+      <!-- TODO:模糊搜索 -->
       <!-- 搜索历史 -->
       <!-- <div class="search_history">
         <ul class="history_list">
@@ -63,10 +64,10 @@
             :data-name="product.name"
             :data-brand="product.brand"
             :data-price="product.price"
-            @click="chooseProduct"
+            @click="chooseProduct(product)"
           >
             <div class="img_box">
-              <img :src="product.img" class="product_img" />
+              <img :src="product.image" class="product_img" />
             </div>
             <div class="text_box">
               <div class="title">{{ product.name }}</div>
@@ -99,10 +100,10 @@
             :data-name="product.name"
             :data-brand="product.brand"
             :data-price="product.price"
-            @click="chooseProduct"
+            @click="chooseProduct(product)"
           >
             <div class="img_box">
-              <img :src="product.img" class="product_img" />
+              <img :src="product.image" class="product_img" />
             </div>
             <div class="text_box">
               <div class="title">{{ product.name }}</div>
@@ -129,7 +130,7 @@
 </template>
 
 <script setup>
-import { reactive, ref, onMounted, onUnmounted } from 'vue'
+import { reactive, ref, onMounted, onUnmounted, onBeforeMount, nextTick } from 'vue'
 import TabBar from '@/components/tabBar'
 import product from '@/assets/prodoct_img.jpg'
 import { useRouter, useRoute } from 'vue-router'
@@ -268,116 +269,48 @@ const productList = reactive([
   //   isAdd: false
   // }
 ])
-const productList_more = reactive([
-  {
-    id: '1',
-    name: 'Givenchy Blossom',
-    brand: 'Givenchy',
-    price: '$29.00',
-    img: product,
-    isAdd: false
-  },
-  {
-    id: '2',
-    name: 'Givenchy Blossom',
-    brand: 'Givenchy',
-    price: '$29.00',
-    img: product,
-    isAdd: false
-  },
-  {
-    id: '3',
-    name: 'Givenchy Blossom',
-    brand: 'Givenchy',
-    price: '$29.00',
-    img: product,
-    isAdd: false
-  },
-  {
-    id: '4',
-    name: 'Givenchy Blossom',
-    brand: 'Givenchy',
-    price: '$29.00',
-    img: product,
-    isAdd: false
-  },
-  {
-    id: '5',
-    name: 'Givenchy Blossom',
-    brand: 'Givenchy',
-    price: '$29.00',
-    img: product,
-    isAdd: false
-  },
-  {
-    id: '6',
-    name: 'Givenchy Blossom',
-    brand: 'Givenchy',
-    price: '$29.00',
-    img: product,
-    isAdd: false
-  },
-  {
-    id: '7',
-    name: 'Givenchy Blossom',
-    brand: 'Givenchy',
-    price: '$29.00',
-    img: product,
-    isAdd: false
-  },
-  {
-    id: '8',
-    name: 'Givenchy Blossom',
-    brand: 'Givenchy',
-    price: '$29.00',
-    img: product,
-    isAdd: false
-  },
-  {
-    id: '9',
-    name: 'Givenchy Blossom',
-    brand: 'Givenchy',
-    price: '$29.00',
-    img: product,
-    isAdd: false
-  },
-  {
-    id: '10',
-    name: 'Givenchy Blossom',
-    brand: 'Givenchy',
-    price: '$29.00',
-    img: product,
-    isAdd: false
-  },
-  {
-    id: '11',
-    name: 'Givenchy Blossom',
-    brand: 'Givenchy',
-    price: '$29.00',
-    img: product,
-    isAdd: false
+
+const token_info = localStorage.getItem('token')
+
+onBeforeMount(async () => {
+  await nextTick()
+
+  // 获取商品列表数据
+  const { data: resp_product } = await axios({
+    method: 'get',
+    url: 'http://192.168.100.7:7001/onlineShop/getGoodsList',
+    params: {
+      size: 6,
+      page: 1,
+      barCode: '',
+      name: ''
+    },
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'application/json; charset=utf-8'
+    }
+  })
+  if (resp_product.errCode == 1000) {
+    Object.assign(productList, resp_product.data.list)
+  } else {
   }
-])
+  console.log('获取商品列表数据:', resp_product)
+  // console.log(productList)
+})
 
 const count_product = ref(productList.length)
 
 // 将商品添加至cart
-const actived_index = ref('')
 const isAdd = ref(false)
 
-const chooseProduct = (e) => {
-  actived_index.value = e.currentTarget.dataset.index
-
-  const detail = ref({
-    name: e.currentTarget.dataset.name,
-    brand: e.currentTarget.dataset.brand,
-    price: e.currentTarget.dataset.price
-  })
-
+const chooseProduct = (product) => {
+  const productId = ref(product.id)
   //   跳转到productDetail页面
   router.push({
     path: '/product_details',
-    query: detail.value
+    query: {
+      productId: productId.value
+    }
   })
 }
 
@@ -387,12 +320,13 @@ const addToCart = (e) => {
   isAdd.value = !isAdd.value
 }
 
-// 下拉刷新
+// 下拉加载，上拉刷新
+// TODO:框的高度不够，每个手机分辨率不一样
 const card = ref()
 const top = ref(false)
 const bottom = ref(false)
 
-const doScroll = (event) => {
+const doScroll = async (event) => {
   const scrollHeight = event.target.scrollHeight
   const scrollTop = event.target.scrollTop
   const clientHeight = event.target.clientHeight
@@ -400,10 +334,31 @@ const doScroll = (event) => {
     console.log('到底了!')
     bottom.value = true
 
-    setTimeout(async () => {
-      Object.assign(productList, productList_more)
-      console.log(productList)
+    const token_info = localStorage.getItem('token')
+    const { data: resp_product } = await axios({
+      method: 'get',
+      url: 'http://192.168.100.7:7001/onlineShop/getGoodsList',
+      params: {
+        size: 20,
+        page: 1,
+        barCode: '',
+        name: ''
+      },
+      headers: {
+        Authorization: `Bearer ${token_info}`,
+        'Content-Type': 'application/json; charset=utf-8'
+      }
+    })
+    //TODO:下拉加载的数据
+    if (resp_product.errCode == 1000) {
+      Object.assign(productList, resp_product.data.list)
+      // productList.push(resp_product.data.list)
       count_product.value = productList.length
+    }
+    console.log('下拉加载更多获取商品列表数据:', resp_product)
+    console.log(productList)
+
+    setTimeout(async () => {
       bottom.value = false
     }, 1000)
   } else {
@@ -414,9 +369,6 @@ const doScroll = (event) => {
     console.log('顶部!')
     top.value = true
     setTimeout(async () => {
-      // Object.assign(productList, productList_more)
-      // console.log(productList)
-      // count_product.value = productList.length
       top.value = false
     }, 1000)
   }

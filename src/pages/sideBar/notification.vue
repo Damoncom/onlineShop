@@ -7,17 +7,20 @@
           class="notification_item"
           v-for="(notification, notification_index) of notificationList"
           :key="notification_index"
+          @click="readNotice(notification)"
         >
           <div class="img_box">
             <i class="iconfont icon-ling"></i>
           </div>
           <div class="text_box">
-            <div class="msg">{{ notification.msg }}</div>
-            <div class="source">{{ notification.source }}</div>
+            <div class="msg">{{ notification.content }}</div>
+            <div class="source">{{ notification.vendor }}</div>
           </div>
           <div class="time_box">
-            <div class="time">{{ notification.time }}</div>
-            <i class="iconfont icon-yuan"></i>
+            <!-- TODO:消息时间 -->
+            <!-- <div class="time">{{ notification.createdAt }}</div> -->
+            <div class="time">1m ago</div>
+            <i class="iconfont icon-yuan" v-if="notification.read == false"></i>
           </div>
         </li>
       </ul>
@@ -25,7 +28,7 @@
   </div>
 </template>
 <script setup>
-import { ref } from 'vue'
+import { onBeforeMount, reactive, ref, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
 
@@ -35,32 +38,125 @@ const route = useRoute()
 // 导入导航栏
 const navTitle = 'Notification'
 
-const notificationList = ref([
-  {
-    id: '1',
-    msg: 'Your Order just arrived',
-    source: 'Vendor',
-    time: '1m ago'
-  },
-  {
-    id: '2',
-    msg: 'Your Order Will be Delayed',
-    source: 'Vendor',
-    time: '1m ago'
-  },
-  {
-    id: '3',
-    msg: 'Your Order just Pending',
-    source: 'Vendor',
-    time: '1m ago'
-  },
-  {
-    id: '4',
-    msg: 'Congratulation!',
-    source: 'AINVE',
-    time: '1m ago'
-  }
+// post请求创建通知
+const createNotice = reactive({
+  content: 'Your Order just arrived',
+  vendor: 'demo',
+  read: 0
+})
+
+// 消息列表数据
+const notificationList = reactive([
+  // {
+  //   id: '1',
+  //   msg: 'Your Order just arrived',
+  //   source: 'Vendor',
+  //   time: '1m ago',
+  //   read: false
+  // },
+  // {
+  //   id: '2',
+  //   msg: 'Your Order Will be Delayed',
+  //   source: 'Vendor',
+  //   time: '1m ago',
+  //   read: false
+  // },
+  // {
+  //   id: '3',
+  //   msg: 'Your Order just Pending',
+  //   source: 'Vendor',
+  //   time: '1m ago',
+  //   read: false
+  // },
+  // {
+  //   id: '4',
+  //   msg: 'Congratulation!',
+  //   source: 'AINVE',
+  //   time: '1m ago',
+  //   read: false
+  // }
 ])
+
+const token_info = localStorage.getItem('token')
+
+onBeforeMount(async () => {
+  await nextTick()
+
+  // 获取用户数据
+  const { data: resp_user } = await axios({
+    method: 'get',
+    url: 'http://192.168.100.7:7001/onlineShop/getUserInfo',
+    params: {},
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'application/json; charset=utf-8'
+    }
+  })
+  if (resp_user.errCode == 1000) {
+    Reflect.set(createNotice, 'userId', resp_user.data.id)
+  } else {
+  }
+  console.log('get用户信息：', resp_user)
+  // console.log(createNotice)
+
+  // 创建通知post请求
+  const { data: resp_ceateNotification } = await axios({
+    method: 'post',
+    url: 'http://192.168.100.7:7001/onlineShop/createNotification',
+    data: createNotice,
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+  if (resp_ceateNotification.errCode == 1000) {
+  } else {
+  }
+  console.log('post创建通知：', resp_ceateNotification)
+
+  // 获取通知get请求
+  const { data: resp_getNotification } = await axios({
+    method: 'get',
+    url: 'http://192.168.100.7:7001/onlineShop/getNotification',
+    params: {
+      size: 10,
+      page: 1
+    },
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'application/json; charset=utf-8'
+    }
+  })
+  if (resp_getNotification.errCode == 1000) {
+    Object.assign(notificationList, resp_getNotification.data.list)
+  } else {
+  }
+  console.log('get获取通知：', resp_getNotification)
+})
+
+// 已读通知put请求
+const readNotice = async (notification) => {
+  await nextTick()
+
+  notification.read = true
+
+  // put请求
+  const { data: resp_read } = await axios({
+    method: 'put',
+    url: 'http://192.168.100.7:7001/onlineShop/readNotification',
+    data: { id: notification.id },
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+  if (resp_read.errCode == 1000) {
+    notification.read = true
+  } else {
+    notification.read = false
+  }
+  console.log('put已读：', resp_read)
+}
 </script>
 <style lang="scss" scoped>
 .app {
@@ -71,6 +167,7 @@ const notificationList = ref([
     // ul
     .notification_list {
       margin-top: 24px;
+      padding-bottom: 30px;
       width: 375px;
       height: auto;
       display: flex;

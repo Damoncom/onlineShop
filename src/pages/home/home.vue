@@ -1,5 +1,6 @@
 <template>
   <div class="app" :class="isActivedInfo == true || isLogOut == true ? 'app_regular' : 'app'">
+    <!-- 顶部导航栏 -->
     <div class="nav">
       <div class="nav_box">
         <i class="iconfont icon-mulu" @click="linkToInfo"></i>
@@ -7,6 +8,7 @@
       </div>
     </div>
     <div class="content">
+      <!-- 搜索框 -->
       <div class="search">
         <div class="search_box">
           <i class="iconfont icon-sousuo"></i>
@@ -22,6 +24,7 @@
           <i class="iconfont icon-saoyisao"></i>
         </div>
       </div>
+      <!-- 轮播图 -->
       <swiper-container
         ref="swiper"
         class="scroll_nav"
@@ -29,22 +32,21 @@
         :centered-slides="true"
         :pagenation="true"
       >
+        <!-- TODO:swiper和v-for -->
         <swiper-slide class="swiper_box1">
-          <div class="swiper_wrapper1">
-            <p class="box_text">Find bast Beauty Product.</p>
-          </div>
+          <img class="swiper_wrapper1" :src="banner[0].image" />
+          <p class="box_text">{{ banner[0].name }}</p>
         </swiper-slide>
         <swiper-slide class="swiper_box2">
-          <div class="swiper_wrapper2">
-            <p class="box_text">Find bast Beauty Product.</p>
-          </div>
+          <img class="swiper_wrapper2" :src="banner[1].image" />
+          <p class="box_text">{{ banner[1].name }}</p>
         </swiper-slide>
         <swiper-slide class="swiper_box3">
-          <div class="swiper_wrapper3">
-            <p class="box_text">Find bast Beauty Product.</p>
-          </div>
+          <img class="swiper_wrapper3" :src="banner[2].image" />
+          <p class="box_text">{{ banner[2].name }}</p>
         </swiper-slide>
       </swiper-container>
+      <!-- 分类 -->
       <div class="categories">
         <ul class="categories_list">
           <li
@@ -57,6 +59,7 @@
           </li>
         </ul>
       </div>
+      <!-- recommend -->
       <div class="recommended">
         <div class="recommended_title">
           <p class="title_text">RECOMMENDED</p>
@@ -65,16 +68,16 @@
           <ul class="product_list">
             <li
               class="product_item"
-              v-for="(product, product_index) of productList"
+              v-for="(product, product_index) of recommendedList"
               :key="product_index"
               :data-index="product_index"
               :data-name="product.name"
               :data-brand="product.brand"
               :data-price="product.price"
-              @click="chooseProduct"
+              @click="chooseProduct(product)"
             >
               <div class="img_box">
-                <img :src="product.img" class="product_img" />
+                <img :src="product.image" class="product_img" />
               </div>
               <div class="text_box">
                 <div class="title">{{ product.name }}</div>
@@ -95,6 +98,7 @@
           </ul>
         </div>
       </div>
+      <!-- popular -->
       <div class="popular">
         <div class="popular_title">
           <p class="title_text">POPULAR</p>
@@ -103,16 +107,16 @@
           <ul class="product_list">
             <li
               class="product_item"
-              v-for="(product, product_index) of productList2"
+              v-for="(product, product_index) of popularList"
               :key="product_index"
               :data-index="product_index"
               :data-name="product.name"
               :data-brand="product.brand"
               :data-price="product.price"
-              @click="chooseProduct"
+              @click="chooseProduct(product)"
             >
               <div class="img_box">
-                <img :src="product.img" class="product_img" />
+                <img :src="product.image" class="product_img" />
               </div>
               <div class="text_box">
                 <div class="title">{{ product.name }}</div>
@@ -136,16 +140,16 @@
           <ul class="product_list">
             <li
               class="product_item"
-              v-for="(product, product_index) of productList2"
+              v-for="(product, product_index) of popularList"
               :key="product_index"
               :data-index="product_index"
               :data-name="product.name"
               :data-brand="product.brand"
               :data-price="product.price"
-              @click="chooseProduct"
+              @click="chooseProduct(product)"
             >
               <div class="img_box">
-                <img :src="product.img" class="product_img" />
+                <img :src="product.image" class="product_img" />
               </div>
               <div class="text_box">
                 <div class="title">{{ product.name }}</div>
@@ -289,6 +293,10 @@ const linkToCategory = () => {
   })
 }
 
+// banner数据
+const banner = reactive([])
+
+// 分类标签数据
 const categoriesList = ref([
   {
     id: '1',
@@ -333,181 +341,177 @@ const categoriesList = ref([
 ])
 
 // 商品列表数据
-const productList = reactive([
-  {
-    id: '1',
-    name: 'Givenchy Blossom',
-    brand: 'Givenchy',
-    price: '$29.00',
-    img: product,
-    isAdd: false
-  },
-  {
-    id: '2',
-    name: 'Givenchy Blossom',
-    brand: 'Givenchy',
-    price: '$29.00',
-    img: product,
-    isAdd: false
-  },
-  {
-    id: '3',
-    name: 'Givenchy Blossom',
-    brand: 'Givenchy',
-    price: '$29.00',
-    img: product,
-    isAdd: false
-  },
-  {
-    id: '4',
-    name: 'Givenchy Blossom',
-    brand: 'Givenchy',
-    price: '$29.00',
-    img: product,
-    isAdd: false
-  },
-  {
-    id: '5',
-    name: 'Givenchy Blossom',
-    brand: 'Givenchy',
-    price: '$29.00',
-    img: product,
-    isAdd: false
-  },
-  {
-    id: '6',
-    name: 'Givenchy Blossom',
-    brand: 'Givenchy',
-    price: '$29.00',
-    img: product,
-    isAdd: false
-  },
-  {
-    id: '7',
-    name: 'Givenchy Blossom',
-    brand: 'Givenchy',
-    price: '$29.00',
-    img: product,
-    isAdd: false
-  },
-  {
-    id: '8',
-    name: 'Givenchy Blossom',
-    brand: 'Givenchy',
-    price: '$29.00',
-    img: product,
-    isAdd: false
-  },
-  {
-    id: '9',
-    name: 'Givenchy Blossom',
-    brand: 'Givenchy',
-    price: '$29.00',
-    img: product,
-    isAdd: false
-  },
-  {
-    id: '10',
-    name: 'Givenchy Blossom',
-    brand: 'Givenchy',
-    price: '$29.00',
-    img: product,
-    isAdd: false
-  },
-  {
-    id: '11',
-    name: 'Givenchy Blossom',
-    brand: 'Givenchy',
-    price: '$29.00',
-    img: product,
-    isAdd: false
-  }
+// recommended数据
+const recommendedList = reactive([
+  // {
+  //   id: '1',
+  //   name: 'Givenchy Blossom',
+  //   brand: 'Givenchy',
+  //   price: '$29.00',
+  //   img: product,
+  //   isAdd: false
+  // },
+  // {
+  //   id: '2',
+  //   name: 'Givenchy Blossom',
+  //   brand: 'Givenchy',
+  //   price: '$29.00',
+  //   img: product,
+  //   isAdd: false
+  // },
+  // {
+  //   id: '3',
+  //   name: 'Givenchy Blossom',
+  //   brand: 'Givenchy',
+  //   price: '$29.00',
+  //   img: product,
+  //   isAdd: false
+  // },
+  // {
+  //   id: '4',
+  //   name: 'Givenchy Blossom',
+  //   brand: 'Givenchy',
+  //   price: '$29.00',
+  //   img: product,
+  //   isAdd: false
+  // },
+  // {
+  //   id: '5',
+  //   name: 'Givenchy Blossom',
+  //   brand: 'Givenchy',
+  //   price: '$29.00',
+  //   img: product,
+  //   isAdd: false
+  // },
+  // {
+  //   id: '6',
+  //   name: 'Givenchy Blossom',
+  //   brand: 'Givenchy',
+  //   price: '$29.00',
+  //   img: product,
+  //   isAdd: false
+  // },
+  // {
+  //   id: '7',
+  //   name: 'Givenchy Blossom',
+  //   brand: 'Givenchy',
+  //   price: '$29.00',
+  //   img: product,
+  //   isAdd: false
+  // },
+  // {
+  //   id: '8',
+  //   name: 'Givenchy Blossom',
+  //   brand: 'Givenchy',
+  //   price: '$29.00',
+  //   img: product,
+  //   isAdd: false
+  // },
+  // {
+  //   id: '9',
+  //   name: 'Givenchy Blossom',
+  //   brand: 'Givenchy',
+  //   price: '$29.00',
+  //   img: product,
+  //   isAdd: false
+  // },
+  // {
+  //   id: '10',
+  //   name: 'Givenchy Blossom',
+  //   brand: 'Givenchy',
+  //   price: '$29.00',
+  //   img: product,
+  //   isAdd: false
+  // },
+  // {
+  //   id: '11',
+  //   name: 'Givenchy Blossom',
+  //   brand: 'Givenchy',
+  //   price: '$29.00',
+  //   img: product,
+  //   isAdd: false
+  // }
 ])
 
-const productList2 = reactive([
-  {
-    id: '1',
-    name: 'Shade Palette',
-    brand: 'Naked',
-    price: '$25.00',
-    img: product2,
-    isAdd: false
-  },
-  {
-    id: '2',
-    name: 'Curolog Blossom',
-    brand: 'Curolog',
-    price: '$20.00',
-    img: product3,
-    isAdd: false
-  },
-  {
-    id: '3',
-    name: 'Shade Palette',
-    brand: 'Naked',
-    price: '$25.00',
-    img: product2,
-    isAdd: false
-  },
-  {
-    id: '4',
-    name: 'Curolog Blossom',
-    brand: 'Curolog',
-    price: '$20.00',
-    img: product3,
-    isAdd: false
-  },
-  {
-    id: '5',
-    name: 'Shade Palette',
-    brand: 'Naked',
-    price: '$25.00',
-    img: product2,
-    isAdd: false
-  },
-  {
-    id: '6',
-    name: 'Curolog Blossom',
-    brand: 'Curolog',
-    price: '$20.00',
-    img: product3,
-    isAdd: false
-  },
-  {
-    id: '7',
-    name: 'Shade Palette',
-    brand: 'Naked',
-    price: '$25.00',
-    img: product2,
-    isAdd: false
-  },
-  {
-    id: '8',
-    name: 'Curolog Blossom',
-    brand: 'Curolog',
-    price: '$20.00',
-    img: product3,
-    isAdd: false
-  }
+// popular数据
+const popularList = reactive([
+  // {
+  //   id: '1',
+  //   name: 'Shade Palette',
+  //   brand: 'Naked',
+  //   price: '$25.00',
+  //   img: product2,
+  //   isAdd: false
+  // },
+  // {
+  //   id: '2',
+  //   name: 'Curolog Blossom',
+  //   brand: 'Curolog',
+  //   price: '$20.00',
+  //   img: product3,
+  //   isAdd: false
+  // },
+  // {
+  //   id: '3',
+  //   name: 'Shade Palette',
+  //   brand: 'Naked',
+  //   price: '$25.00',
+  //   img: product2,
+  //   isAdd: false
+  // },
+  // {
+  //   id: '4',
+  //   name: 'Curolog Blossom',
+  //   brand: 'Curolog',
+  //   price: '$20.00',
+  //   img: product3,
+  //   isAdd: false
+  // },
+  // {
+  //   id: '5',
+  //   name: 'Shade Palette',
+  //   brand: 'Naked',
+  //   price: '$25.00',
+  //   img: product2,
+  //   isAdd: false
+  // },
+  // {
+  //   id: '6',
+  //   name: 'Curolog Blossom',
+  //   brand: 'Curolog',
+  //   price: '$20.00',
+  //   img: product3,
+  //   isAdd: false
+  // },
+  // {
+  //   id: '7',
+  //   name: 'Shade Palette',
+  //   brand: 'Naked',
+  //   price: '$25.00',
+  //   img: product2,
+  //   isAdd: false
+  // },
+  // {
+  //   id: '8',
+  //   name: 'Curolog Blossom',
+  //   brand: 'Curolog',
+  //   price: '$20.00',
+  //   img: product3,
+  //   isAdd: false
+  // }
 ])
 
 // 将商品添加至cart
-const actived_index = ref('')
 const isAdd = ref(false)
 
-const chooseProduct = (e) => {
-  actived_index.value = e.currentTarget.dataset.index
-
-  const detail = ref({
-    name: e.currentTarget.dataset.name,
-    brand: e.currentTarget.dataset.brand,
-    price: e.currentTarget.dataset.price
-  })
-
+const chooseProduct = (product) => {
+  const productId = ref(product.id)
   //   跳转到productDetail页面
   router.push({
     path: '/product_details',
-    query: detail.value
+    query: {
+      productId: productId.value
+    }
   })
 }
 
@@ -519,6 +523,7 @@ const addToCart = (e) => {
 
 const user = reactive({})
 
+// TODO:合并生命周期
 // 获取用户信息
 onBeforeMount(async () => {
   const token_info = localStorage.getItem('token')
@@ -532,7 +537,7 @@ onBeforeMount(async () => {
     }
   })
   Object.assign(user, resp.data)
-  console.log('resp', resp)
+  console.log('用户信息resp', resp)
 })
 
 // sideBar页面
@@ -622,6 +627,24 @@ const linkToTest = () => {
     path: '/test'
   })
 }
+
+// 获取首页数据
+onBeforeMount(async () => {
+  const token_info = localStorage.getItem('token')
+  const { data: resp } = await axios({
+    method: 'get',
+    url: 'http://192.168.100.7:7001/onlineShop/getHomeData',
+    params: {},
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'application/json; charset=utf-8'
+    }
+  })
+  Object.assign(recommendedList, resp.data.recommended)
+  Object.assign(popularList, resp.data.popular)
+  Object.assign(banner, resp.data.banner)
+  console.log('首页数据resp', resp)
+})
 </script>
 
 <style lang="scss" scoped>
@@ -733,63 +756,54 @@ const linkToTest = () => {
         display: flex;
         align-items: center;
         justify-content: center;
+        position: relative;
         .swiper_wrapper1 {
           width: 321px;
           height: 140px;
           border-radius: 10px;
-          background-image: url(src/assets/home_nav.jpg);
-          background-size: contain;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          .box_text {
-            font-size: 28px;
-            line-height: 30px;
-            color: white;
-            margin-left: 16px;
-          }
+        }
+        .box_text {
+          font-size: 28px;
+          line-height: 30px;
+          color: white;
+          position: absolute;
+          left: 50px;
         }
       }
       .swiper_box2 {
         display: flex;
         align-items: center;
         justify-content: center;
+        position: relative;
         .swiper_wrapper2 {
           width: 321px;
           height: 140px;
           border-radius: 10px;
-          background-image: url(src/assets/home_nav.jpg);
-          background-size: contain;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          .box_text {
-            font-size: 28px;
-            line-height: 30px;
-            color: white;
-            margin-left: 16px;
-          }
+        }
+        .box_text {
+          font-size: 28px;
+          line-height: 30px;
+          color: white;
+          position: absolute;
+          left: 50px;
         }
       }
       .swiper_box3 {
         display: flex;
         align-items: center;
         justify-content: center;
+        position: relative;
         .swiper_wrapper3 {
           width: 321px;
           height: 140px;
           border-radius: 10px;
-          background-image: url(src/assets/home_nav.jpg);
-          background-size: contain;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          .box_text {
-            font-size: 28px;
-            line-height: 30px;
-            color: white;
-            margin-left: 16px;
-          }
+        }
+        .box_text {
+          font-size: 28px;
+          line-height: 30px;
+          color: white;
+          position: absolute;
+          left: 50px;
         }
       }
     }

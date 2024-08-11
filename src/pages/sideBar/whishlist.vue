@@ -3,16 +3,12 @@
     <Nav :init_title="navTitle" />
     <div class="content">
       <ul class="whishlist_list">
-        <li
-          class="whishlist_item"
-          v-for="(whishlist, whishlist_index) of whishlistList"
-          :key="whishlist_index"
-        >
-          <img :src="whishlist.img" class="img" />
+        <li class="whishlist_item" v-for="(wish, wishlist_index) of wishlist" :key="wishlist_index">
+          <img :src="wish.goods.image" class="img" />
           <div class="text_box">
-            <div class="name">{{ whishlist.name }}</div>
-            <div class="brand">{{ whishlist.brand }}</div>
-            <div class="price">${{ whishlist.price }}</div>
+            <div class="name">{{ wish.goods.name }}</div>
+            <div class="brand">{{ wish.goods.origin }}</div>
+            <div class="price">${{ wish.goods.price }}</div>
           </div>
           <div class="like_box">
             <i class="iconfont icon-aixin1"></i>
@@ -31,7 +27,7 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue'
+import { reactive, ref, onBeforeMount, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
 import product from '@/assets/details_img.jpg'
@@ -42,36 +38,35 @@ const route = useRoute()
 // 导入导航栏
 const navTitle = 'Wishlist'
 
-const whishlistList = reactive([
-  {
-    id: '1',
-    name: 'GivenchyL’ intemporel Blossom',
-    brand: 'Givenchy',
-    price: '29.00',
-    img: product
-  },
-  {
-    id: '2',
-    name: 'GivenchyL’ intemporel Blossom',
-    brand: 'Givenchy',
-    price: '29.00',
-    img: product
-  },
-  {
-    id: '3',
-    name: 'GivenchyL’ intemporel Blossom',
-    brand: 'Givenchy',
-    price: '29.00',
-    img: product
-  },
-  {
-    id: '4',
-    name: 'GivenchyL’ intemporel Blossom',
-    brand: 'Givenchy',
-    price: '29.00',
-    img: product
+// 定义收藏列表变量
+const wishlist = reactive([])
+
+const token_info = localStorage.getItem('token')
+
+// 获取收藏列表数据
+onBeforeMount(async () => {
+  await nextTick()
+
+  const { data: resp_wishlist } = await axios({
+    method: 'get',
+    url: 'http://192.168.100.7:7001/onlineShop/getWishlist',
+    params: {
+      size: 10,
+      page: 1
+    },
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'application/json; charset=utf-8'
+    }
+  })
+  if (resp_wishlist.errCode == 1000) {
+    Object.assign(wishlist, resp_wishlist.data.list)
+  } else {
   }
-])
+
+  console.log('获取收藏列表数据:', resp_wishlist)
+  console.log(wishlist)
+})
 </script>
 
 <style lang="scss" scoped>

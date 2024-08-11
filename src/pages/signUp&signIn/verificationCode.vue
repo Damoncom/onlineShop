@@ -128,7 +128,7 @@ onMounted(async () => {
     }
   })
   console.log(resp)
-  // alert(resp.verificationCode)
+  alert(resp.verificationCode)
 })
 
 // 验证码框
