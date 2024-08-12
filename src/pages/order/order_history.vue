@@ -23,11 +23,11 @@
             :data-img="order.imgUrl"
           >
             <div class="item_top">
-              <img :src="order.imgUrl" class="li_img" />
+              <img :src="order.goods.image" class="li_img" />
               <div class="text_box">
-                <div class="title">{{ order.name }}</div>
-                <div class="brand">{{ order.brand }}</div>
-                <div class="price">{{ order.price }}</div>
+                <div class="title">{{ order.goods.name }}</div>
+                <div class="brand">{{ order.goods.origin }}</div>
+                <div class="price">$ {{ order.goods.price }}</div>
               </div>
               <div class="state">
                 <p class="state_text">{{ order.state }}</p>
@@ -40,7 +40,7 @@
               <div class="re_order" @click="reOrder">
                 <p class="re_order_text">Re-Order</p>
               </div>
-              <div class="tracking" @click="linkToTracking">
+              <div class="tracking">
                 <p class="tracking_text">Tracking</p>
               </div>
             </div>
@@ -54,7 +54,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, nextTick, onBeforeMount, reactive, toRaw } from 'vue'
 import TabBar from '@/components/tabBar'
 import Nav from '@/components/nav'
 import { useRouter, useRoute } from 'vue-router'
@@ -63,6 +63,8 @@ import order2 from '@/assets/order2.jpg'
 
 const router = useRouter()
 const route = useRoute()
+
+const token_info = localStorage.getItem('token')
 
 // 导入导航栏
 const navTitle = 'Order'
@@ -74,37 +76,13 @@ const linkToUpcoming = () => {
   })
 }
 
-// 跳转到商品路径追溯页面
-const linkToTracking = () => {
-  router.push({
-    path: '/order_tracking'
-  })
-}
-
 // 确认是Order页面
 const isOrderPage = true
 
 // 商品列表信息
-const orderList = ref([
-  {
-    id: '1',
-    name: 'ESTEE LAUDER ’ Blossom',
-    brand: 'Givenchy',
-    imgUrl: order2,
-    price: '$1020.00',
-    state: 'Completed'
-  },
-  {
-    id: '2',
-    name: 'ESTEE LAUDER ’ Blossom',
-    brand: 'Givenchy',
-    imgUrl: order2,
-    price: '$1020.00',
-    state: 'Completed'
-  }
-])
+const orderList = reactive([])
 
-// 控制商品状态
+// -1:cancelled 1:pending 2:on going 3:completed
 
 // reorder重新添加到购物车
 const reOrder = (e) => {
@@ -123,6 +101,41 @@ const reOrder = (e) => {
     query: reorderDetails
   })
 }
+
+onBeforeMount(async () => {
+  await nextTick()
+
+  // 获取订单列表
+  const { data: resp_orderList } = await axios({
+    method: 'get',
+    url: 'http://192.168.100.7:7001/onlineShop/getOrderList',
+    params: {
+      size: 10,
+      page: 1
+    },
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'application/json; charset=utf-8'
+    }
+  })
+
+  if (resp_orderList.errCode == 1000) {
+    Object.assign(orderList, resp_orderList.data.list)
+    toRaw(orderList).forEach((item) => {
+      if (item.status == -1) {
+        item.state = 'cancelled'
+      } else if (item.status == 1) {
+        item.state = 'pending'
+      } else if (item.status == 2) {
+        item.state = 'on going'
+      } else if (item.status == 3) {
+        item.state = 'pending'
+      }
+    })
+  } else {
+  }
+  console.log('get订单列表:', resp_orderList)
+})
 </script>
 
 <style lang="scss" scoped>
@@ -173,6 +186,7 @@ const reOrder = (e) => {
       margin-top: 24px;
       // ul
       .orders_list {
+        padding-bottom: 70px;
         // li
         .orders_item {
           width: 335px;
@@ -199,11 +213,11 @@ const reOrder = (e) => {
             .text_box {
               width: 159px;
               height: 89px;
-              margin-left: 12px;
+              margin: 10px 0 0 12px;
               .title {
                 width: 165px;
                 font-size: 14px;
-                line-height: 22px;
+                line-height: 20px;
                 color: #000000;
               }
               .brand {
@@ -214,7 +228,7 @@ const reOrder = (e) => {
               .price {
                 font-size: 16px;
                 color: #001c33;
-                line-height: 30px;
+                line-height: 50px;
               }
             }
             .state {

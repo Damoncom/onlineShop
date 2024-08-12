@@ -17,7 +17,6 @@
             <div class="source">{{ notification.vendor }}</div>
           </div>
           <div class="time_box">
-            <!-- TODO:消息时间 -->
             <!-- <div class="time">{{ notification.createdAt }}</div> -->
             <div class="time">1m ago</div>
             <i class="iconfont icon-yuan" v-if="notification.read == false"></i>

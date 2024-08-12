@@ -523,7 +523,6 @@ const addToCart = (e) => {
 
 const user = reactive({})
 
-// TODO:合并生命周期
 // 获取用户信息
 onBeforeMount(async () => {
   const token_info = localStorage.getItem('token')

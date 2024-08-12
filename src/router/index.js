@@ -147,7 +147,7 @@ const router = createRouter({
     {
       path: '/test',
       name: 'test',
-      component: () => import('../pages/Test')
+      component: () => import('@/components/MapContainer.vue')
     }
   ]
 })

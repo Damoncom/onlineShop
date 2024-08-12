@@ -12,15 +12,12 @@
           :data-price="cart.price"
           :data-num="cart.num"
         >
-          <i
-            class="iconfont icon-xuanzhong"
-            :class="cart.isChosen == true ? 'icon-xuanzhong_purple' : 'icon-xuanzhong'"
-          ></i>
+          <i class="iconfont icon-xuanzhong"></i>
           <div class="product_box">
-            <img :src="cart.img" class="img" />
+            <img :src="cart.goods.image" class="img" />
             <div class="text_box">
-              <div class="name">{{ cart.name }}</div>
-              <div class="price">${{ cart.price }}</div>
+              <div class="name">{{ cart.goods.name }}</div>
+              <div class="price">${{ cart.goods.price }}</div>
             </div>
           </div>
           <div class="number">
@@ -28,7 +25,7 @@
               <p class="text">—</p>
             </div>
             <div class="num_text">
-              <p class="text">{{ cart.num }}</p>
+              <p class="text">{{ cart.amount }}</p>
             </div>
             <div class="add">
               <p class="text" @click="add(cart, arr)">+</p>
@@ -56,7 +53,16 @@
   </div>
 </template>
 <script setup>
-import { onUnmounted, reactive, ref, toRaw, onUpdated, nextTick } from 'vue'
+import {
+  onUnmounted,
+  reactive,
+  ref,
+  toRaw,
+  onUpdated,
+  nextTick,
+  onBeforeMount,
+  onMounted
+} from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import product from '@/assets/details_img.jpg'
 import Nav from '@/components/nav'
@@ -65,57 +71,75 @@ import currency from 'currency.js'
 const router = useRouter()
 const route = useRoute()
 
+const token_info = localStorage.getItem('token')
+
 // 导入导航栏
 const navTitle = 'Cart'
 
 // 商品列表信息
-const cartList = reactive([
-  {
-    id: '1',
-    name: 'Gienchy L’  intemprorel Blossom',
-    price: '29.33',
-    img: product,
-    num: 1,
-    isChosen: true
-  },
-  {
-    id: '2',
-    name: 'Gienchy L’  intemprorel Blossom',
-    price: '29.99',
-    img: product,
-    num: 1,
-    isChosen: true
-  }
-])
+const cartList = reactive([])
 
 // 计算总数
 const sum = ref(0.0)
 let sumShow = ref()
 const arr = toRaw(cartList)
 
-arr.forEach((item, index) => {
-  sum.value = currency(item.price).multiply(item.num).add(currency(sum.value))
-  sumShow.value = currency(sum.value).value
-})
-
-const minus = (cart) => {
-  cart.num--
-  if (cart.num <= 1) {
-    cart.num = 1
+// 减一
+const minus = async (cart) => {
+  cart.amount--
+  if (cart.amount <= 1) {
+    cart.amount = 1
   }
   sum.value = 0.0
   arr.forEach((item, index) => {
-    sum.value = currency(item.price).multiply(item.num).add(currency(sum.value))
+    sum.value = currency(item.goods.price).multiply(item.amount).add(currency(sum.value))
     sumShow.value = currency(sum.value).value
   })
+
+  // post请求
+  const { data: resp_minus } = await axios({
+    method: 'post',
+    url: 'http://192.168.100.7:7001/onlineShop/editCart',
+    data: {
+      goodsId: cart.goodsId,
+      amount: cart.amount
+    },
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+  if (resp_minus.errCode == 1000) {
+  } else {
+  }
+  console.log('post数量减一：', resp_minus)
 }
-const add = (cart, arr) => {
-  cart.num++
+// 加一
+const add = async (cart, arr) => {
+  cart.amount++
   sum.value = 0.0
   arr.forEach((item, index) => {
-    sum.value = currency(item.price).multiply(item.num).add(currency(sum.value))
+    sum.value = currency(item.goods.price).multiply(item.amount).add(currency(sum.value))
     sumShow.value = currency(sum.value).value
   })
+
+  // post请求
+  const { data: resp_add } = await axios({
+    method: 'post',
+    url: 'http://192.168.100.7:7001/onlineShop/editCart',
+    data: {
+      goodsId: cart.goodsId,
+      amount: cart.amount
+    },
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+  if (resp_add.errCode == 1000) {
+  } else {
+  }
+  console.log('post数量加一：', resp_add)
 }
 
 // 跳转到reviewPurchase页面
@@ -127,7 +151,38 @@ const linkToReviewPurchase = () => {
     }
   })
 }
+
+// 获取购物车数据
+onBeforeMount(async () => {
+  await nextTick()
+
+  const { data: resp_cart } = await axios({
+    method: 'get',
+    url: 'http://192.168.100.7:7001/onlineShop/getCart',
+    params: {
+      size: 10,
+      page: 1
+    },
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'application/json; charset=utf-8'
+    }
+  })
+  if (resp_cart.errCode == 1000) {
+    Object.assign(cartList, resp_cart.data.list)
+  } else {
+  }
+
+  console.log('获取购物车数据:', resp_cart)
+
+  // pre计算总数
+  arr.forEach((item, index) => {
+    sum.value = currency(item.goods.price).multiply(item.amount).add(currency(sum.value))
+    sumShow.value = currency(sum.value).value
+  })
+})
 </script>
+
 <style lang="scss" scoped>
 .app {
   .bar {
@@ -170,17 +225,15 @@ const linkToReviewPurchase = () => {
         align-items: center;
         .icon-xuanzhong {
           font-size: 20px;
-          color: #f1f1f1;
+          color: #a456dd;
           margin-left: 24px;
         }
-        .icon-xuanzhong_purple {
-          font-size: 20px;
-          color: #a456dd;
-        }
+
         .product_box {
           height: 60px;
           margin-left: 8px;
           display: flex;
+          align-items: center;
           .img {
             width: 60px;
             height: 60px;
@@ -192,13 +245,12 @@ const linkToReviewPurchase = () => {
             .name {
               font-size: 13px;
               color: #001c33;
-              line-height: 14px;
-              margin-top: 5px;
+              line-height: 30px;
             }
             .price {
               font-size: 18px;
               color: #001c33;
-              margin-top: 8px;
+              line-height: 30px;
             }
           }
         }

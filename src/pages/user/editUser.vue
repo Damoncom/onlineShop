@@ -143,8 +143,6 @@ const isChangeImg_box = (e) => {
   isChange.value = false
 }
 
-// TODO:裁剪功能
-
 //获取摄像头功能
 const takePhoto = async () => {
   isChange.value = false

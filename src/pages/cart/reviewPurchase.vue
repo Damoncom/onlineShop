@@ -5,10 +5,10 @@
       <ul class="cart_list">
         <li class="cart_item" v-for="(cart, cart_index) of cartList" :key="cart_index">
           <div class="product_box">
-            <img :src="cart.img" class="img" />
+            <img :src="cart.goods.image" class="img" />
             <div class="text_box">
-              <div class="name">{{ cart.name }}</div>
-              <div class="price">${{ cart.price }}</div>
+              <div class="name">{{ cart.goods.name }}</div>
+              <div class="price">${{ cart.goods.price }}</div>
             </div>
           </div>
           <div class="edit" @click="linkToCart">
@@ -28,7 +28,7 @@
             <i class="iconfont icon-dingwei"></i>
           </div>
           <div class="location_text">
-            <p class="text">{{ location }}</p>
+            <p class="text">{{ locationDetails.location }}</p>
           </div>
           <div class="jump">
             <i class="iconfont icon-jiantou"></i>
@@ -45,11 +45,11 @@
         </div>
         <div class="shipping_and_handing">
           <p class="name">Shipping & Handing</p>
-          <p class="num">$ {{ shipping }}</p>
+          <p class="num">$ {{ plus.handling }}</p>
         </div>
         <div class="Tax">
           <p class="name">Tax</p>
-          <p class="num">$ {{ tax }}</p>
+          <p class="num">$ {{ plus.tax }}</p>
         </div>
         <div class="total">
           <p class="name">Total</p>
@@ -70,7 +70,7 @@
   </div>
 </template>
 <script setup>
-import { reactive, ref, toRaw } from 'vue'
+import { reactive, ref, toRaw, nextTick, onBeforeMount } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import product from '@/assets/details_img.jpg'
 import Nav from '@/components/nav'
@@ -79,27 +79,29 @@ import currency from 'currency.js'
 const router = useRouter()
 const route = useRoute()
 
+const token_info = localStorage.getItem('token')
+
 // 导入导航栏
 const navTitle = 'Review Purchase'
 
 // 商品列表信息
 const cartList = reactive([
-  {
-    id: '1',
-    name: 'Gienchy L’  intemprorel Blossom',
-    price: '29.33',
-    img: product,
-    num: 1,
-    isChosen: true
-  },
-  {
-    id: '2',
-    name: 'Gienchy L’  intemprorel Blossom',
-    price: '29.99',
-    img: product,
-    num: 1,
-    isChosen: true
-  }
+  // {
+  //   id: '1',
+  //   name: 'Gienchy L’  intemprorel Blossom',
+  //   price: '29.33',
+  //   img: product,
+  //   num: 1,
+  //   isChosen: true
+  // },
+  // {
+  //   id: '2',
+  //   name: 'Gienchy L’  intemprorel Blossom',
+  //   price: '29.99',
+  //   img: product,
+  //   num: 1,
+  //   isChosen: true
+  // }
 ])
 
 // edit按钮
@@ -109,16 +111,11 @@ const linkToCart = () => {
   })
 }
 
-const location = ref('Preston Rd. inglewood St. Maine 98380')
-
 //最终价格
 const pre = route.query
 const subtotal = ref(pre.sum)
-const shipping = ref(19.99)
-const tax = ref(4.0)
+const plus = reactive({})
 const total = ref()
-
-total.value = currency(pre.sum).add(currency(shipping.value)).add(currency(tax.value))
 
 // 跳转到location页面
 const linkToLocation = () => {
@@ -127,13 +124,109 @@ const linkToLocation = () => {
   })
 }
 
+const locationDetails = reactive({})
+const queryOrder = reactive([])
+
+onBeforeMount(async () => {
+  await nextTick()
+
+  // 获取购物车信息
+  const { data: resp_cart } = await axios({
+    method: 'get',
+    url: 'http://192.168.100.7:7001/onlineShop/getCart',
+    params: {
+      size: 10,
+      page: 1
+    },
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'application/json; charset=utf-8'
+    }
+  })
+  if (resp_cart.errCode == 1000) {
+    Object.assign(cartList, resp_cart.data.list)
+  } else {
+  }
+  console.log('get购物车数据:', resp_cart)
+
+  // 重新整合商品数据
+  const postgoods = reactive([])
+  const arr = toRaw(resp_cart.data.list)
+  arr.forEach((item, index) => {
+    postgoods.push({
+      id: item.goodsId,
+      amount: item.amount
+    })
+  })
+
+  // 获取配送地址
+  const { data: resp_getLocation } = await axios({
+    method: 'get',
+    url: 'http://192.168.100.7:7001/onlineShop/getLocation',
+    params: {
+      size: 1,
+      page: 1
+    },
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'application/json; charset=utf-8'
+    }
+  })
+  if (resp_getLocation.errCode == 1000) {
+    Object.assign(locationDetails, ...resp_getLocation.data.list)
+  } else {
+  }
+  console.log('get配送地址数据:', resp_getLocation)
+
+  // post计算费用
+  const { data: resp_calculate } = await axios({
+    method: 'post',
+    url: 'http://192.168.100.7:7001/onlineShop/calculateCost',
+    data: {
+      goods: toRaw(postgoods),
+      subtotal: pre.sum,
+      locationId: locationDetails.id
+    },
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+  if (resp_calculate.errCode == 1000) {
+    Object.assign(plus, resp_calculate.data)
+    total.value = currency(pre.sum)
+      .add(currency(resp_calculate.data.handling))
+      .add(currency(resp_calculate.data.tax))
+  } else {
+  }
+  console.log('post计算费用：', resp_calculate)
+
+  // 整理传参数据
+  const queryOrderPre = reactive([])
+  const itemSubTotal = ref()
+  arr.forEach((item, index) => {
+    itemSubTotal.value = currency(item.goods.price).multiply(item.amount)
+    queryOrderPre.push({
+      userId: item.userId,
+      goodsId: item.goodsId,
+      amount: item.amount,
+      subTotal: itemSubTotal.value.value,
+      tax: itemSubTotal.value.value * 0.01,
+      handling: itemSubTotal.value.value * 0.1,
+      total: itemSubTotal.value.value * 1.11
+    })
+  })
+  toRaw(queryOrderPre).forEach((item) => {
+    item.locationId = locationDetails.id
+  })
+  Object.assign(queryOrder, queryOrderPre)
+})
+
+console.log(queryOrder)
 // 跳转到Payment页面
 const linkToPayment = () => {
   router.push({
-    path: '/payment',
-    query: {
-      total: total.value
-    }
+    path: '/payment'
   })
 }
 </script>
@@ -182,6 +275,7 @@ const linkToPayment = () => {
           height: 60px;
           margin-left: 20px;
           display: flex;
+          align-items: center;
           .img {
             width: 60px;
             height: 60px;
@@ -193,13 +287,12 @@ const linkToPayment = () => {
             .name {
               font-size: 13px;
               color: #001c33;
-              line-height: 14px;
-              margin-top: 5px;
+              line-height: 30px;
             }
             .price {
               font-size: 18px;
               color: #001c33;
-              margin-top: 8px;
+              line-height: 30px;
             }
           }
         }

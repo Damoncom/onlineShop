@@ -46,7 +46,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, reactive, onMounted, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 // import { location } from '@/utils/Location'
 import MapLoader from '../../utils/unti'
@@ -60,16 +60,6 @@ const getCurrentLocation = () => {
   isActivedCurrent.value = true
 
   MapLoader()
-  //   let _that = this
-  //   let geolocation = location.initMap('map-container') //定位
-  //   AMap.event.addListener(geolocation, 'complete', (result) => {
-  //     console.log(result)
-  //     _that.lat = result.position.lat
-  //     _that.lng = result.position.lng
-  //     _that.province = result.addressComponent.province
-  //     _that.city = result.addressComponent.city
-  //     _that.district = result.addressComponent.district
-  //   })
 }
 
 // 位置数据
@@ -85,6 +75,34 @@ const cancel = () => {
 const activedMask = () => {
   isActivedCurrent.value = false
 }
+
+const token_info = localStorage.getItem('token')
+
+// 添加配送地址
+const postData = reactive({
+  location: '广东省肇庆市端州区顺宝天誉花园菜鸟驿站',
+  lng: '112.508953',
+  lat: '23.082909'
+})
+
+onMounted(async () => {
+  await nextTick()
+
+  // post请求
+  const { data: resp_location } = await axios({
+    method: 'post',
+    url: 'http://192.168.100.7:7001/onlineShop/createLocation',
+    data: postData,
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+  if (resp_location.errCode == 1000) {
+  } else {
+  }
+  console.log('post添加配送地址：', resp_location)
+})
 </script>
 
 <style lang="scss" scoped>

@@ -68,12 +68,6 @@ const goBack = () => {
   router.go(-1)
 }
 
-// 是否加入购物车右上角图标
-const isAdd = ref(false)
-const add = () => {
-  isAdd.value = !isAdd.value
-}
-
 // 获取传参信息
 const productId = route.query
 console.log('传参的数据', productId)
@@ -154,6 +148,34 @@ const cancelShouCang = async () => {
     details.inWishlist = true
   }
   console.log('delete请求取消收藏：', resp_cancelNotidication)
+}
+
+// 是否加入购物车右上角图标
+const isAdd = ref(false)
+const add = async () => {
+  await nextTick()
+
+  isAdd.value = true
+
+  // post请求
+  const { data: resp_addToCart } = await axios({
+    method: 'post',
+    url: 'http://192.168.100.7:7001/onlineShop/editCart',
+    data: {
+      goodsId: productId.productId,
+      amount: 1
+    },
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+  if (resp_addToCart.errCode == 1000) {
+    isAdd.value = true
+  } else {
+    isAdd.value = false
+  }
+  console.log('post加入购物车：', resp_addToCart)
 }
 
 // 跳转cart页面

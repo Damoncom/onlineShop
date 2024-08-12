@@ -32,8 +32,12 @@ import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
 const route = useRoute()
 
+// 获取传参
+const orderId = route.query
+console.log(orderId)
+
 // 导入导航栏
-const navTitle = 'Order XY3843'
+const navTitle = 'Order ' + orderId.orderId
 
 const orderNum = ref()
 

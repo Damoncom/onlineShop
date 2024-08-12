@@ -90,10 +90,11 @@
   <Toast :init="msg" v-if="isShowToast == true" />
 </template>
 <script setup>
-import { ref } from 'vue'
+import { ref, reactive, onBeforeMount, nextTick, toRaw } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
 import Toast from '@/components/toast'
+import currency from 'currency.js'
 
 const router = useRouter()
 const route = useRoute()
@@ -129,7 +130,6 @@ const chooseChange = () => {
   logo.value = 'src/assets/change.jpg'
 }
 
-//TODO:银行卡判断非数字输入
 // 银行卡的输入
 const isShowToast = ref(false)
 const msg = ref('')
@@ -160,10 +160,113 @@ const onInput = () => {
   // return aaa.replace(/(\d{4})(?=\d)/g, '$1 ') // 4位
 }
 
-const linkToDone = () => {
-  router.push({
-    path: '/done'
+// 获取当前时间
+let yy = new Date().getFullYear()
+let mm =
+  new Date().getMonth() + 1 < 10 ? '0' + (new Date().getMonth() + 1) : new Date().getMonth() + 1
+let dd = new Date().getDate()
+let hh = new Date().getHours()
+let mf = new Date().getMinutes() < 10 ? '0' + new Date().getMinutes() : new Date().getMinutes()
+let ss = new Date().getSeconds() < 10 ? '0' + new Date().getSeconds() : new Date().getSeconds()
+// const time = yy + mm + dd + hh + mf + ss
+
+const token_info = localStorage.getItem('token')
+const locationDetails = reactive({})
+const queryOrder = reactive([])
+
+onBeforeMount(async () => {
+  await nextTick()
+
+  // 获取购物车信息
+  const { data: resp_cart } = await axios({
+    method: 'get',
+    url: 'http://192.168.100.7:7001/onlineShop/getCart',
+    params: {
+      size: 10,
+      page: 1
+    },
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'application/json; charset=utf-8'
+    }
   })
+  if (resp_cart.errCode == 1000) {
+  } else {
+  }
+  console.log('get购物车数据:', resp_cart)
+
+  // 重新整合商品数据
+  const arr = toRaw(resp_cart.data.list)
+
+  // 获取配送地址
+  const { data: resp_getLocation } = await axios({
+    method: 'get',
+    url: 'http://192.168.100.7:7001/onlineShop/getLocation',
+    params: {
+      size: 1,
+      page: 1
+    },
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'application/json; charset=utf-8'
+    }
+  })
+  if (resp_getLocation.errCode == 1000) {
+    Object.assign(locationDetails, ...resp_getLocation.data.list)
+  } else {
+  }
+  console.log('get配送地址数据:', resp_getLocation)
+
+  // 整理传参数据
+  const queryOrderPre = reactive([])
+  const itemSubTotal = ref()
+  arr.forEach((item, index) => {
+    itemSubTotal.value = currency(item.goods.price).multiply(item.amount)
+    queryOrderPre.push({
+      userId: item.userId,
+      goodsId: item.goodsId,
+      amount: item.amount,
+      subTotal: itemSubTotal.value.value,
+      tax: itemSubTotal.value.value * 0.01,
+      handling: itemSubTotal.value.value * 0.1,
+      total: itemSubTotal.value.value * 1.11
+    })
+  })
+  toRaw(queryOrderPre).forEach((item) => {
+    item.locationId = locationDetails.id
+  })
+  Object.assign(queryOrder, queryOrderPre)
+})
+console.log(queryOrder)
+
+const linkToDone = async () => {
+  // 前端生成订单号：order_${yyyMMddHHmmss}_${uuid}【多个商品时，使用相同的OrderId】
+  const time = yy + mm + dd + hh + mf + ss
+  toRaw(queryOrder).forEach((item) => {
+    item.orderId = 'order_' + time + '_' + item.goodsId
+  })
+  console.log(queryOrder)
+
+  //TODO:把queryOrder拆分为多个数组，发起多个请求，promise.all()
+  const { data: resp_create } = await axios({
+    method: 'post',
+    url: 'http://192.168.100.7:7001/onlineShop/createOrder',
+    data: queryOrder[0],
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+  if (resp_create.errCode == 1000) {
+    router.push({
+      path: '/done',
+      query: {
+        orderId: queryOrder[0].orderId
+      }
+    })
+  } else {
+  }
+  console.log('post创建订单：', resp_create)
 }
 </script>
 <style lang="scss" scoped>
