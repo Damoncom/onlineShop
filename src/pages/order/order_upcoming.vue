@@ -18,14 +18,13 @@
             :key="order_index"
             :data-index="order_index"
           >
-            <img :src="order.imgUrl" class="li_img" />
+            <img :src="order.goods.image" class="li_img" />
             <div class="text_box">
-              <div class="title">{{ order.name }}</div>
-              <div class="brand">{{ order.brand }}</div>
-              <div class="price">{{ order.price }}</div>
+              <div class="title">{{ order.goods.name }}</div>
+              <div class="brand">{{ order.goods.origin }}</div>
+              <div class="price">$ {{ order.goods.price }}</div>
             </div>
             <div class="state">
-              <!-- :style="{ backgroundColor: order.state == 'Pending' ? '#fff0e3' : '#ecf8ff' } -->
               <p class="state_text">{{ order.state }}</p>
             </div>
           </li>
@@ -38,7 +37,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick, reactive, onBeforeMount } from 'vue'
+import { ref, onMounted, nextTick, reactive, onBeforeMount, toRaw } from 'vue'
 import TabBar from '@/components/tabBar'
 import Nav from '@/components/nav'
 import { useRouter, useRoute } from 'vue-router'
@@ -47,6 +46,8 @@ import order2 from '@/assets/order2.jpg'
 
 const router = useRouter()
 const route = useRoute()
+
+const token_info = localStorage.getItem('token')
 
 // 导入导航栏
 const navTitle = 'Order'
@@ -62,42 +63,11 @@ const linkToHistory = () => {
 const isOrderPage = true
 
 // 商品列表信息
-const orderList = reactive([
-  {
-    id: 1,
-    name: 'Givenchy L‘ intemporel Blossom',
-    brand: 'Givenchy',
-    imgUrl: order,
-    price: '$29.00',
-    state: 'On Going'
-  },
-  {
-    id: 2,
-    name: 'Givenchy L‘ intemporel Blossom',
-    brand: 'Givenchy',
-    imgUrl: order,
-    price: '$29.00',
-    state: 'Cancelled'
-  },
-  {
-    id: 3,
-    name: 'Givenchy L‘ intemporel Blossom',
-    brand: 'Givenchy',
-    imgUrl: order,
-    price: '$29.00',
-    state: 'Pending'
-  }
-])
-
-// 注释上面的orderList数组 + 添加下面的三行后，可以实现upcoming页面的更新缓存。但是新用户登录第一次进入这个页面会因为找不到localstorage缓存的orderList_info数据而报错
-// const orderList_info = JSON.parse(localStorage.getItem('orderList'))
-// const orderList = reactive([...orderList_info])
-// console.log('upcoming列表状态:', orderList)
+const orderList = reactive([])
 
 // 从商品历史页面添加的商品
 const addOrder = route.query
 const count = ref(orderList.length)
-console.log(count.value)
 
 if (JSON.stringify(addOrder) != '{}') {
   orderList.push({
@@ -112,6 +82,60 @@ if (JSON.stringify(addOrder) != '{}') {
   // 存储商品列表
   localStorage.setItem('orderList', JSON.stringify(orderList))
 }
+
+onBeforeMount(async () => {
+  await nextTick()
+
+  // 获取订单列表
+  const { data: resp_orderList } = await axios({
+    method: 'get',
+    url: '/onlineShop/getOrderList',
+    params: {
+      size: 10,
+      page: 1
+    },
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'application/json; charset=utf-8'
+    }
+  })
+
+  if (resp_orderList.errCode == 1000) {
+    Object.assign(orderList, resp_orderList.data.list)
+    toRaw(orderList).forEach((item) => {
+      if (item.status == -1) {
+        item.state = 'cancelled'
+      } else if (item.status == 1) {
+        item.state = 'pending'
+      } else if (item.status == 2) {
+        item.state = 'on going'
+      } else if (item.status == 3) {
+        item.state = 'completed'
+      }
+    })
+  } else {
+  }
+  console.log('get订单列表:', resp_orderList)
+  console.log(orderList)
+
+  // put修改订单状态
+  const { data: resp_editState } = await axios({
+    method: 'put',
+    url: '/onlineShop/updateOrderStatus',
+    data: {
+      orderId: 'order_20240812212956_7',
+      status: -1
+    },
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'application/json; charset=utf-8'
+    }
+  })
+  if (resp_editState.errCode == 1000) {
+  } else {
+  }
+  console.log('put修改订单状态：', resp_editState)
+})
 </script>
 
 <style lang="scss" scoped>
@@ -159,7 +183,7 @@ if (JSON.stringify(addOrder) != '{}') {
       }
     }
     .orders {
-      margin: 24px 0;
+      margin: 24px 0 70px 0;
       // ul
       .orders_list {
         // li
@@ -181,7 +205,7 @@ if (JSON.stringify(addOrder) != '{}') {
           .text_box {
             width: 195px;
             height: 89px;
-            margin-left: 12px;
+            margin: 12px 0 0 12px;
             .title {
               width: 165px;
               font-size: 14px;
@@ -197,6 +221,7 @@ if (JSON.stringify(addOrder) != '{}') {
               font-size: 16px;
               color: #001c33;
               line-height: 30px;
+              margin-top: 10px;
             }
           }
           .state {

@@ -95,6 +95,7 @@ import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
 import Toast from '@/components/toast'
 import currency from 'currency.js'
+import axios from 'axios'
 
 const router = useRouter()
 const route = useRoute()
@@ -103,7 +104,7 @@ const route = useRoute()
 const navTitle = 'Payment'
 
 // 余额
-const balance = ref(3700.0)
+const balance = ref(370000.0)
 
 const logo = ref('src/assets/visa_bottom.jpg')
 
@@ -168,7 +169,6 @@ let dd = new Date().getDate()
 let hh = new Date().getHours()
 let mf = new Date().getMinutes() < 10 ? '0' + new Date().getMinutes() : new Date().getMinutes()
 let ss = new Date().getSeconds() < 10 ? '0' + new Date().getSeconds() : new Date().getSeconds()
-// const time = yy + mm + dd + hh + mf + ss
 
 const token_info = localStorage.getItem('token')
 const locationDetails = reactive({})
@@ -217,7 +217,7 @@ onBeforeMount(async () => {
   }
   console.log('get配送地址数据:', resp_getLocation)
 
-  // 整理传参数据
+  // 整理订单数据
   const queryOrderPre = reactive([])
   const itemSubTotal = ref()
   arr.forEach((item, index) => {
@@ -237,7 +237,8 @@ onBeforeMount(async () => {
   })
   Object.assign(queryOrder, queryOrderPre)
 })
-console.log(queryOrder)
+
+const queryOrderId = reactive([])
 
 const linkToDone = async () => {
   // 前端生成订单号：order_${yyyMMddHHmmss}_${uuid}【多个商品时，使用相同的OrderId】
@@ -245,28 +246,40 @@ const linkToDone = async () => {
   toRaw(queryOrder).forEach((item) => {
     item.orderId = 'order_' + time + '_' + item.goodsId
   })
-  console.log(queryOrder)
 
-  //TODO:把queryOrder拆分为多个数组，发起多个请求，promise.all()
-  const { data: resp_create } = await axios({
-    method: 'post',
-    url: '/onlineShop/createOrder',
-    data: queryOrder[0],
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'multipart/form-data'
-    }
+  const arrReq = queryOrder.map((item) => {
+    return axios({
+      method: 'post',
+      url: '/onlineShop/createOrder',
+      data: item,
+      headers: {
+        Authorization: `Bearer ${token_info}`,
+        'Content-Type': 'multipart/form-data'
+      }
+    })
   })
-  if (resp_create.errCode == 1000) {
+
+  const respList = await Promise.all(arrReq)
+  const respStateList = respList.map((item) => {
+    if (item.data.errCode == 1000) return true
+    else return false
+  })
+  console.log(respStateList)
+  if (!respStateList.includes(false)) {
+    // 全部接口放回正确后需要操作
+    console.log('success')
+    ;(await Promise.all(arrReq)).forEach((item) => {
+      queryOrderId.push(item.data.data.orderId)
+    })
     router.push({
       path: '/done',
       query: {
-        orderId: queryOrder[0].orderId
+        orderId: queryOrderId
       }
     })
-  } else {
   }
-  console.log('post创建订单：', resp_create)
+  console.log(await Promise.all(arrReq))
+  console.log(queryOrderId)
 }
 </script>
 <style lang="scss" scoped>

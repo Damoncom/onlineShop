@@ -200,29 +200,7 @@ onBeforeMount(async () => {
   } else {
   }
   console.log('post计算费用：', resp_calculate)
-
-  // 整理传参数据
-  const queryOrderPre = reactive([])
-  const itemSubTotal = ref()
-  arr.forEach((item, index) => {
-    itemSubTotal.value = currency(item.goods.price).multiply(item.amount)
-    queryOrderPre.push({
-      userId: item.userId,
-      goodsId: item.goodsId,
-      amount: item.amount,
-      subTotal: itemSubTotal.value.value,
-      tax: itemSubTotal.value.value * 0.01,
-      handling: itemSubTotal.value.value * 0.1,
-      total: itemSubTotal.value.value * 1.11
-    })
-  })
-  toRaw(queryOrderPre).forEach((item) => {
-    item.locationId = locationDetails.id
-  })
-  Object.assign(queryOrder, queryOrderPre)
 })
-
-console.log(queryOrder)
 // 跳转到Payment页面
 const linkToPayment = () => {
   router.push({
@@ -350,7 +328,7 @@ const linkToPayment = () => {
           }
         }
         .location_text {
-          width: 150px;
+          width: 210px;
           margin-left: 10px;
           .text {
             font-size: 12px;

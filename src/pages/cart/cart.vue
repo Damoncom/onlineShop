@@ -87,8 +87,9 @@ const arr = toRaw(cartList)
 // 减一
 const minus = async (cart) => {
   cart.amount--
-  if (cart.amount <= 1) {
-    cart.amount = 1
+  if (cart.amount <= 0) {
+    cart.amount = 0
+    router.go(0)
   }
   sum.value = 0.0
   arr.forEach((item, index) => {

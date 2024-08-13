@@ -15,13 +15,13 @@
             @click="chooseProduct"
           >
             <div class="img_box">
-              <img :src="product.img" class="product_img" />
+              <img :src="product.image" class="product_img" />
             </div>
             <div class="text_box">
               <div class="title">{{ product.name }}</div>
               <div class="brand">{{ product.brand }}</div>
               <div class="price">{{ product.price }}</div>
-              <div class="card_cart" @click.stop="addToCart">
+              <div class="card_cart" @click.stop="addToCart(product, $event)">
                 <i
                   class="iconfont icon-gouwudai"
                   :class="
@@ -40,7 +40,7 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue'
+import { reactive, ref, onBeforeMount, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
 import product from '@/assets/prodoct_img.jpg'
@@ -48,100 +48,13 @@ import product from '@/assets/prodoct_img.jpg'
 const router = useRouter()
 const route = useRoute()
 
+const token_info = localStorage.getItem('token')
+
 // 导入导航栏
 const navTitle = 'Category'
 
 // 商品列表数据
-const productList = reactive([
-  {
-    id: '1',
-    name: 'Givenchy Blossom',
-    brand: 'Givenchy',
-    price: '$29.00',
-    img: product,
-    isAdd: false
-  },
-  {
-    id: '2',
-    name: 'Givenchy Blossom',
-    brand: 'Givenchy',
-    price: '$29.00',
-    img: product,
-    isAdd: false
-  },
-  {
-    id: '3',
-    name: 'Givenchy Blossom',
-    brand: 'Givenchy',
-    price: '$29.00',
-    img: product,
-    isAdd: false
-  },
-  {
-    id: '4',
-    name: 'Givenchy Blossom',
-    brand: 'Givenchy',
-    price: '$29.00',
-    img: product,
-    isAdd: false
-  },
-  {
-    id: '5',
-    name: 'Givenchy Blossom',
-    brand: 'Givenchy',
-    price: '$29.00',
-    img: product,
-    isAdd: false
-  },
-  {
-    id: '6',
-    name: 'Givenchy Blossom',
-    brand: 'Givenchy',
-    price: '$29.00',
-    img: product,
-    isAdd: false
-  },
-  {
-    id: '7',
-    name: 'Givenchy Blossom',
-    brand: 'Givenchy',
-    price: '$29.00',
-    img: product,
-    isAdd: false
-  },
-  {
-    id: '8',
-    name: 'Givenchy Blossom',
-    brand: 'Givenchy',
-    price: '$29.00',
-    img: product,
-    isAdd: false
-  },
-  {
-    id: '9',
-    name: 'Givenchy Blossom',
-    brand: 'Givenchy',
-    price: '$29.00',
-    img: product,
-    isAdd: false
-  },
-  {
-    id: '10',
-    name: 'Givenchy Blossom',
-    brand: 'Givenchy',
-    price: '$29.00',
-    img: product,
-    isAdd: false
-  },
-  {
-    id: '11',
-    name: 'Givenchy Blossom',
-    brand: 'Givenchy',
-    price: '$29.00',
-    img: product,
-    isAdd: false
-  }
-])
+const productList = reactive([])
 
 // 将商品添加至cart
 const actived_index = ref('')
@@ -164,10 +77,59 @@ const chooseProduct = (e) => {
 }
 
 const actived_cardIndex = ref('')
-const addToCart = (e) => {
-  actived_cardIndex.value = e.currentTarget.parentElement.parentElement.dataset.index
-  isAdd.value = !isAdd.value
+const addToCart = async (product, event) => {
+  await nextTick()
+
+  actived_cardIndex.value = event.currentTarget.parentElement.parentElement.dataset.index
+  isAdd.value = true
+
+  // post请求
+  const { data: resp_addToCart } = await axios({
+    method: 'post',
+    url: '/onlineShop/editCart',
+    data: {
+      goodsId: product.id,
+      amount: '1'
+    },
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+  if (resp_addToCart.errCode == 1000) {
+    isAdd.value = true
+  } else {
+    isAdd.value = false
+  }
+  console.log('post增加到购物车：', resp_addToCart)
 }
+
+// 获取商品列表信息
+onBeforeMount(async () => {
+  await nextTick()
+
+  const { data: resp_orderList } = await axios({
+    method: 'get',
+    url: '/onlineShop/getGoodsList',
+    params: {
+      size: 10,
+      page: 1,
+      barCode: '',
+      name: ''
+    },
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'application/json; charset=utf-8'
+    }
+  })
+  if (resp_orderList.errCode == 1000) {
+    Object.assign(productList, resp_orderList.data.list)
+  } else {
+  }
+
+  console.log('获取商品列表数据:', resp_orderList)
+  console.log(productList)
+})
 </script>
 
 <style lang="scss" scoped>
