@@ -21,7 +21,7 @@
               :class="avtivedIndex == index ? 'icon-xuanzhong_purple' : 'icon-xuanzhong'"
             ></i>
             <div class="place_text">{{ region.location }}</div>
-            <i class="iconfont icon-bianji" @click="linkToEditLocation"></i>
+            <i class="iconfont icon-bianji" @click="linkToEditLocation(region)"></i>
           </div>
         </div>
       </div>
@@ -59,9 +59,11 @@ let searchIndex = ref('')
 // })
 
 // 跳到编辑地址页面
-const linkToEditLocation = () => {
+const linkToEditLocation = (region) => {
+  console.log(region)
   router.push({
-    path: '/edit_location'
+    path: '/edit_location',
+    query: region
   })
 }
 
@@ -86,7 +88,6 @@ onBeforeMount(async () => {
   } else {
   }
   console.log('get配送地址:', resp_getLocation)
-  console.log(regionList)
 })
 </script>
 <style lang="scss" scoped>

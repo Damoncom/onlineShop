@@ -6,19 +6,25 @@
         <div class="name_box">
           <div class="name_text">Name</div>
           <div class="input_box">
-            <input type="text" class="name_input" v-model="user.name" />
+            <input type="text" class="name_input" />
           </div>
         </div>
         <div class="phone_box">
           <div class="phone_text">phone</div>
           <div class="input_box">
-            <input type="number" class="phone_input" v-model="user.phoneNumber" />
+            <input type="number" class="phone_input" />
           </div>
         </div>
         <div class="area_box">
           <div class="area_text">Area</div>
           <div class="input_box">
-            <input type="text" class="area_input" v-model="areaText" />
+            <div class="el_box">
+              <AreaSelect class="areaSelect" />
+            </div>
+            <div class="area_input">{{ route.query.area }}</div>
+            <div class="arrow">
+              <i class="iconfont icon-jiantou"></i>
+            </div>
           </div>
         </div>
         <div class="details_box">
@@ -30,146 +36,58 @@
       </div>
 
       <div class="box_button">
-        <div class="save_button" @click="save">
-          <div class="save">
+        <div class="cancel_button" @click="save">
+          <div class="cancel">
             <p class="text">Save</p>
           </div>
         </div>
-        <div class="delete_button" @click="deleteB">
-          <div class="delete">
-            <p class="text">Delete</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- 蒙层 -->
-  <div class="mask" v-if="isMask == true" @click="activedMask"></div>
-
-  <!-- 删除面板 -->
-  <div class="delete_box" v-if="isMask == true">
-    <i class="iconfont icon-shanchu"></i>
-    <div class="delete_text">Are you sure to delete this address information?</div>
-    <div class="choose_button">
-      <div class="cancel_button" @click="cancelDelete">
-        <p>no</p>
-      </div>
-      <div class="delete_button" @click="comfirmDelete">
-        <p>yes</p>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { onUpdated, nextTick, reactive, ref, onBeforeMount } from 'vue'
+import { onUpdated, nextTick, reactive, ref } from 'vue'
 import Nav from '@/components/nav'
 import AreaSelect from '@/components/areaSelect'
 import { useRouter, useRoute } from 'vue-router'
 
 // 导入导航栏
-const navTitle = 'Edit Location'
+const navTitle = 'Add Location'
 
 const router = useRouter()
 const route = useRoute()
 
-const user = reactive({})
-const locationInfo = route.query
-const str = ref(locationInfo.location)
-const areaText = ref(str.value?.slice(0, str.value?.indexOf('区') + 1))
-const detailsText = ref(str.value?.slice(str.value?.indexOf('区') + 1))
-
 const token_info = localStorage.getItem('token')
 
-// 获取用户信息
-onBeforeMount(async () => {
-  await nextTick()
+const detailsText = ref()
 
-  const { data: resp_user } = await axios({
-    method: 'get',
-    url: '/onlineShop/getUserInfo',
-    params: {},
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'application/json; charset=utf-8'
-    }
-  })
-  if (resp_user.errCode == 1000) {
-    Object.assign(user, resp_user.data)
-  } else {
-  }
-})
-
-// 发送put请求，修改配送地址
+// 发送post请求，添加配送地址
 const save = async () => {
   await nextTick()
 
-  const loc = `${areaText.value}${detailsText.value}`
   const postData = reactive({
-    id: locationInfo.id,
-    location: loc,
-    lng: locationInfo.lng,
-    lat: locationInfo.lat
+    location: route.query.area + detailsText.value,
+    lng: '114.215767',
+    lat: '22.684308'
   })
-  console.log(postData)
 
-  const { data: resp_editLocation } = await axios({
-    method: 'put',
-    url: '/onlineShop/updateLocation',
+  const { data: resp_location } = await axios({
+    method: 'post',
+    url: '/onlineShop/createLocation',
     data: postData,
     headers: {
       Authorization: `Bearer ${token_info}`,
       'Content-Type': 'multipart/form-data'
     }
   })
-  if (resp_editLocation.errCode == 1000) {
+  if (resp_location.errCode == 1000) {
     router.push({
-      path: '/select_location'
+      path: '/profile'
     })
   } else {
   }
-  console.log('put修改地址：', resp_editLocation)
-}
-
-// 控制蒙层
-const isMask = ref(false)
-const activedMask = () => {
-  isMask.value = !isMask.value
-}
-
-// 删除面板
-const deleteB = async () => {
-  await nextTick()
-
-  isMask.value = !isMask.value
-}
-
-const cancelDelete = () => {
-  isMask.value = !isMask.value
-}
-
-const comfirmDelete = async () => {
-  await nextTick()
-
-  // delete请求
-  const { data: resp_deleteAddress } = await axios({
-    method: 'delete',
-    url: '/onlineShop/removeLocation',
-    data: {
-      id: locationInfo.id
-    },
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'application/json; charset=utf-8'
-    }
-  })
-  if (resp_deleteAddress.errCode == 1000) {
-    router.push({
-      path: '/select_location'
-    })
-  } else {
-  }
-  console.log('delete删除地址：', resp_deleteAddress)
+  console.log('post添加配送地址：', resp_location)
 }
 </script>
 
@@ -181,7 +99,7 @@ const comfirmDelete = async () => {
     align-items: center;
     .info {
       width: 375px;
-      margin: 24px 0 120px 0;
+      margin: 24px 0 157px 0;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -307,18 +225,18 @@ const comfirmDelete = async () => {
 
     .box_button {
       display: flex;
-      flex-direction: column;
       align-items: center;
       margin-top: 25px;
+      //   position: fixed;
+      //   bottom: 50px;
 
-      .save_button {
+      .cancel_button {
         width: 375px;
         height: 50px;
-        margin-bottom: 20px;
         display: flex;
         justify-content: center;
         align-items: center;
-        .save {
+        .cancel {
           width: 327px;
           height: 50px;
           border-radius: 6px;
@@ -332,108 +250,10 @@ const comfirmDelete = async () => {
             color: white;
           }
         }
-        .save:active {
-          width: 315px;
+        .cancel:active {
+          width: 149px;
           height: 46.8px;
         }
-      }
-      .delete_button {
-        width: 375px;
-        height: 50px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        .delete {
-          width: 325px;
-          height: 48px;
-          border-radius: 6px;
-          border: 1px solid red;
-          // background-color: #a456dd;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          transition: all 0.1s ease-in-out;
-          .text {
-            font-size: 16px;
-            color: #a456dd;
-          }
-        }
-        .delete:active {
-          width: 315px;
-          height: 46.8px;
-        }
-      }
-    }
-  }
-}
-// 蒙层
-.mask {
-  width: 375px;
-  height: 812px;
-  background-color: rgba($color: #000000, $alpha: 0.5);
-  position: absolute;
-  top: 0;
-  z-index: 2;
-}
-
-// 删除面板
-.delete_box {
-  position: absolute;
-  top: 25vh;
-  left: 8.5vh;
-  width: 250px;
-  height: 250px;
-  border-radius: 10px;
-  background-color: white;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  .icon-shanchu {
-    font-size: 40px;
-    color: rgb(255, 51, 51);
-    line-height: 60px;
-  }
-  .delete_text {
-    font-size: 16px;
-    text-align: center;
-    line-height: 25px;
-    width: 200px;
-    margin-bottom: 20px;
-  }
-  .choose_button {
-    width: 250px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    .cancel_button {
-      width: 70px;
-      height: 30px;
-      border-radius: 6px;
-      background-color: #a456dd;
-      margin-right: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      p {
-        font-size: 17px;
-        color: white;
-      }
-    }
-    .delete_button {
-      width: 70px;
-      height: 30px;
-      border-radius: 6px;
-      background-color: #a456dd;
-      margin-left: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      p {
-        font-size: 17px;
-        color: white;
       }
     }
   }

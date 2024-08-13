@@ -10,6 +10,11 @@
         v-if="props.init_title == 'Profile'"
         @click="linkToEditUser"
       ></i>
+      <i
+        class="iconfont icon-bianji"
+        v-if="props.init_title == 'Select Location'"
+        @click="linkToAddLocation"
+      ></i>
     </div>
   </div>
 </template>
@@ -32,6 +37,13 @@ const goBack = () => {
 const linkToEditUser = () => {
   router.push({
     path: '/editUser'
+  })
+}
+
+// 跳转到增加配送地址
+const linkToAddLocation = () => {
+  router.push({
+    path: '/add_location'
   })
 }
 </script>

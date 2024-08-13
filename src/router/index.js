@@ -44,6 +44,11 @@ const router = createRouter({
       component: () => import('../pages/location/selectLocation')
     },
     {
+      path: '/add_location',
+      name: 'add_location',
+      component: () => import('../pages/location/addLocation')
+    },
+    {
       path: '/edit_location',
       name: 'edit_location',
       component: () => import('../pages/location/editLocation')
@@ -152,7 +157,7 @@ const router = createRouter({
     {
       path: '/test',
       name: 'test',
-      component: () => import('@/components/MapContainer.vue')
+      component: () => import('../pages/Test')
     }
   ]
 })

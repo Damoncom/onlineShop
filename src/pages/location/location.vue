@@ -57,10 +57,7 @@ const route = useRoute()
 const token_info = localStorage.getItem('token')
 
 // 添加配送地址
-const postData = reactive({
-  lng: '112.508953',
-  lat: '23.082909'
-})
+const postData = reactive({})
 
 // 控制蒙层
 let isActivedCurrent = ref(false)
@@ -103,6 +100,9 @@ const getCurrentLocation = async () => {
 
     const onComplete = ({ position }) => {
       console.log('🚀 ~ onComplete ~ position:', position)
+      Reflect.set(postData, 'lat', position.lat)
+      Reflect.set(postData, 'lng', position.lng)
+
       // data是具体的定位信息
       geocoder.getAddress([position.lng, position.lat], (status, result) => {
         console.log('🚀 ~ geocoder.getAddress ~ status:', status)
