@@ -49,7 +49,7 @@ onBeforeMount(async () => {
 
   const { data: resp_wishlist } = await axios({
     method: 'get',
-    url: 'http://192.168.100.7:7001/onlineShop/getWishlist',
+    url: '/onlineShop/getWishlist',
     params: {
       size: 10,
       page: 1

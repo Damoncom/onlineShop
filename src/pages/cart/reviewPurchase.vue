@@ -133,7 +133,7 @@ onBeforeMount(async () => {
   // 获取购物车信息
   const { data: resp_cart } = await axios({
     method: 'get',
-    url: 'http://192.168.100.7:7001/onlineShop/getCart',
+    url: '/onlineShop/getCart',
     params: {
       size: 10,
       page: 1
@@ -162,7 +162,7 @@ onBeforeMount(async () => {
   // 获取配送地址
   const { data: resp_getLocation } = await axios({
     method: 'get',
-    url: 'http://192.168.100.7:7001/onlineShop/getLocation',
+    url: '/onlineShop/getLocation',
     params: {
       size: 1,
       page: 1
@@ -181,7 +181,7 @@ onBeforeMount(async () => {
   // post计算费用
   const { data: resp_calculate } = await axios({
     method: 'post',
-    url: 'http://192.168.100.7:7001/onlineShop/calculateCost',
+    url: '/onlineShop/calculateCost',
     data: {
       goods: toRaw(postgoods),
       subtotal: pre.sum,

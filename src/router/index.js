@@ -4,14 +4,13 @@ import walkthrough from '../pages/walkthrough/walkthrough'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    // 开屏动画
+    // walkthrough页面
     {
       path: '/',
       name: 'walkthrough',
       component: walkthrough
     },
-
-    // 登录与注册
+    // signIn  &   signUp 页面
     {
       path: '/signUp',
       name: 'signUp',
@@ -33,7 +32,7 @@ const router = createRouter({
       component: () => import('../pages/signUp&signIn/resetPwd')
     },
 
-    // 定位
+    // location页面
     {
       path: '/location',
       name: 'location',
@@ -43,6 +42,11 @@ const router = createRouter({
       path: '/select_location',
       name: 'selectLocation',
       component: () => import('../pages/location/selectLocation')
+    },
+    {
+      path: '/edit_location',
+      name: 'edit_location',
+      component: () => import('../pages/location/editLocation')
     },
 
     // Home页面
@@ -144,6 +148,7 @@ const router = createRouter({
       component: () => import('../pages/settingss/language')
     },
 
+    // 测试页面
     {
       path: '/test',
       name: 'test',

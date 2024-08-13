@@ -528,7 +528,7 @@ onBeforeMount(async () => {
   const token_info = localStorage.getItem('token')
   const { data: resp } = await axios({
     method: 'get',
-    url: 'http://192.168.100.7:7001/onlineShop/getUserInfo',
+    url: '/onlineShop/getUserInfo',
     params: {},
     headers: {
       Authorization: `Bearer ${token_info}`,
@@ -632,7 +632,7 @@ onBeforeMount(async () => {
   const token_info = localStorage.getItem('token')
   const { data: resp } = await axios({
     method: 'get',
-    url: 'http://192.168.100.7:7001/onlineShop/getHomeData',
+    url: '/onlineShop/getHomeData',
     params: {},
     headers: {
       Authorization: `Bearer ${token_info}`,

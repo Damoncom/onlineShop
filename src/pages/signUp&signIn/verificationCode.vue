@@ -117,7 +117,7 @@ onMounted(async () => {
   const { data: resp } = await axios({
     method: 'get',
     // url: `${baseUrl}/getVerificationCode`,
-    url: 'http://192.168.100.7:7001/onlineShop/getVerificationCode',
+    url: '/onlineShop/getVerificationCode',
     params: {
       // verificationCode: '1234',
       phoneNumber: user.phoneNumber
@@ -177,7 +177,7 @@ const submit = (user) => {
   // 发送数据
   axios.defaults.headers.post['Content-Type'] = 'application/json; charset=utf-8'
   axios
-    .post('http://192.168.100.7:7001/onlineShop/signUp', user)
+    .post('/onlineShop/signUp', user)
     .then(function ({ data: response }) {
       console.log(response)
       console.log(user)
@@ -190,7 +190,7 @@ const submit = (user) => {
         // 发送数据
         axios.defaults.headers.post['Content-Type'] = 'application/json; charset=utf-8'
         axios
-          .post('http://192.168.100.7:7001/onlineShop/signIn', user_signIn)
+          .post('/onlineShop/signIn', user_signIn)
           .then(function ({ data: response }) {
             console.log(response)
             localStorage.setItem('token', response.data.token)

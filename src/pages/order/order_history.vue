@@ -58,6 +58,7 @@ import { ref, onMounted, nextTick, onBeforeMount, reactive, toRaw } from 'vue'
 import TabBar from '@/components/tabBar'
 import Nav from '@/components/nav'
 import { useRouter, useRoute } from 'vue-router'
+// const axios = require('axios')
 import order from '@/assets/prodoct_img.jpg'
 import order2 from '@/assets/order2.jpg'
 
@@ -108,7 +109,7 @@ onBeforeMount(async () => {
   // 获取订单列表
   const { data: resp_orderList } = await axios({
     method: 'get',
-    url: 'http://192.168.100.7:7001/onlineShop/getOrderList',
+    url: '/onlineShop/getOrderList',
     params: {
       size: 10,
       page: 1

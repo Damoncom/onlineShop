@@ -278,7 +278,7 @@ onBeforeMount(async () => {
   // 获取商品列表数据
   const { data: resp_product } = await axios({
     method: 'get',
-    url: 'http://192.168.100.7:7001/onlineShop/getGoodsList',
+    url: '/onlineShop/getGoodsList',
     params: {
       size: 6,
       page: 1,
@@ -337,7 +337,7 @@ const doScroll = async (event) => {
     const token_info = localStorage.getItem('token')
     const { data: resp_product } = await axios({
       method: 'get',
-      url: 'http://192.168.100.7:7001/onlineShop/getGoodsList',
+      url: '/onlineShop/getGoodsList',
       params: {
         size: 20,
         page: 1,

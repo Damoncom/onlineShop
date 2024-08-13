@@ -180,7 +180,7 @@ onBeforeMount(async () => {
   // 获取购物车信息
   const { data: resp_cart } = await axios({
     method: 'get',
-    url: 'http://192.168.100.7:7001/onlineShop/getCart',
+    url: '/onlineShop/getCart',
     params: {
       size: 10,
       page: 1
@@ -201,7 +201,7 @@ onBeforeMount(async () => {
   // 获取配送地址
   const { data: resp_getLocation } = await axios({
     method: 'get',
-    url: 'http://192.168.100.7:7001/onlineShop/getLocation',
+    url: '/onlineShop/getLocation',
     params: {
       size: 1,
       page: 1
@@ -250,7 +250,7 @@ const linkToDone = async () => {
   //TODO:把queryOrder拆分为多个数组，发起多个请求，promise.all()
   const { data: resp_create } = await axios({
     method: 'post',
-    url: 'http://192.168.100.7:7001/onlineShop/createOrder',
+    url: '/onlineShop/createOrder',
     data: queryOrder[0],
     headers: {
       Authorization: `Bearer ${token_info}`,

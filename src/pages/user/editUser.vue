@@ -157,7 +157,7 @@ const takePhoto = async () => {
   axios.defaults.headers.post['Content-Type'] = 'multipart/form-data'
   axios.defaults.headers.post['Authorization'] = `Bearer ${token_info}`
   axios
-    .post('http://192.168.100.7:7001/onlineShop/uploadImage', formData1)
+    .post('/onlineShop/uploadImage', formData1)
     .then(function ({ data: response }) {
       console.log(response)
       // 获取上传图片的路径
@@ -209,7 +209,7 @@ const handleFileUpload = async (file, fileList) => {
   axios.defaults.headers.post['Content-Type'] = 'multipart/form-data'
   axios.defaults.headers.post['Authorization'] = `Bearer ${token_info}`
   axios
-    .post('http://192.168.100.7:7001/onlineShop/uploadImage', formData)
+    .post('/onlineShop/uploadImage', formData)
     .then(function ({ data: response }) {
       console.log(response)
       // 获取上传图片的路径
@@ -276,7 +276,7 @@ onBeforeMount(async () => {
   const token_info = localStorage.getItem('token')
   const { data: resp } = await axios({
     method: 'get',
-    url: 'http://192.168.100.7:7001/onlineShop/getUserInfo',
+    url: '/onlineShop/getUserInfo',
     params: {},
     headers: {
       Authorization: `Bearer ${token_info}`,
@@ -317,7 +317,7 @@ const save = () => {
   axios.defaults.headers.put['Content-Type'] = 'application/json; charset=utf-8'
   axios.defaults.headers.put['Authorization'] = `Bearer ${token_info}`
   axios
-    .put('http://192.168.100.7:7001/onlineShop/updateUserInfo', obj)
+    .put('/onlineShop/updateUserInfo', obj)
     .then(function ({ data: response }) {
       console.log(response)
       if (response.errCode == 1000) {

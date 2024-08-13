@@ -31,7 +31,7 @@
         <div class="address_box" @click="linkToLoaction">
           <div class="list">
             <div class="title">Address</div>
-            <div class="detail">{{ user.address }}</div>
+            <div class="detail">{{ locationDetails.location }}</div>
           </div>
         </div>
         <div class="birthday_box">
@@ -63,12 +63,10 @@
   <TabBar :init_profile="isProfilePage" />
 </template>
 <script setup>
-import { ref, onMounted, onServerPrefetch, onBeforeUpdate } from 'vue'
+import { ref, onMounted, onServerPrefetch, onBeforeUpdate, onBeforeMount, reactive } from 'vue'
 import TabBar from '@/components/tabBar'
 import Nav from '@/components/nav'
 import { useRouter, useRoute } from 'vue-router'
-import { onBeforeMount } from 'vue'
-import { reactive } from 'vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -85,15 +83,16 @@ const user = reactive({
   ...user_details,
   iconImage: 'src/assets/imgurl.jpg'
 })
-// console.log('profile本来的数据：', user)
-// console.log(user)
 
-// 获取用户信息
+const locationDetails = reactive({})
+
+const token_info = localStorage.getItem('token')
+
 onBeforeMount(async () => {
-  const token_info = localStorage.getItem('token')
+  // 获取用户信息
   const { data: resp } = await axios({
     method: 'get',
-    url: 'http://192.168.100.7:7001/onlineShop/getUserInfo',
+    url: '/onlineShop/getUserInfo',
     params: {},
     headers: {
       Authorization: `Bearer ${token_info}`,
@@ -101,9 +100,27 @@ onBeforeMount(async () => {
     }
   })
   Object.assign(user, resp.data)
-  // Reflect.set(user.value, 'id', resp.data.id)
-  console.log('resp', resp)
-  console.log('profile更新过的数据：', user)
+  console.log('get获取用户信息：', resp)
+
+  // 获取地址信息
+  const { data: resp_getLocation } = await axios({
+    method: 'get',
+    url: '/onlineShop/getLocation',
+    params: {
+      size: 1,
+      page: 1
+    },
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'application/json; charset=utf-8'
+    }
+  })
+  if (resp_getLocation.errCode == 1000) {
+    Object.assign(locationDetails, ...resp_getLocation.data.list)
+  } else {
+  }
+  console.log('get配送地址数据:', resp_getLocation)
+  console.log(locationDetails)
 })
 
 // 跳转编辑个人信息页面
@@ -116,7 +133,7 @@ const linkToEdit = () => {
 // 确认是Profile页面
 const isProfilePage = true
 
-// address调到定位页面
+// address跳到定位页面
 const linkToLoaction = () => {
   router.push({
     path: '/location'
@@ -289,13 +306,13 @@ const linkToLoaction = () => {
           }
           .detail {
             width: 220px;
-            font-size: 14px;
+            font-size: 13px;
             color: #333333;
             line-height: 19.6px;
             letter-spacing: 0.3;
             margin-left: auto;
             text-align: end;
-            font-weight: 600;
+            font-weight: 700;
           }
         }
       }

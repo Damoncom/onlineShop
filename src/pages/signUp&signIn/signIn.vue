@@ -195,7 +195,7 @@ const signIn = (user) => {
     // 发送数据
     axios.defaults.headers.post['Content-Type'] = 'application/json; charset=utf-8'
     axios
-      .post('http://192.168.100.7:7001/onlineShop/signIn', obj)
+      .post('/onlineShop/signIn', obj)
       .then(function ({ data: response }) {
         console.log(response)
 

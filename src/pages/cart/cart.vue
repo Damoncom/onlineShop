@@ -99,7 +99,7 @@ const minus = async (cart) => {
   // post请求
   const { data: resp_minus } = await axios({
     method: 'post',
-    url: 'http://192.168.100.7:7001/onlineShop/editCart',
+    url: '/onlineShop/editCart',
     data: {
       goodsId: cart.goodsId,
       amount: cart.amount
@@ -126,7 +126,7 @@ const add = async (cart, arr) => {
   // post请求
   const { data: resp_add } = await axios({
     method: 'post',
-    url: 'http://192.168.100.7:7001/onlineShop/editCart',
+    url: '/onlineShop/editCart',
     data: {
       goodsId: cart.goodsId,
       amount: cart.amount
@@ -158,7 +158,7 @@ onBeforeMount(async () => {
 
   const { data: resp_cart } = await axios({
     method: 'get',
-    url: 'http://192.168.100.7:7001/onlineShop/getCart',
+    url: '/onlineShop/getCart',
     params: {
       size: 10,
       page: 1

@@ -81,7 +81,7 @@ onBeforeMount(async () => {
 
   const { data: resp_product_details } = await axios({
     method: 'get',
-    url: 'http://192.168.100.7:7001/onlineShop/getGoodsDetail',
+    url: '/onlineShop/getGoodsDetail',
     params: {
       id: productId.productId
     },
@@ -111,7 +111,7 @@ const comfirmShouCang = async () => {
   // post请求
   const { data: resp_notification } = await axios({
     method: 'post',
-    url: 'http://192.168.100.7:7001/onlineShop/createWishlist',
+    url: '/onlineShop/createWishlist',
     data: postData,
     headers: {
       Authorization: `Bearer ${token_info}`,
@@ -135,7 +135,7 @@ const cancelShouCang = async () => {
   // delete请求
   const { data: resp_cancelNotidication } = await axios({
     method: 'delete',
-    url: 'http://192.168.100.7:7001/onlineShop/deleteWishlist',
+    url: '/onlineShop/deleteWishlist',
     data: postData,
     headers: {
       Authorization: `Bearer ${token_info}`,
@@ -160,7 +160,7 @@ const add = async () => {
   // post请求
   const { data: resp_addToCart } = await axios({
     method: 'post',
-    url: 'http://192.168.100.7:7001/onlineShop/editCart',
+    url: '/onlineShop/editCart',
     data: {
       goodsId: productId.productId,
       amount: 1

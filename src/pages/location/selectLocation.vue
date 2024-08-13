@@ -20,7 +20,8 @@
               class="iconfont icon-xuanzhong"
               :class="avtivedIndex == index ? 'icon-xuanzhong_purple' : 'icon-xuanzhong'"
             ></i>
-            <div class="place_text">{{ region.name }}</div>
+            <div class="place_text">{{ region.location }}</div>
+            <i class="iconfont icon-bianji" @click="linkToEditLocation"></i>
           </div>
         </div>
       </div>
@@ -28,39 +29,20 @@
   </div>
 </template>
 <script setup>
-import { ref, onUpdated, nextTick } from 'vue'
+import { ref, onUpdated, nextTick, onBeforeMount, reactive } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
 
 const router = useRouter()
 const route = useRoute()
 
+const token_info = localStorage.getItem('token')
+
 // 导入导航栏
 const navTitle = 'Select Location'
 
 // 地址列表
-const regionList = ref([
-  {
-    id: '1',
-    name: 'Queensland'
-  },
-  {
-    id: '2',
-    name: 'New South Wales'
-  },
-  {
-    id: '3',
-    name: 'Victoria'
-  },
-  {
-    id: '4',
-    name: 'Western Australia'
-  },
-  {
-    id: '5',
-    name: 'Tasmania'
-  }
-])
+const regionList = reactive([])
 let avtivedIndex = ref(0)
 const chooseRegion = (e) => {
   avtivedIndex.value = e.target.dataset.index
@@ -70,10 +52,41 @@ const chooseRegion = (e) => {
 let inputText = ref('')
 let searchElement = ref('')
 let searchIndex = ref('')
-onUpdated(async () => {
+// onUpdated(async () => {
+//   await nextTick()
+//   searchElement.value = regionList.value.find((region) => region.name == inputText.value)
+//   searchIndex.value = searchElement.value.id
+// })
+
+// 跳到编辑地址页面
+const linkToEditLocation = () => {
+  router.push({
+    path: '/edit_location'
+  })
+}
+
+// 获取配送地址
+onBeforeMount(async () => {
   await nextTick()
-  searchElement.value = regionList.value.find((region) => region.name == inputText.value)
-  searchIndex.value = searchElement.value.id
+
+  const { data: resp_getLocation } = await axios({
+    method: 'get',
+    url: '/onlineShop/getLocation',
+    params: {
+      size: 10,
+      page: 1
+    },
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'application/json; charset=utf-8'
+    }
+  })
+  if (resp_getLocation.errCode == 1000) {
+    Object.assign(regionList, resp_getLocation.data.list)
+  } else {
+  }
+  console.log('get配送地址:', resp_getLocation)
+  console.log(regionList)
 })
 </script>
 <style lang="scss" scoped>
@@ -131,7 +144,13 @@ onUpdated(async () => {
           .place_text {
             font-size: 14px;
             color: #4f4f4f;
-            margin-left: 10px;
+            margin: 0 10px;
+          }
+          .icon-bianji {
+            font-size: 20px;
+            color: #b2b2b2;
+            margin-left: auto;
+            margin-right: 20px;
           }
         }
         .box_purple {

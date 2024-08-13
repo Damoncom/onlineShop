@@ -84,7 +84,7 @@ onBeforeMount(async () => {
   // 获取用户数据
   const { data: resp_user } = await axios({
     method: 'get',
-    url: 'http://192.168.100.7:7001/onlineShop/getUserInfo',
+    url: '/onlineShop/getUserInfo',
     params: {},
     headers: {
       Authorization: `Bearer ${token_info}`,
@@ -101,7 +101,7 @@ onBeforeMount(async () => {
   // 创建通知post请求
   const { data: resp_ceateNotification } = await axios({
     method: 'post',
-    url: 'http://192.168.100.7:7001/onlineShop/createNotification',
+    url: '/onlineShop/createNotification',
     data: createNotice,
     headers: {
       Authorization: `Bearer ${token_info}`,
@@ -116,7 +116,7 @@ onBeforeMount(async () => {
   // 获取通知get请求
   const { data: resp_getNotification } = await axios({
     method: 'get',
-    url: 'http://192.168.100.7:7001/onlineShop/getNotification',
+    url: '/onlineShop/getNotification',
     params: {
       size: 10,
       page: 1
@@ -142,7 +142,7 @@ const readNotice = async (notification) => {
   // put请求
   const { data: resp_read } = await axios({
     method: 'put',
-    url: 'http://192.168.100.7:7001/onlineShop/readNotification',
+    url: '/onlineShop/readNotification',
     data: { id: notification.id },
     headers: {
       Authorization: `Bearer ${token_info}`,
