@@ -17,8 +17,7 @@
             <div class="source">{{ notification.vendor }}</div>
           </div>
           <div class="time_box">
-            <!-- <div class="time">{{ notification.createdAt }}</div> -->
-            <div class="time">1m ago</div>
+            <div class="time">{{ notification.timediff }}</div>
             <i class="iconfont icon-yuan" v-if="notification.read == false"></i>
           </div>
         </li>
@@ -30,6 +29,7 @@
 import { onBeforeMount, reactive, ref, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
+import dayjs from 'dayjs'
 
 const router = useRouter()
 const route = useRoute()
@@ -37,81 +37,13 @@ const route = useRoute()
 // 导入导航栏
 const navTitle = 'Notification'
 
-// post请求创建通知
-const createNotice = reactive({
-  content: 'Your Order just arrived',
-  vendor: 'demo',
-  read: 0
-})
-
 // 消息列表数据
-const notificationList = reactive([
-  // {
-  //   id: '1',
-  //   msg: 'Your Order just arrived',
-  //   source: 'Vendor',
-  //   time: '1m ago',
-  //   read: false
-  // },
-  // {
-  //   id: '2',
-  //   msg: 'Your Order Will be Delayed',
-  //   source: 'Vendor',
-  //   time: '1m ago',
-  //   read: false
-  // },
-  // {
-  //   id: '3',
-  //   msg: 'Your Order just Pending',
-  //   source: 'Vendor',
-  //   time: '1m ago',
-  //   read: false
-  // },
-  // {
-  //   id: '4',
-  //   msg: 'Congratulation!',
-  //   source: 'AINVE',
-  //   time: '1m ago',
-  //   read: false
-  // }
-])
+const notificationList = reactive([])
 
 const token_info = localStorage.getItem('token')
 
 onBeforeMount(async () => {
   await nextTick()
-
-  // 获取用户数据
-  const { data: resp_user } = await axios({
-    method: 'get',
-    url: '/onlineShop/getUserInfo',
-    params: {},
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'application/json; charset=utf-8'
-    }
-  })
-  if (resp_user.errCode == 1000) {
-    Reflect.set(createNotice, 'userId', resp_user.data.id)
-  } else {
-  }
-  console.log('get用户信息：', resp_user)
-  // console.log(createNotice)
-
-  // 创建通知post请求
-  const { data: resp_ceateNotification } = await axios({
-    method: 'post',
-    url: '/onlineShop/createNotification',
-    data: createNotice,
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'multipart/form-data'
-    }
-  })
-  if (resp_ceateNotification.errCode == 1000) {
-  } else {
-  }
-  console.log('post创建通知：', resp_ceateNotification)
 
   // 获取通知get请求
   const { data: resp_getNotification } = await axios({
@@ -131,6 +63,19 @@ onBeforeMount(async () => {
   } else {
   }
   console.log('get获取通知：', resp_getNotification)
+  console.log(notificationList)
+
+  // 时间差处理
+  notificationList.forEach((item) => {
+    let time = item.createdAt
+    time = dayjs(time).format('YYYY-MM-DD HH:mm:ss')
+    let nowTime = dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss')
+
+    const date1 = dayjs(nowTime)
+    const timediff = date1.diff(nowTime, 'minute')
+
+    item.timediff = timediff + ' m ago'
+  })
 })
 
 // 已读通知put请求
@@ -157,6 +102,7 @@ const readNotice = async (notification) => {
   console.log('put已读：', resp_read)
 }
 </script>
+
 <style lang="scss" scoped>
 .app {
   .content {
@@ -199,8 +145,9 @@ const readNotice = async (notification) => {
         }
         .text_box {
           width: 212px;
-          height: 34px;
+          // height: 34px;
           margin-left: 12px;
+
           .msg {
             font-size: 14px;
             color: #474949;

@@ -12,12 +12,26 @@
             Please wait for upcoming notification of your order in notification menu
           </div>
         </div>
+        <ul class="orderId_list" v-show="isShowId == true">
+          <li
+            class="orderId_item"
+            v-for="(orderId, orderId_index) of orderIdList"
+            :key="orderId_index"
+          >
+            {{ orderId }}
+          </li>
+        </ul>
       </div>
     </div>
     <div class="bottom">
-      <div class="button_box" @click="linkToHome">
+      <div class="button_box" @click="showOrderId">
         <div class="create_button">
           <p class="text">Explore More!</p>
+        </div>
+      </div>
+      <div class="button_box" @click="linkToHome">
+        <div class="create_button">
+          <p class="text">Back To Home</p>
         </div>
       </div>
     </div>
@@ -25,7 +39,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, reactive } from 'vue'
 import Nav from '@/components/nav'
 import { useRouter, useRoute } from 'vue-router'
 
@@ -33,14 +47,20 @@ const router = useRouter()
 const route = useRoute()
 
 // 获取传参
-const orderId = route.query
-console.log(orderId)
+const orderIdList = reactive([])
+Object.assign(orderIdList, route.query.orderId)
+console.log(orderIdList)
 
 // 导入导航栏
-const navTitle = 'Order ' + orderId.orderId
+const navTitle = 'Order '
 
-const orderNum = ref()
+// 展示订单号
+const isShowId = ref(false)
+const showOrderId = () => {
+  isShowId.value = !isShowId.value
+}
 
+// 返回首页
 const linkToHome = () => {
   router.push({
     path: '/home'
@@ -95,6 +115,19 @@ const linkToHome = () => {
           text-align: center;
         }
       }
+      .orderId_list {
+        width: 327px;
+        margin-top: 24px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        .orderId_item {
+          padding: 10px;
+          font-size: 14px;
+          color: #a456dd;
+        }
+      }
 
       .jump {
         width: 139px;
@@ -114,17 +147,16 @@ const linkToHome = () => {
   .bottom {
     width: 375px;
     height: 70px;
+    margin: 30px 0;
     background-color: white;
-    position: fixed;
-    bottom: 20px;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
 
     .button_box {
-      width: 335px;
+      width: 150px;
       height: 46px;
+      margin: 0 10px;
       position: relative;
       display: flex;
       justify-content: center;

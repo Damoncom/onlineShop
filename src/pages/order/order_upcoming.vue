@@ -124,7 +124,7 @@ onBeforeMount(async () => {
     url: '/onlineShop/updateOrderStatus',
     data: {
       orderId: 'order_20240812212956_7',
-      status: -1
+      status: 2
     },
     headers: {
       Authorization: `Bearer ${token_info}`,

@@ -174,6 +174,18 @@ const token_info = localStorage.getItem('token')
 const locationDetails = reactive({})
 const queryOrder = reactive([])
 
+// post请求创建通知
+const createNotice = reactive(
+  []
+  //   {
+  //   content: 'Your Order just arrived',
+  //   vendor: 'demo',
+  //   read: 0
+  // }
+)
+// 购物车变量
+const cartList = reactive([])
+
 onBeforeMount(async () => {
   await nextTick()
 
@@ -191,9 +203,35 @@ onBeforeMount(async () => {
     }
   })
   if (resp_cart.errCode == 1000) {
+    Object.assign(cartList, resp_cart.data.list)
+    toRaw(cartList).forEach((item) => {
+      toRaw(createNotice).push({
+        content: '您购买的' + item.goods.name + '商品已下单'
+      })
+    })
   } else {
   }
   console.log('get购物车数据:', resp_cart)
+
+  // 获取用户数据
+  const { data: resp_user } = await axios({
+    method: 'get',
+    url: '/onlineShop/getUserInfo',
+    params: {},
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'application/json; charset=utf-8'
+    }
+  })
+  if (resp_user.errCode == 1000) {
+    toRaw(createNotice).forEach((item) => {
+      Reflect.set(item, 'userId', resp_user.data.id)
+      Reflect.set(item, 'vendor', 'system')
+      Reflect.set(item, 'read', 0)
+    })
+  } else {
+  }
+  console.log('get用户信息：', resp_user)
 
   // 重新整合商品数据
   const arr = toRaw(resp_cart.data.list)
@@ -240,6 +278,7 @@ onBeforeMount(async () => {
 
 const queryOrderId = reactive([])
 
+// 提交订单按钮
 const linkToDone = async () => {
   // 前端生成订单号：order_${yyyMMddHHmmss}_${uuid}【多个商品时，使用相同的OrderId】
   const time = yy + mm + dd + hh + mf + ss
@@ -247,6 +286,8 @@ const linkToDone = async () => {
     item.orderId = 'order_' + time + '_' + item.goodsId
   })
 
+  // promise.all(并起发送请求)
+  // 创建订单
   const arrReq = queryOrder.map((item) => {
     return axios({
       method: 'post',
@@ -267,10 +308,40 @@ const linkToDone = async () => {
   console.log(respStateList)
   if (!respStateList.includes(false)) {
     // 全部接口放回正确后需要操作
-    console.log('success')
+    console.log('创建所有订单success')
     ;(await Promise.all(arrReq)).forEach((item) => {
       queryOrderId.push(item.data.data.orderId)
     })
+  }
+  console.log(await Promise.all(arrReq))
+  console.log(queryOrderId)
+
+  // 创建通知
+  const arrReq2 = createNotice.map((item) => {
+    return axios({
+      method: 'post',
+      url: '/onlineShop/createNotification',
+      data: item,
+      headers: {
+        Authorization: `Bearer ${token_info}`,
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+  })
+
+  const respList2 = await Promise.all(arrReq2)
+  const respStateList2 = respList2.map((item) => {
+    if (item.data.errCode == 1000) return true
+    else return false
+  })
+  console.log(respStateList2)
+  if (!respStateList2.includes(false)) {
+    // 全部接口放回正确后需要操作
+    console.log('创建所有通知success')
+  }
+  console.log(await Promise.all(arrReq2))
+
+  if (!respStateList.includes(false) && !respStateList2.includes(false)) {
     router.push({
       path: '/done',
       query: {
@@ -278,8 +349,6 @@ const linkToDone = async () => {
       }
     })
   }
-  console.log(await Promise.all(arrReq))
-  console.log(queryOrderId)
 }
 </script>
 <style lang="scss" scoped>
