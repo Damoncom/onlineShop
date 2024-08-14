@@ -20,9 +20,8 @@
           </div>
         </div>
       </div>
-      <!-- TODO:模糊搜索 -->
       <!-- 搜索历史 -->
-      <!-- <div class="search_history">
+      <div class="search_history" v-if="isWay == false">
         <ul class="history_list">
           <li
             class="history_item"
@@ -32,9 +31,9 @@
             <p class="item_text">{{ history.name }}</p>
           </li>
         </ul>
-      </div> -->
+      </div>
       <!-- 信息栏 -->
-      <div class="info_block">
+      <div class="info_block" v-if="isWay == true">
         <div class="result">
           <p class="result_num">{{ count_product }}</p>
           <p class="result_text">Results</p>
@@ -54,7 +53,12 @@
       </div>
       <!-- type1商品列表 -->
       <i class="iconfont icon-jiazaizhong2 icon_top" v-if="top && isShow == true"></i>
-      <div class="product_card" v-if="isShow == true" ref="card" @scroll="doScroll">
+      <div
+        class="product_card"
+        v-if="isShow == true && isWay == true"
+        ref="card"
+        @scroll="doScroll"
+      >
         <ul class="product_list">
           <li
             class="product_item"
@@ -90,7 +94,12 @@
       <i class="iconfont icon-jiazaizhong2 icon_bottom" v-if="bottom && isShow == true"></i>
       <!-- type2商品列表 -->
       <i class="iconfont icon-jiazaizhong2 icon_top" v-if="top && isShow == false"></i>
-      <div class="product_card2" v-if="isShow == false" ref="card" @scroll="doScroll">
+      <div
+        class="product_card2"
+        v-if="isShow == false && isWay == true"
+        ref="card"
+        @scroll="doScroll"
+      >
         <ul class="product_list">
           <li
             class="product_item"
@@ -130,7 +139,7 @@
 </template>
 
 <script setup>
-import { reactive, ref, onMounted, onUnmounted, onBeforeMount, nextTick } from 'vue'
+import { reactive, ref, onMounted, onUnmounted, onBeforeMount, nextTick, toRaw } from 'vue'
 import TabBar from '@/components/tabBar'
 import product from '@/assets/prodoct_img.jpg'
 import { useRouter, useRoute } from 'vue-router'
@@ -138,9 +147,16 @@ import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
 const route = useRoute()
 
+// 商品列表数据
+const productList = reactive([])
+const count_product = ref()
+
+const token_info = localStorage.getItem('token')
+
 // 确认是Home页面
 const isSearchPage = true
 
+const isWay = ref(false)
 // 搜索数据
 const historyList = reactive([
   {
@@ -157,16 +173,46 @@ const historyList = reactive([
 // 搜索功能(回车后添加li)
 const inputText = ref('')
 const count = ref(historyList.length)
-const search = () => {
+const search = async () => {
+  await nextTick()
+
   historyList.push({
     id: count.value + 1,
     name: inputText.value
   })
+
+  isWay.value = true
+
+  // 模糊搜索
+  // 有条件获取商品列表数据
+  const { data: resp_search } = await axios({
+    method: 'get',
+    url: '/onlineShop/getGoodsList',
+    params: {
+      size: 10,
+      page: 1,
+      barCode: '',
+      name: inputText.value
+    },
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'application/json; charset=utf-8'
+    }
+  })
+  if (resp_search.errCode == 1000) {
+    Object.assign(productList, resp_search.data.list)
+    count_product.value = productList.length
+    isWay.value = true
+  } else {
+    isWay.value = false
+  }
+  console.log('模糊搜索获取商品列表数据:', resp_search)
 }
 
 // 取消功能
 const cancel = () => {
   inputText.value = ''
+  isWay.value = false
 }
 
 // 商品显示方式选择
@@ -178,127 +224,32 @@ const oneShow = () => {
   isShow.value = false
 }
 
-// 商品列表数据
-const productList = reactive([
-  {
-    id: '1',
-    name: 'Givenchy Blossom',
-    brand: 'Givenchy',
-    price: '$29.00',
-    img: product,
-    isAdd: false
-  },
-  {
-    id: '2',
-    name: 'Givenchy Blossom',
-    brand: 'Givenchy',
-    price: '$29.00',
-    img: product,
-    isAdd: false
-  },
-  {
-    id: '3',
-    name: 'Givenchy Blossom',
-    brand: 'Givenchy',
-    price: '$29.00',
-    img: product,
-    isAdd: false
-  },
-  {
-    id: '4',
-    name: 'Givenchy Blossom',
-    brand: 'Givenchy',
-    price: '$29.00',
-    img: product,
-    isAdd: false
-  },
-  {
-    id: '5',
-    name: 'Givenchy Blossom',
-    brand: 'Givenchy',
-    price: '$29.00',
-    img: product,
-    isAdd: false
-  },
-  {
-    id: '6',
-    name: 'Givenchy Blossom',
-    brand: 'Givenchy',
-    price: '$29.00',
-    img: product,
-    isAdd: false
-  }
-  // {
-  //   id: '7',
-  //   name: 'Givenchy Blossom',
-  //   brand: 'Givenchy',
-  //   price: '$29.00',
-  //   img: product,
-  //   isAdd: false
-  // },
-  // {
-  //   id: '8',
-  //   name: 'Givenchy Blossom',
-  //   brand: 'Givenchy',
-  //   price: '$29.00',
-  //   img: product,
-  //   isAdd: false
-  // },
-  // {
-  //   id: '9',
-  //   name: 'Givenchy Blossom',
-  //   brand: 'Givenchy',
-  //   price: '$29.00',
-  //   img: product,
-  //   isAdd: false
-  // },
-  // {
-  //   id: '10',
-  //   name: 'Givenchy Blossom',
-  //   brand: 'Givenchy',
-  //   price: '$29.00',
-  //   img: product,
-  //   isAdd: false
-  // },
-  // {
-  //   id: '11',
-  //   name: 'Givenchy Blossom',
-  //   brand: 'Givenchy',
-  //   price: '$29.00',
-  //   img: product,
-  //   isAdd: false
-  // }
-])
+// 首次进入search页面
+// onBeforeMount(async () => {
+//   await nextTick()
 
-const token_info = localStorage.getItem('token')
-
-onBeforeMount(async () => {
-  await nextTick()
-
-  // 获取商品列表数据
-  const { data: resp_product } = await axios({
-    method: 'get',
-    url: '/onlineShop/getGoodsList',
-    params: {
-      size: 6,
-      page: 1,
-      barCode: '',
-      name: ''
-    },
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'application/json; charset=utf-8'
-    }
-  })
-  if (resp_product.errCode == 1000) {
-    Object.assign(productList, resp_product.data.list)
-  } else {
-  }
-  console.log('获取商品列表数据:', resp_product)
-  // console.log(productList)
-})
-
-const count_product = ref(productList.length)
+//   // 获取商品列表数据
+//   const { data: resp_product } = await axios({
+//     method: 'get',
+//     url: '/onlineShop/getGoodsList',
+//     params: {
+//       size: 6,
+//       page: 1,
+//       barCode: '',
+//       name: ''
+//     },
+//     headers: {
+//       Authorization: `Bearer ${token_info}`,
+//       'Content-Type': 'application/json; charset=utf-8'
+//     }
+//   })
+//   if (resp_product.errCode == 1000) {
+//     Object.assign(productList, resp_product.data.list)
+//     count_product.value = productList.length
+//   } else {
+//   }
+//   console.log('获取商品列表数据:', resp_product)
+// })
 
 // 将商品添加至cart
 const isAdd = ref(false)
@@ -321,7 +272,6 @@ const addToCart = (e) => {
 }
 
 // 下拉加载，上拉刷新
-// TODO:框的高度不够，每个手机分辨率不一样
 const card = ref()
 const top = ref(false)
 const bottom = ref(false)
@@ -349,10 +299,9 @@ const doScroll = async (event) => {
         'Content-Type': 'application/json; charset=utf-8'
       }
     })
-    //TODO:下拉加载的数据
+
     if (resp_product.errCode == 1000) {
       Object.assign(productList, resp_product.data.list)
-      // productList.push(resp_product.data.list)
       count_product.value = productList.length
     }
     console.log('下拉加载更多获取商品列表数据:', resp_product)
@@ -522,7 +471,7 @@ const doScroll = async (event) => {
     }
     .product_card {
       width: 350px;
-      height: 500px;
+      height: 70vh;
       overflow: auto;
       margin-top: 16px;
       // ul
@@ -594,7 +543,8 @@ const doScroll = async (event) => {
       font-size: 26px;
       color: #a456dd;
       position: absolute;
-      bottom: 0px;
+      // bottom: 0px;
+      bottom: 0vh;
       z-index: 3;
       animation: rotating 1s infinite linear;
     }
@@ -610,8 +560,7 @@ const doScroll = async (event) => {
 
     .product_card2 {
       width: 335px;
-      // height: 467px;
-      height: 499px;
+      height: 75vh;
       overflow: auto;
       margin-top: 16px;
       // ul
