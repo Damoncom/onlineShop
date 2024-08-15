@@ -11,7 +11,7 @@
             <div class="price">$ {{ wish.goods.price }}</div>
           </div>
           <!-- TODO:取消收藏 -->
-          <div class="like_box">
+          <div class="like_box" @click="cancelLike(wish)">
             <i class="iconfont icon-aixin1"></i>
           </div>
         </li>
@@ -67,8 +67,30 @@ onBeforeMount(async () => {
   }
 
   console.log('获取收藏列表数据:', resp_wishlist)
-  console.log(wishlist)
 })
+
+// 取消收藏功能
+const cancelLike = async (wish) => {
+  await nextTick()
+
+  // delete请求
+  const { data: resp_cancelNotidication } = await axios({
+    method: 'delete',
+    url: '/onlineShop/deleteWishlist',
+    data: {
+      id: wish.goodsId
+    },
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'application/json; charset=utf-8'
+    }
+  })
+  if (resp_cancelNotidication.errCode == 1000) {
+    router.go(0)
+  } else {
+  }
+  console.log('delete请求取消收藏：', resp_cancelNotidication)
+}
 </script>
 
 <style lang="scss" scoped>
