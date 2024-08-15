@@ -147,9 +147,7 @@ const comfirm = async () => {
   })
   if (resp_location.errCode == 1000) {
     isActivedCurrent.value = false
-    router.push({
-      path: '/profile'
-    })
+    router.go(-1)
   } else {
     isActivedCurrent.value = true
   }

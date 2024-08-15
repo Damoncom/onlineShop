@@ -22,7 +22,6 @@
             <div class="title">Delivery Location</div>
           </div>
         </div>
-        <!-- TODO:没有地址时，不可以跳转下一步 -->
         <div class="location_bottom" @click="linkToLocation">
           <div class="location_img">
             <img src="@/assets/review.jpg" class="img" />
