@@ -9,11 +9,11 @@
           :key="order_index"
           :data-index="order_index"
         >
-          <img :src="order.imgUrl" class="li_img" />
+          <img :src="order.goods.image" class="li_img" />
           <div class="text_box">
-            <div class="title">{{ order.name }}</div>
-            <div class="brand">{{ order.brand }}</div>
-            <div class="price">{{ order.price }}</div>
+            <div class="title">{{ order.goods.name }}</div>
+            <div class="brand">{{ order.goods.origin }}</div>
+            <div class="price">$ {{ order.goods.price }}</div>
           </div>
           <div class="state">
             <p class="state_text">{{ order.state }}</p>
@@ -24,7 +24,7 @@
   </div>
 </template>
 <script setup>
-import { reactive } from 'vue'
+import { reactive, onBeforeMount, nextTick, toRaw } from 'vue'
 import order from '@/assets/details_img.jpg'
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
@@ -35,42 +35,47 @@ const route = useRoute()
 // 导入导航栏
 const navTitle = 'Payment History'
 
+const token_info = localStorage.getItem('token')
+
 //TODO:获取订单信息
 // 商品列表信息
-const orderList = reactive([
-  {
-    id: 1,
-    name: 'Givenchy L‘ intemporel Blossom',
-    brand: 'Givenchy',
-    imgUrl: order,
-    price: '$29.00',
-    state: 'Completed'
-  },
-  {
-    id: 2,
-    name: 'Givenchy L‘ intemporel Blossom',
-    brand: 'Givenchy',
-    imgUrl: order,
-    price: '$29.00',
-    state: 'Completed'
-  },
-  {
-    id: 3,
-    name: 'Givenchy L‘ intemporel Blossom',
-    brand: 'Givenchy',
-    imgUrl: order,
-    price: '$29.00',
-    state: 'Completed'
-  },
-  {
-    id: 4,
-    name: 'Givenchy L‘ intemporel Blossom',
-    brand: 'Givenchy',
-    imgUrl: order,
-    price: '$29.00',
-    state: 'Completed'
+const orderList = reactive([])
+
+onBeforeMount(async () => {
+  await nextTick()
+
+  // 获取订单列表
+  const { data: resp_orderList } = await axios({
+    method: 'get',
+    url: '/onlineShop/getOrderList',
+    params: {
+      size: 10,
+      page: 1
+    },
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'application/json; charset=utf-8'
+    }
+  })
+
+  if (resp_orderList.errCode == 1000) {
+    Object.assign(orderList, resp_orderList.data.list)
+    toRaw(orderList).forEach((item) => {
+      if (item.status == -1) {
+        item.state = 'cancelled'
+      } else if (item.status == 1) {
+        item.state = 'pending'
+      } else if (item.status == 2) {
+        item.state = 'on going'
+      } else if (item.status == 3) {
+        item.state = 'pending'
+      }
+    })
+  } else {
   }
-])
+  console.log('get订单列表:', resp_orderList)
+  console.log(orderList)
+})
 </script>
 
 <style lang="scss" scoped>
@@ -102,7 +107,7 @@ const orderList = reactive([
         .text_box {
           width: 195px;
           height: 89px;
-          margin-left: 12px;
+          margin: 10px 0 0 12px;
           .title {
             width: 165px;
             font-size: 14px;
@@ -118,6 +123,7 @@ const orderList = reactive([
             font-size: 16px;
             color: #001c33;
             line-height: 30px;
+            margin-top: 10px;
           }
         }
         .state {
