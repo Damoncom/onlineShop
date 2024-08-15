@@ -187,7 +187,6 @@
     @click="activedMask"
     :class="isActivedInfo == true ? 'mask_regular' : 'mask'"
   ></div>
-  <!-- TODO:侧边栏动画卡顿 -->
   <!-- 侧边栏 -->
   <div class="sideBar" v-if="isActivedInfo == true">
     <div class="logo">
@@ -1140,7 +1139,7 @@ onBeforeMount(async () => {
   background-color: white;
   position: absolute;
   z-index: 3;
-  animation: sideBar 0.3s alternate ease-in-out;
+  animation: sideBar 0.3s alternate linear;
   .logo {
     margin: 46px 0 0 26px;
     .img {
