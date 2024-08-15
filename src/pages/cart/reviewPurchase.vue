@@ -8,7 +8,7 @@
             <img :src="cart.goods.image" class="img" />
             <div class="text_box">
               <div class="name">{{ cart.goods.name }}</div>
-              <div class="price">${{ cart.goods.price }}</div>
+              <div class="price">$ {{ cart.goods.price }}</div>
             </div>
           </div>
           <div class="edit" @click="linkToCart">
@@ -69,10 +69,13 @@
       </div>
     </div>
   </div>
+  <!-- 引入toast组件 -->
+  <Toast :init="msg" v-if="isActivedPurchase == true" />
 </template>
 <script setup>
 import { reactive, ref, toRaw, nextTick, onBeforeMount } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import Toast from '@/components/toast.vue'
 import product from '@/assets/details_img.jpg'
 import Nav from '@/components/nav'
 import currency from 'currency.js'
@@ -111,6 +114,8 @@ const linkToCart = () => {
     path: '/cart'
   })
 }
+
+const isHaveLocation = ref(false)
 
 //最终价格
 const pre = route.query
@@ -177,6 +182,11 @@ onBeforeMount(async () => {
     Object.assign(locationDetails, ...resp_getLocation.data.list)
   } else {
   }
+  if (resp_getLocation.data.list.length == 0) {
+    isHaveLocation.value = false
+  } else {
+    isHaveLocation.value = true
+  }
   console.log('get配送地址数据:', resp_getLocation)
 
   // post计算费用
@@ -202,11 +212,23 @@ onBeforeMount(async () => {
   }
   console.log('post计算费用：', resp_calculate)
 })
+
+const msg = ref('')
+const isActivedPurchase = ref(false)
 // 跳转到Payment页面
 const linkToPayment = () => {
-  router.push({
-    path: '/payment'
-  })
+  if (isHaveLocation.value == true) {
+    router.push({
+      path: '/payment'
+    })
+  } else {
+    isActivedPurchase.value = !isActivedPurchase.value
+    msg.value = 'The delivery address cannot be empty'
+    setTimeout(async () => {
+      await nextTick()
+      isActivedPurchase.value = !isActivedPurchase.value
+    }, 3900)
+  }
 }
 </script>
 <style lang="scss" scoped>

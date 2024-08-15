@@ -94,7 +94,7 @@
 <script setup>
 import { ref, onUpdated, nextTick, onMounted, onBeforeMount } from 'vue'
 import Nav from '@/components/nav'
-import Toast from '../../components/toast.vue'
+import Toast from '@/components/toast.vue'
 import { useRouter, useRoute } from 'vue-router'
 import { reactive, isReactive, isRef } from 'vue'
 import { unref } from 'vue'
