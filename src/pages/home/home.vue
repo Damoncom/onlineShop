@@ -13,7 +13,7 @@
     </div>
     <div class="content">
       <!-- 搜索框 -->
-      <div class="search">
+      <div class="search" @click="linkToSearch">
         <div class="search_box">
           <i class="iconfont icon-sousuo"></i>
           <input
@@ -297,6 +297,14 @@ const linkToNotification = () => {
     path: '/notification'
   })
 }
+
+// 跳转到search页面
+const linkToSearch = () => {
+  router.push({
+    path: '/search'
+  })
+}
+
 // 跳转到category页面
 const linkToCategory = () => {
   router.push({
