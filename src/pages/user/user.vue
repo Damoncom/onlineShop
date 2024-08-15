@@ -120,15 +120,7 @@ onBeforeMount(async () => {
   } else {
   }
   console.log('get配送地址数据:', resp_getLocation)
-  console.log(locationDetails)
 })
-
-// 跳转编辑个人信息页面
-const linkToEdit = () => {
-  router.push({
-    path: '/editUser'
-  })
-}
 
 // 确认是Profile页面
 const isProfilePage = true

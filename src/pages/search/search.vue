@@ -76,7 +76,7 @@
             <div class="text_box">
               <div class="title">{{ product.name }}</div>
               <div class="brand">{{ product.brand }}</div>
-              <div class="price">{{ product.price }}</div>
+              <div class="price">$ {{ product.price }}</div>
               <div class="card_cart" @click.stop="addToCart">
                 <i
                   class="iconfont icon-gouwudai"
@@ -92,6 +92,7 @@
         </ul>
       </div>
       <i class="iconfont icon-jiazaizhong2 icon_bottom" v-if="bottom && isShow == true"></i>
+      <p class="bottom_text" v-if="bottom && isShow == false">All products are here ~</p>
       <!-- type2商品列表 -->
       <i class="iconfont icon-jiazaizhong2 icon_top" v-if="top && isShow == false"></i>
       <div
@@ -117,7 +118,7 @@
             <div class="text_box">
               <div class="title">{{ product.name }}</div>
               <div class="brand">{{ product.brand }}</div>
-              <div class="price">{{ product.price }}</div>
+              <div class="price">$ {{ product.price }}</div>
               <div class="card_cart" @click.stop="addToCart">
                 <i
                   class="iconfont icon-gouwudai"
@@ -133,6 +134,7 @@
         </ul>
       </div>
       <i class="iconfont icon-jiazaizhong2 icon_bottom" v-if="bottom && isShow == false"></i>
+      <p class="bottom_text" v-if="bottom && isShow == false">All products are here ~</p>
     </div>
   </div>
   <TabBar :init_search="isSearchPage" />
@@ -471,7 +473,7 @@ const doScroll = async (event) => {
     }
     .product_card {
       width: 350px;
-      height: 70vh;
+      height: 75vh;
       overflow: auto;
       margin-top: 16px;
       // ul
@@ -538,13 +540,13 @@ const doScroll = async (event) => {
     .product_card::-webkit-scrollbar {
       display: none;
     }
+
     .icon_bottom {
       display: inline-block; /*需要设置为行内块元素动画才会生效*/
       font-size: 26px;
       color: #a456dd;
       position: absolute;
-      // bottom: 0px;
-      bottom: 0vh;
+      bottom: 0;
       z-index: 3;
       animation: rotating 1s infinite linear;
     }
@@ -645,6 +647,12 @@ const doScroll = async (event) => {
       to {
         transform: rotate(1turn); /*动画结束位置为旋转1圈*/
       }
+    }
+    .bottom_text {
+      color: #a456dd;
+      padding: 0 0 10px 0;
+      position: absolute;
+      bottom: 0;
     }
   }
 }

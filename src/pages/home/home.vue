@@ -33,15 +33,15 @@
         :pagenation="true"
       >
         <!-- TODO:swiper和v-for -->
-        <swiper-slide class="swiper_box1">
+        <swiper-slide class="swiper_box1" @click="linkToBanner1">
           <img class="swiper_wrapper1" :src="banner[0].image" />
           <p class="box_text">{{ banner[0].name }}</p>
         </swiper-slide>
-        <swiper-slide class="swiper_box2">
+        <swiper-slide class="swiper_box2" @click="linkToBanner2">
           <img class="swiper_wrapper2" :src="banner[1].image" />
           <p class="box_text">{{ banner[1].name }}</p>
         </swiper-slide>
-        <swiper-slide class="swiper_box3">
+        <swiper-slide class="swiper_box3" @click="linkToBanner3">
           <img class="swiper_wrapper3" :src="banner[2].image" />
           <p class="box_text">{{ banner[2].name }}</p>
         </swiper-slide>
@@ -82,8 +82,8 @@
               <div class="text_box">
                 <div class="title">{{ product.name }}</div>
                 <div class="brand">{{ product.brand }}</div>
-                <div class="price">{{ product.price }}</div>
-                <div class="card_cart" @click.stop="addToCart">
+                <div class="price">$ {{ product.price }}</div>
+                <div class="card_cart" @click.stop="addToCart(product, $event)">
                   <i
                     class="iconfont icon-gouwudai"
                     :class="
@@ -121,8 +121,8 @@
               <div class="text_box">
                 <div class="title">{{ product.name }}</div>
                 <div class="brand">{{ product.brand }}</div>
-                <div class="price">{{ product.price }}</div>
-                <div class="card_cart" @click.stop="addToCart">
+                <div class="price">$ {{ product.price }}</div>
+                <div class="card_cart" @click.stop="addToCart(product, $event)">
                   <i
                     class="iconfont icon-gouwudai"
                     :class="
@@ -154,8 +154,8 @@
               <div class="text_box">
                 <div class="title">{{ product.name }}</div>
                 <div class="brand">{{ product.brand }}</div>
-                <div class="price">{{ product.price }}</div>
-                <div class="card_cart" @click.stop="addToCart">
+                <div class="price">$ {{ product.price }}</div>
+                <div class="card_cart" @click.stop="addToCart(product, $event)">
                   <i
                     class="iconfont icon-gouwudai"
                     :class="
@@ -241,7 +241,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onBeforeMount } from 'vue'
+import { ref, reactive, onBeforeMount, nextTick } from 'vue'
 import TabBar from '@/components/tabBar'
 import product from '@/assets/prodoct_img.jpg'
 import product2 from '@/assets/popular_img1.jpg'
@@ -266,6 +266,8 @@ const onSlideChange = (e) => {
 }
 
 let swiper = ref(null)
+
+const token_info = localStorage.getItem('token')
 
 // 确认是Home页面
 const isHomePage = true
@@ -295,7 +297,30 @@ const linkToCategory = () => {
 
 // banner数据
 const banner = reactive([])
-
+const linkToBanner1 = () => {
+  router.push({
+    path: '/product_details',
+    query: {
+      productId: banner[0].id
+    }
+  })
+}
+const linkToBanner2 = () => {
+  router.push({
+    path: '/product_details',
+    query: {
+      productId: banner[1].id
+    }
+  })
+}
+const linkToBanner3 = () => {
+  router.push({
+    path: '/product_details',
+    query: {
+      productId: banner[2].id
+    }
+  })
+}
 // 分类标签数据
 const categoriesList = ref([
   {
@@ -516,16 +541,37 @@ const chooseProduct = (product) => {
 }
 
 const actived_cardIndex = ref('')
-const addToCart = (e) => {
-  actived_cardIndex.value = e.currentTarget.parentElement.parentElement.dataset.index
+const addToCart = async (product, event) => {
+  await nextTick()
+
+  actived_cardIndex.value = event.currentTarget.parentElement.parentElement.dataset.index
   isAdd.value = !isAdd.value
+
+  // post请求
+  const { data: resp_addToCart } = await axios({
+    method: 'post',
+    url: '/onlineShop/editCart',
+    data: {
+      goodsId: product.id,
+      amount: '1'
+    },
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+  if (resp_addToCart.errCode == 1000) {
+    isAdd.value = true
+  } else {
+    isAdd.value = false
+  }
+  console.log('post增加到购物车：', resp_addToCart)
 }
 
 const user = reactive({})
 
 // 获取用户信息
 onBeforeMount(async () => {
-  const token_info = localStorage.getItem('token')
   const { data: resp } = await axios({
     method: 'get',
     url: '/onlineShop/getUserInfo',

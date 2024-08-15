@@ -2,7 +2,8 @@
   <div class="app">
     <Nav :init_title="navTitle" />
     <div class="content">
-      <div class="product_card">
+      <i class="iconfont icon-jiazaizhong2 icon_top" v-if="top == true"></i>
+      <div class="product_card" ref="card" @scroll="doScroll">
         <ul class="product_list">
           <li
             class="product_item"
@@ -20,7 +21,7 @@
             <div class="text_box">
               <div class="title">{{ product.name }}</div>
               <div class="brand">{{ product.brand }}</div>
-              <div class="price">{{ product.price }}</div>
+              <div class="price">$ {{ product.price }}</div>
               <div class="card_cart" @click.stop="addToCart(product, $event)">
                 <i
                   class="iconfont icon-gouwudai"
@@ -35,6 +36,8 @@
           </li>
         </ul>
       </div>
+      <i class="iconfont icon-jiazaizhong2 icon_bottom" v-if="bottom == true"></i>
+      <p class="bottom_text">All products are here ~</p>
     </div>
   </div>
 </template>
@@ -130,6 +133,57 @@ onBeforeMount(async () => {
   console.log('获取商品列表数据:', resp_orderList)
   console.log(productList)
 })
+
+// 下拉加载，上拉刷新
+const card = ref()
+const top = ref(false)
+const bottom = ref(false)
+
+const doScroll = async (event) => {
+  const scrollHeight = event.target.scrollHeight
+  const scrollTop = event.target.scrollTop
+  const clientHeight = event.target.clientHeight
+  if (scrollTop + clientHeight >= scrollHeight) {
+    console.log('到底了!')
+    bottom.value = true
+
+    const token_info = localStorage.getItem('token')
+    const { data: resp_product } = await axios({
+      method: 'get',
+      url: '/onlineShop/getGoodsList',
+      params: {
+        size: 20,
+        page: 1,
+        barCode: '',
+        name: ''
+      },
+      headers: {
+        Authorization: `Bearer ${token_info}`,
+        'Content-Type': 'application/json; charset=utf-8'
+      }
+    })
+
+    if (resp_product.errCode == 1000) {
+      Object.assign(productList, resp_product.data.list)
+    }
+    console.log('下拉加载更多获取商品列表数据:', resp_product)
+    console.log(productList)
+
+    setTimeout(async () => {
+      bottom.value = false
+    }, 1000)
+  } else {
+    bottom.value = false
+  }
+
+  if (scrollTop <= 0) {
+    console.log('顶部!')
+    top.value = true
+    setTimeout(async () => {
+      top.value = false
+    }, 1000)
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -142,8 +196,9 @@ onBeforeMount(async () => {
 
     .product_card {
       width: 350px;
+      height: 90vh;
+      overflow: auto;
       margin-top: 16px;
-      padding-bottom: 70px;
       // ul
       .product_list {
         display: flex;
@@ -204,6 +259,46 @@ onBeforeMount(async () => {
           }
         }
       }
+    }
+    .icon_top {
+      display: inline-block;
+      font-size: 26px;
+      color: #a456dd;
+      position: absolute;
+      top: 70px;
+      z-index: 3;
+      animation: rotating2 1s infinite linear;
+    }
+    @keyframes rotating2 {
+      0% {
+        transform: rotate(0deg); /*动画起始位置为旋转0度*/
+      }
+
+      to {
+        transform: rotate(1turn); /*动画结束位置为旋转1圈*/
+      }
+    }
+    .icon_bottom {
+      display: inline-block; /*需要设置为行内块元素动画才会生效*/
+      font-size: 26px;
+      color: #a456dd;
+      position: absolute;
+      bottom: 0;
+      z-index: 3;
+      animation: rotating 1s infinite linear;
+    }
+    @keyframes rotating {
+      0% {
+        transform: rotate(0deg); /*动画起始位置为旋转0度*/
+      }
+
+      to {
+        transform: rotate(1turn); /*动画结束位置为旋转1圈*/
+      }
+    }
+    .bottom_text {
+      color: #a456dd;
+      padding: 0 0 10px 0;
     }
   }
 }

@@ -62,7 +62,7 @@
           <p class="text">Save</p>
         </div>
       </div>
-      <div class="button_box1">
+      <div class="button_box1" @click="cancel">
         <div class="create_button">
           <p class="text">Cancel</p>
         </div>
@@ -135,6 +135,10 @@ const activeSetting = (e) => {
 
 // 控制蒙层
 const activedMask = () => {
+  activedLiIndex.value = !activedLiIndex.value
+}
+
+const cancel = () => {
   activedLiIndex.value = !activedLiIndex.value
 }
 
