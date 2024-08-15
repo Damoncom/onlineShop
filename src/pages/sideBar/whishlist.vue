@@ -8,8 +8,9 @@
           <div class="text_box">
             <div class="name">{{ wish.goods.name }}</div>
             <div class="brand">{{ wish.goods.origin }}</div>
-            <div class="price">${{ wish.goods.price }}</div>
+            <div class="price">$ {{ wish.goods.price }}</div>
           </div>
+          <!-- TODO:取消收藏 -->
           <div class="like_box">
             <i class="iconfont icon-aixin1"></i>
           </div>
@@ -17,6 +18,7 @@
       </ul>
     </div>
     <div class="bottom">
+      <!-- TODO:跳转到首页 -->
       <div class="button_box">
         <div class="create_button">
           <p class="text">Explore More!</p>

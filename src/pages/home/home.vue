@@ -1,5 +1,6 @@
 <template>
   <div class="app" :class="isActivedInfo == true || isLogOut == true ? 'app_regular' : 'app'">
+    <!-- TODO:有通知时，没有小红点 -->
     <!-- 顶部导航栏 -->
     <div class="nav">
       <div class="nav_box">
@@ -46,6 +47,7 @@
           <p class="box_text">{{ banner[2].name }}</p>
         </swiper-slide>
       </swiper-container>
+      <!-- TODO:右边留空隙 -->
       <!-- 分类 -->
       <div class="categories">
         <ul class="categories_list">
@@ -66,6 +68,7 @@
         </div>
         <div class="product_card">
           <ul class="product_list">
+            <!-- TODO:价格保0操作 -->
             <li
               class="product_item"
               v-for="(product, product_index) of recommendedList"
@@ -181,6 +184,8 @@
     @click="activedMask"
     :class="isActivedInfo == true ? 'mask_regular' : 'mask'"
   ></div>
+  <!-- TODO:通知的小红点 -->
+  <!-- TODO:侧边栏动画卡顿 -->
   <!-- 侧边栏 -->
   <div class="sideBar" v-if="isActivedInfo == true">
     <div class="logo">
@@ -218,6 +223,7 @@
     <div class="info_version">Version 1.0.0</div>
   </div>
 
+  <!-- TODO:退出后返回在刷新还有登录状态 -->
   <!-- 退出登录面板 -->
   <div class="logout" v-if="isLogOut == true">
     <div class="line_box">
@@ -367,96 +373,7 @@ const categoriesList = ref([
 
 // 商品列表数据
 // recommended数据
-const recommendedList = reactive([
-  // {
-  //   id: '1',
-  //   name: 'Givenchy Blossom',
-  //   brand: 'Givenchy',
-  //   price: '$29.00',
-  //   img: product,
-  //   isAdd: false
-  // },
-  // {
-  //   id: '2',
-  //   name: 'Givenchy Blossom',
-  //   brand: 'Givenchy',
-  //   price: '$29.00',
-  //   img: product,
-  //   isAdd: false
-  // },
-  // {
-  //   id: '3',
-  //   name: 'Givenchy Blossom',
-  //   brand: 'Givenchy',
-  //   price: '$29.00',
-  //   img: product,
-  //   isAdd: false
-  // },
-  // {
-  //   id: '4',
-  //   name: 'Givenchy Blossom',
-  //   brand: 'Givenchy',
-  //   price: '$29.00',
-  //   img: product,
-  //   isAdd: false
-  // },
-  // {
-  //   id: '5',
-  //   name: 'Givenchy Blossom',
-  //   brand: 'Givenchy',
-  //   price: '$29.00',
-  //   img: product,
-  //   isAdd: false
-  // },
-  // {
-  //   id: '6',
-  //   name: 'Givenchy Blossom',
-  //   brand: 'Givenchy',
-  //   price: '$29.00',
-  //   img: product,
-  //   isAdd: false
-  // },
-  // {
-  //   id: '7',
-  //   name: 'Givenchy Blossom',
-  //   brand: 'Givenchy',
-  //   price: '$29.00',
-  //   img: product,
-  //   isAdd: false
-  // },
-  // {
-  //   id: '8',
-  //   name: 'Givenchy Blossom',
-  //   brand: 'Givenchy',
-  //   price: '$29.00',
-  //   img: product,
-  //   isAdd: false
-  // },
-  // {
-  //   id: '9',
-  //   name: 'Givenchy Blossom',
-  //   brand: 'Givenchy',
-  //   price: '$29.00',
-  //   img: product,
-  //   isAdd: false
-  // },
-  // {
-  //   id: '10',
-  //   name: 'Givenchy Blossom',
-  //   brand: 'Givenchy',
-  //   price: '$29.00',
-  //   img: product,
-  //   isAdd: false
-  // },
-  // {
-  //   id: '11',
-  //   name: 'Givenchy Blossom',
-  //   brand: 'Givenchy',
-  //   price: '$29.00',
-  //   img: product,
-  //   isAdd: false
-  // }
-])
+const recommendedList = reactive([])
 
 // popular数据
 const popularList = reactive([
@@ -540,6 +457,7 @@ const chooseProduct = (product) => {
   })
 }
 
+//TODO:提取代码api
 const actived_cardIndex = ref('')
 const addToCart = async (product, event) => {
   await nextTick()

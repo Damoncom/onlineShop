@@ -20,8 +20,13 @@
           </div>
         </div>
       </div>
+      <!-- TODO:清空搜索历史 -->
       <!-- 搜索历史 -->
       <div class="search_history" v-if="isWay == false">
+        <div class="history_use">
+          <div class="use_text">Search History</div>
+          <i class="iconfont icon-shanchu" @click="deleteHistory"></i>
+        </div>
         <ul class="history_list">
           <li
             class="history_item"
@@ -141,7 +146,16 @@
 </template>
 
 <script setup>
-import { reactive, ref, onMounted, onUnmounted, onBeforeMount, nextTick, toRaw } from 'vue'
+import {
+  reactive,
+  ref,
+  onMounted,
+  onUnmounted,
+  onBeforeMount,
+  nextTick,
+  toRaw,
+  onUpdated
+} from 'vue'
 import TabBar from '@/components/tabBar'
 import product from '@/assets/prodoct_img.jpg'
 import { useRouter, useRoute } from 'vue-router'
@@ -159,18 +173,28 @@ const token_info = localStorage.getItem('token')
 const isSearchPage = true
 
 const isWay = ref(false)
-// 搜索数据
-const historyList = reactive([
-  {
-    id: '1',
-    name: 'Cream'
-  },
-  {
-    id: '2',
-    name: 'Spray'
-  }
-])
 
+// 搜索数据
+const historyList = reactive([])
+
+console.log(historyList)
+
+// 页面取消挂载时存储搜索历史
+onUnmounted(async () => {
+  await nextTick()
+
+  localStorage.setItem('searchHistory', JSON.stringify(historyList))
+})
+
+// 页面载入前获取搜索历史
+onBeforeMount(async () => {
+  await nextTick()
+
+  const search_history = JSON.parse(localStorage.getItem('searchHistory'))
+  Object.assign(historyList, search_history)
+})
+
+// TODO:没有搜索结果时，更新获取结果
 //搜索功能
 // 搜索功能(回车后添加li)
 const inputText = ref('')
@@ -178,8 +202,10 @@ const count = ref(historyList.length)
 const search = async () => {
   await nextTick()
 
+  count.value++
+
   historyList.push({
-    id: count.value + 1,
+    id: count.value,
     name: inputText.value
   })
 
@@ -217,6 +243,37 @@ const cancel = () => {
   isWay.value = false
 }
 
+// 清空搜索历史
+const deleteHistory = async () => {
+  await nextTick()
+
+  isWay.value = true
+
+  historyList.length = 0
+
+  // 获取商品列表数据
+  const { data: resp_product } = await axios({
+    method: 'get',
+    url: '/onlineShop/getGoodsList',
+    params: {
+      size: 6,
+      page: 1,
+      barCode: '',
+      name: ''
+    },
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'application/json; charset=utf-8'
+    }
+  })
+  if (resp_product.errCode == 1000) {
+    Object.assign(productList, resp_product.data.list)
+    count_product.value = productList.length
+  } else {
+  }
+  console.log('获取商品列表数据:', resp_product)
+}
+
 // 商品显示方式选择
 const isShow = ref(true)
 const twoShow = () => {
@@ -225,33 +282,6 @@ const twoShow = () => {
 const oneShow = () => {
   isShow.value = false
 }
-
-// 首次进入search页面
-// onBeforeMount(async () => {
-//   await nextTick()
-
-//   // 获取商品列表数据
-//   const { data: resp_product } = await axios({
-//     method: 'get',
-//     url: '/onlineShop/getGoodsList',
-//     params: {
-//       size: 6,
-//       page: 1,
-//       barCode: '',
-//       name: ''
-//     },
-//     headers: {
-//       Authorization: `Bearer ${token_info}`,
-//       'Content-Type': 'application/json; charset=utf-8'
-//     }
-//   })
-//   if (resp_product.errCode == 1000) {
-//     Object.assign(productList, resp_product.data.list)
-//     count_product.value = productList.length
-//   } else {
-//   }
-//   console.log('获取商品列表数据:', resp_product)
-// })
 
 // 将商品添加至cart
 const isAdd = ref(false)
@@ -286,7 +316,6 @@ const doScroll = async (event) => {
     console.log('到底了!')
     bottom.value = true
 
-    const token_info = localStorage.getItem('token')
     const { data: resp_product } = await axios({
       method: 'get',
       url: '/onlineShop/getGoodsList',
@@ -381,8 +410,6 @@ const doScroll = async (event) => {
         .scan {
           width: 44px;
           height: 44px;
-          // border: 1px solid #d9d9d9;
-          // border-radius: 10px;
           margin: 0 -5px 0 15px;
           display: flex;
           align-items: center;
@@ -400,14 +427,42 @@ const doScroll = async (event) => {
     }
 
     .search_history {
-      margin: 23px 0 0 28px;
-      align-self: flex-start;
+      width: 375px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 18px 0 0 0;
+      .history_use {
+        width: 327px;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .use_text {
+          font-size: 14px;
+          color: #a2a2a3;
+          margin-right: auto;
+        }
+        .icon-shanchu {
+          font-size: 15px;
+          color: #a2a2a3;
+        }
+        .icon-shanchu:active {
+          color: #a456dd;
+        }
+      }
       // ul
       .history_list {
-        width: auto;
+        width: 327px;
+        display: flex;
+        flex-wrap: wrap;
+        display: flex;
+        align-items: center;
+
         // li
         .history_item {
-          width: auto;
+          margin-right: 10px;
           padding: 0 10px;
           height: 29px;
           margin-bottom: 12px;

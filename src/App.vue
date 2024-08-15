@@ -5,4 +5,9 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
 </script>
-<style scoped></style>
+<style>
+html {
+  touch-action: none;
+  touch-action: pan-y;
+}
+</style>
