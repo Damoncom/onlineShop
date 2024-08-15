@@ -13,7 +13,7 @@
           <div class="text_box">
             <div class="title">{{ order.goods.name }}</div>
             <div class="brand">{{ order.goods.origin }}</div>
-            <div class="price">$ {{ order.goods.price }}</div>
+            <div class="price">$ {{ Number(order.goods.price).toFixed(2) }}</div>
           </div>
           <div class="state">
             <p class="state_text">{{ order.state }}</p>

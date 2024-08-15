@@ -80,7 +80,7 @@
             <div class="text_box">
               <div class="title">{{ product.name }}</div>
               <div class="brand">{{ product.brand }}</div>
-              <div class="price">$ {{ product.price }}</div>
+              <div class="price">$ {{ Number(product.price).toFixed(2) }}</div>
               <div class="card_cart" @click.stop="addToCart">
                 <i
                   class="iconfont icon-gouwudai"
@@ -122,7 +122,7 @@
             <div class="text_box">
               <div class="title">{{ product.name }}</div>
               <div class="brand">{{ product.brand }}</div>
-              <div class="price">$ {{ product.price }}</div>
+              <div class="price">$ {{ Number(product.price).toFixed(2) }}</div>
               <div class="card_cart" @click.stop="addToCart">
                 <i
                   class="iconfont icon-gouwudai"

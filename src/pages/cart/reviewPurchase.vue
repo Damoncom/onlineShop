@@ -8,7 +8,7 @@
             <img :src="cart.goods.image" class="img" />
             <div class="text_box">
               <div class="name">{{ cart.goods.name }}</div>
-              <div class="price">$ {{ cart.goods.price }}</div>
+              <div class="price">$ {{ Number(cart.goods.price).toFixed(2) }}</div>
             </div>
           </div>
           <div class="edit" @click="linkToCart">
@@ -41,19 +41,19 @@
       <div class="caculate">
         <div class="subtotal">
           <p class="name">Subtotal</p>
-          <p class="num">$ {{ subtotal }}</p>
+          <p class="num">$ {{ Number(subtotal).toFixed(2) }}</p>
         </div>
         <div class="shipping_and_handing">
           <p class="name">Shipping & Handing</p>
-          <p class="num">$ {{ plus.handling }}</p>
+          <p class="num">$ {{ Number(plus.handling).toFixed(2) }}</p>
         </div>
         <div class="Tax">
           <p class="name">Tax</p>
-          <p class="num">$ {{ plus.tax }}</p>
+          <p class="num">$ {{ Number(plus.tax).toFixed(2) }}</p>
         </div>
         <div class="total">
           <p class="name">Total</p>
-          <p class="num">$ {{ total }}</p>
+          <p class="num">$ {{ Number(total).toFixed(2) }}</p>
         </div>
       </div>
     </div>

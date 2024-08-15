@@ -17,7 +17,7 @@
             <img :src="cart.goods.image" class="img" />
             <div class="text_box">
               <div class="name">{{ cart.goods.name }}</div>
-              <div class="price">${{ cart.goods.price }}</div>
+              <div class="price">${{ Number(cart.goods.price).toFixed(2) }}</div>
             </div>
           </div>
           <div class="number">
@@ -42,7 +42,7 @@
         <i class="iconfont icon-gouwudai"></i>
       </div>
       <div class="sum">
-        <p class="sum_text">$ {{ sumShow }}</p>
+        <p class="sum_text">$ {{ Number(sumShow).toFixed(2) }}</p>
       </div>
       <div class="button_box" @click="linkToReviewPurchase">
         <div class="create_button">

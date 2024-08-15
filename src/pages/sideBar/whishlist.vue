@@ -8,7 +8,7 @@
           <div class="text_box">
             <div class="name">{{ wish.goods.name }}</div>
             <div class="brand">{{ wish.goods.origin }}</div>
-            <div class="price">$ {{ wish.goods.price }}</div>
+            <div class="price">$ {{ Number(wish.goods.price).toFixed(2) }}</div>
           </div>
           <div class="like_box" @click="cancelLike(wish)">
             <i class="iconfont icon-aixin1"></i>
