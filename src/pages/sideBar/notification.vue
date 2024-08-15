@@ -26,7 +26,16 @@
   </div>
 </template>
 <script setup>
-import { onBeforeMount, reactive, ref, nextTick } from 'vue'
+import {
+  onBeforeMount,
+  reactive,
+  ref,
+  nextTick,
+  onUpdated,
+  toRaw,
+  onUnmounted,
+  onBeforeUnmount
+} from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
 import dayjs from 'dayjs'
@@ -63,7 +72,6 @@ onBeforeMount(async () => {
   } else {
   }
   console.log('get获取通知：', resp_getNotification)
-  console.log(notificationList)
 
   // 时间差处理
   notificationList.forEach((item) => {

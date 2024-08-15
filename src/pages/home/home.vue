@@ -1,11 +1,14 @@
 <template>
   <div class="app" :class="isActivedInfo == true || isLogOut == true ? 'app_regular' : 'app'">
-    <!-- TODO:有通知时，没有小红点 -->
     <!-- 顶部导航栏 -->
     <div class="nav">
       <div class="nav_box">
-        <i class="iconfont icon-mulu" @click="linkToInfo"></i>
-        <i class="iconfont icon-ling" @click="linkToNotification"></i>
+        <i class="iconfont icon-mulu" @click="linkToInfo">
+          <div class="unread" v-if="noRead == false"></div>
+        </i>
+        <i class="iconfont icon-ling" @click="linkToNotification">
+          <div class="unread" v-if="noRead == false"></div>
+        </i>
       </div>
     </div>
     <div class="content">
@@ -184,7 +187,6 @@
     @click="activedMask"
     :class="isActivedInfo == true ? 'mask_regular' : 'mask'"
   ></div>
-  <!-- TODO:通知的小红点 -->
   <!-- TODO:侧边栏动画卡顿 -->
   <!-- 侧边栏 -->
   <div class="sideBar" v-if="isActivedInfo == true">
@@ -212,6 +214,7 @@
           <img :src="use.img" class="use_img" />
           <p class="use_name">{{ use.name }}</p>
           <div class="arrow">
+            <div class="unread" v-if="use_index == 1 && noRead == false"></div>
             <i class="iconfont icon-jiantou"></i>
           </div>
         </li>
@@ -247,7 +250,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onBeforeMount, nextTick } from 'vue'
+import { ref, reactive, onBeforeMount, nextTick, toRaw } from 'vue'
 import TabBar from '@/components/tabBar'
 import product from '@/assets/prodoct_img.jpg'
 import product2 from '@/assets/popular_img1.jpg'
@@ -487,9 +490,12 @@ const addToCart = async (product, event) => {
 }
 
 const user = reactive({})
+const noRead = ref(false)
 
-// 获取用户信息
 onBeforeMount(async () => {
+  await nextTick()
+
+  // 获取用户信息
   const { data: resp } = await axios({
     method: 'get',
     url: '/onlineShop/getUserInfo',
@@ -501,6 +507,37 @@ onBeforeMount(async () => {
   })
   Object.assign(user, resp.data)
   console.log('用户信息resp', resp)
+
+  // 获取通知get请求
+  const { data: resp_getNotification } = await axios({
+    method: 'get',
+    url: '/onlineShop/getNotification',
+    params: {
+      size: 10,
+      page: 1
+    },
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'application/json; charset=utf-8'
+    }
+  })
+
+  const arr = reactive([])
+  toRaw(resp_getNotification.data.list).forEach((item) => {
+    if (item.read == 0) {
+      toRaw(arr).push({
+        noread: item.read
+      })
+    }
+  })
+  if (arr.length == 0) {
+    noRead.value = true
+  }
+  console.log(resp_getNotification)
+  console.log(arr.length)
+  //   // 获取notification页面消息是否已读
+  // const noRead = ref(route.query.noRead)
+  // console.log(noRead.value)
 })
 
 // sideBar页面
@@ -632,6 +669,16 @@ onBeforeMount(async () => {
         color: #191d31;
         margin-right: auto;
         margin-left: 20px;
+        position: relative;
+        .unread {
+          width: 8px;
+          height: 8px;
+          border-radius: 50px;
+          background-color: #a456dd;
+          position: absolute;
+          top: -3px;
+          right: -5px;
+        }
       }
       .title {
         width: 48px;
@@ -650,6 +697,16 @@ onBeforeMount(async () => {
         color: #a456dd;
         margin-left: auto;
         margin-right: 20px;
+        position: relative;
+        .unread {
+          width: 8px;
+          height: 8px;
+          border-radius: 50px;
+          background-color: #a456dd;
+          position: absolute;
+          top: 0px;
+          right: 0px;
+        }
       }
     }
   }
@@ -1146,6 +1203,15 @@ onBeforeMount(async () => {
           align-items: center;
           margin-left: auto;
           margin-right: 20px;
+          position: relative;
+          .unread {
+            width: 8px;
+            height: 8px;
+            border-radius: 50px;
+            background-color: #a456dd;
+            position: absolute;
+            right: -15px;
+          }
           .icon-jiantou {
             font-size: 13px;
             color: #828282;
