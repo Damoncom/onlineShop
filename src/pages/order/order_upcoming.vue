@@ -65,24 +65,6 @@ const isOrderPage = true
 // 商品列表信息
 const orderList = reactive([])
 
-// 从商品历史页面添加的商品
-const addOrder = route.query
-const count = ref(orderList.length)
-
-if (JSON.stringify(addOrder) != '{}') {
-  orderList.push({
-    id: count.value + 1,
-    name: addOrder.name,
-    brand: addOrder.brand,
-    price: addOrder.price,
-    imgUrl: order2,
-    state: 'Pending'
-  })
-
-  // 存储商品列表
-  localStorage.setItem('orderList', JSON.stringify(orderList))
-}
-
 onBeforeMount(async () => {
   await nextTick()
 
@@ -118,23 +100,23 @@ onBeforeMount(async () => {
   console.log('get订单列表:', resp_orderList)
   console.log(orderList)
 
-  // put修改订单状态
-  const { data: resp_editState } = await axios({
-    method: 'put',
-    url: '/onlineShop/updateOrderStatus',
-    data: {
-      orderId: 'order_20240812212956_7',
-      status: -1
-    },
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'application/json; charset=utf-8'
-    }
-  })
-  if (resp_editState.errCode == 1000) {
-  } else {
-  }
-  console.log('put修改订单状态：', resp_editState)
+  // // put修改订单状态
+  // const { data: resp_editState } = await axios({
+  //   method: 'put',
+  //   url: '/onlineShop/updateOrderStatus',
+  //   data: {
+  //     orderId: 'order_20240812212956_7',
+  //     status: -1
+  //   },
+  //   headers: {
+  //     Authorization: `Bearer ${token_info}`,
+  //     'Content-Type': 'application/json; charset=utf-8'
+  //   }
+  // })
+  // if (resp_editState.errCode == 1000) {
+  // } else {
+  // }
+  // console.log('put修改订单状态：', resp_editState)
 })
 </script>
 

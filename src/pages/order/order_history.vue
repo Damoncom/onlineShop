@@ -37,7 +37,7 @@
               <div class="line"></div>
             </div>
             <div class="item_bottom">
-              <div class="re_order" @click="reOrder">
+              <div class="re_order" @click="reOrder(order)">
                 <p class="re_order_text">Re-Order</p>
               </div>
               <div class="tracking">
@@ -86,21 +86,26 @@ const orderList = reactive([])
 // -1:cancelled 1:pending 2:on going 3:completed
 
 // reorder重新添加到购物车
-const reOrder = (e) => {
-  let getDataset = e.currentTarget.parentElement.parentElement.dataset
-  console.log(getDataset)
-  let reorderDetails = {
-    name: getDataset.name,
-    brand: getDataset.brand,
-    price: getDataset.price,
-    imgUrl: getDataset.img
-  }
-  console.log(reorderDetails)
+const reOrder = async (order) => {
+  await nextTick()
+  console.log(order)
 
-  router.push({
-    path: '/order',
-    query: reorderDetails
+  const { data: resp_addToCart } = await axios({
+    method: 'post',
+    url: '/onlineShop/editCart',
+    data: {
+      goodsId: order.goods.id,
+      amount: '1'
+    },
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'multipart/form-data'
+    }
   })
+  if (resp_addToCart.errCode == 1000) {
+  } else {
+  }
+  console.log('post增加到购物车：', resp_addToCart)
 }
 
 onBeforeMount(async () => {

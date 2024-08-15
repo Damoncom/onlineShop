@@ -51,6 +51,7 @@
         </swiper-slide>
       </swiper-container>
       <!-- TODO:右边留空隙 -->
+      <!-- TODO:手机不一样，是否可以滑动 -->
       <!-- 分类 -->
       <div class="categories">
         <ul class="categories_list">

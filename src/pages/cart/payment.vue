@@ -286,7 +286,6 @@ const linkToDone = async () => {
     item.orderId = 'order_' + time + '_' + item.goodsId
   })
 
-  //TODO:返回太多订单
   // promise.all(并起发送请求)
   // 创建订单
   const arrReq = queryOrder.map((item) => {
