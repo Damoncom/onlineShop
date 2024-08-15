@@ -23,12 +23,13 @@
           {{ details.origin }}
         </div>
         <div class="score">
-          <i class="iconfont icon-shoucang"></i>
-          <i class="iconfont icon-shoucang" v-if="details.score > 2"></i>
-          <i class="iconfont icon-shoucang" v-if="details.score > 4"></i>
-          <i class="iconfont icon-shoucang" v-if="details.score > 6"></i>
-          <i class="iconfont icon-shoucang" v-if="details.score > 8"></i>
-          <p class="score_text">{{ details.score }}</p>
+          <star-rating
+            :rating="details.score"
+            :increment="0.1"
+            :read-only="true"
+            :star-size="20"
+            class="starScore"
+          ></star-rating>
         </div>
         <div class="info_discription">
           {{ details.introduction }}
@@ -60,6 +61,7 @@ import { onBeforeMount, reactive, ref, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import product from '@/assets/details_img.jpg'
 import axios from 'axios'
+import StarRating from 'vue-star-rating'
 
 const router = useRouter()
 const route = useRoute()
@@ -69,6 +71,7 @@ const goBack = () => {
   router.go(-1)
 }
 
+const rating = ref('')
 // 获取传参信息
 const productId = route.query
 console.log('传参的数据', productId)
@@ -283,10 +286,7 @@ const addToCart = async () => {
         display: flex;
         align-items: center;
         margin-top: 6px;
-        .icon-shoucang {
-          margin-right: 5px;
-          color: #ffa412;
-        }
+
         .score_text {
           color: #ffa412;
           margin-left: 5px;
