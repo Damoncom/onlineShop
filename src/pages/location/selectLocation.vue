@@ -7,14 +7,15 @@
         <input type="text" class="search" placeholder="Search..." v-model="inputText" />
       </div>
       <div class="select_box">
-        <div class="active" @click="chooseRegion">
+        <div class="active">
           <div
             class="box"
             v-for="(region, index) of regionList"
             :key="index"
             :data-name="region.name"
             :data-index="index"
-            :class="avtivedIndex == index || searchIndex == region.id ? 'box_purple' : 'box'"
+            @click="chooseRegion"
+            :class="avtivedIndex == index ? 'box_purple' : 'box'"
           >
             <i
               class="iconfont icon-xuanzhong"
@@ -45,22 +46,18 @@ const navTitle = 'Select Location'
 const regionList = reactive([])
 let avtivedIndex = ref(0)
 const chooseRegion = (e) => {
-  avtivedIndex.value = e.target.dataset.index
+  avtivedIndex.value = e.currentTarget.dataset.index
+  console.log(e.currentTarget)
 }
 
 // 搜索功能
 let inputText = ref('')
 let searchElement = ref('')
 let searchIndex = ref('')
-// onUpdated(async () => {
-//   await nextTick()
-//   searchElement.value = regionList.value.find((region) => region.name == inputText.value)
-//   searchIndex.value = searchElement.value.id
-// })
 
 // 跳到编辑地址页面
 const linkToEditLocation = (region) => {
-  console.log(region)
+  // console.log(region)
   router.push({
     path: '/edit_location',
     query: region
