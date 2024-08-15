@@ -67,6 +67,7 @@ import { ref, onMounted, onServerPrefetch, onBeforeUpdate, onBeforeMount, reacti
 import TabBar from '@/components/tabBar'
 import Nav from '@/components/nav'
 import { useRouter, useRoute } from 'vue-router'
+import getUserInfo from '@/utils/getUserInfo'
 
 const router = useRouter()
 const route = useRoute()
@@ -90,17 +91,20 @@ const token_info = localStorage.getItem('token')
 
 onBeforeMount(async () => {
   // 获取用户信息
-  const { data: resp } = await axios({
-    method: 'get',
-    url: '/onlineShop/getUserInfo',
-    params: {},
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'application/json; charset=utf-8'
-    }
-  })
-  Object.assign(user, resp.data)
-  console.log('get获取用户信息：', resp)
+  getUserInfo(user)
+
+  // // 获取用户信息
+  // const { data: resp } = await axios({
+  //   method: 'get',
+  //   url: '/onlineShop/getUserInfo',
+  //   params: {},
+  //   headers: {
+  //     Authorization: `Bearer ${token_info}`,
+  //     'Content-Type': 'application/json; charset=utf-8'
+  //   }
+  // })
+  // Object.assign(user, resp.data)
+  // console.log('get获取用户信息：', resp)
 
   // 获取地址信息
   const { data: resp_getLocation } = await axios({

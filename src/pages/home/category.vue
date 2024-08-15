@@ -47,6 +47,8 @@ import { reactive, ref, onBeforeMount, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
 import product from '@/assets/prodoct_img.jpg'
+import getGoodsList from '@/utils/getGoodsList'
+import editCart from '@/utils/addToCart'
 
 const router = useRouter()
 const route = useRoute()
@@ -87,51 +89,53 @@ const addToCart = async (product, event) => {
   isAdd.value = true
 
   // post请求
-  const { data: resp_addToCart } = await axios({
-    method: 'post',
-    url: '/onlineShop/editCart',
-    data: {
-      goodsId: product.id,
-      amount: '1'
-    },
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'multipart/form-data'
-    }
-  })
-  if (resp_addToCart.errCode == 1000) {
-    isAdd.value = true
-  } else {
-    isAdd.value = false
-  }
-  console.log('post增加到购物车：', resp_addToCart)
+  editCart(product)
+  // const { data: resp_addToCart } = await axios({
+  //   method: 'post',
+  //   url: '/onlineShop/editCart',
+  //   data: {
+  //     goodsId: product.id,
+  //     amount: '1'
+  //   },
+  //   headers: {
+  //     Authorization: `Bearer ${token_info}`,
+  //     'Content-Type': 'multipart/form-data'
+  //   }
+  // })
+  // if (resp_addToCart.errCode == 1000) {
+  //   isAdd.value = true
+  // } else {
+  //   isAdd.value = false
+  // }
+  // console.log('post增加到购物车：', resp_addToCart)
 }
 
 // 获取商品列表信息
 onBeforeMount(async () => {
   await nextTick()
 
-  const { data: resp_orderList } = await axios({
-    method: 'get',
-    url: '/onlineShop/getGoodsList',
-    params: {
-      size: 10,
-      page: 1,
-      barCode: '',
-      name: ''
-    },
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'application/json; charset=utf-8'
-    }
-  })
-  if (resp_orderList.errCode == 1000) {
-    Object.assign(productList, resp_orderList.data.list)
-  } else {
-  }
+  getGoodsList(productList)
+  // const { data: resp_orderList } = await axios({
+  //   method: 'get',
+  //   url: '/onlineShop/getGoodsList',
+  //   params: {
+  //     size: 10,
+  //     page: 1,
+  //     barCode: '',
+  //     name: ''
+  //   },
+  //   headers: {
+  //     Authorization: `Bearer ${token_info}`,
+  //     'Content-Type': 'application/json; charset=utf-8'
+  //   }
+  // })
+  // if (resp_orderList.errCode == 1000) {
+  //   Object.assign(productList, resp_orderList.data.list)
+  // } else {
+  // }
 
-  console.log('获取商品列表数据:', resp_orderList)
-  console.log(productList)
+  // console.log('获取商品列表数据:', resp_orderList)
+  // console.log(productList)
 })
 
 // 下拉加载，上拉刷新

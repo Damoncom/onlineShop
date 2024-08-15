@@ -50,7 +50,6 @@
           <p class="box_text">{{ banner[2].name }}</p>
         </swiper-slide>
       </swiper-container>
-      <!-- TODO:手机不一样，是否可以滑动 -->
       <!-- 分类 -->
       <div class="categories">
         <ul class="categories_list">
@@ -253,6 +252,9 @@ import product from '@/assets/prodoct_img.jpg'
 import product2 from '@/assets/popular_img1.jpg'
 import product3 from '@/assets/popular_img2.jpg'
 import { useRouter, useRoute } from 'vue-router'
+import getUserInfo from '@/utils/getUserInfo'
+import getNoctice from '@/utils/getNotice'
+import editCart from '@/utils/addToCart'
 
 const router = useRouter()
 const route = useRoute()
@@ -465,7 +467,6 @@ const chooseProduct = (product) => {
   })
 }
 
-//TODO:提取代码api
 const actived_cardIndex = ref('')
 const addToCart = async (product, event) => {
   await nextTick()
@@ -474,72 +475,67 @@ const addToCart = async (product, event) => {
   isAdd.value = !isAdd.value
 
   // post请求
-  const { data: resp_addToCart } = await axios({
-    method: 'post',
-    url: '/onlineShop/editCart',
-    data: {
-      goodsId: product.id,
-      amount: '1'
-    },
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'multipart/form-data'
-    }
-  })
-  if (resp_addToCart.errCode == 1000) {
-    isAdd.value = true
-  } else {
-    isAdd.value = false
-  }
-  console.log('post增加到购物车：', resp_addToCart)
+  editCart(product)
+  // const { data: resp_addToCart } = await axios({
+  //   method: 'post',
+  //   url: '/onlineShop/editCart',
+  //   data: {
+  //     goodsId: product.id,
+  //     amount: '1'
+  //   },
+  //   headers: {
+  //     Authorization: `Bearer ${token_info}`,
+  //     'Content-Type': 'multipart/form-data'
+  //   }
+  // })
+  // if (resp_addToCart.errCode == 1000) {
+  //   isAdd.value = true
+  // } else {
+  //   isAdd.value = false
+  // }
+  // console.log('post增加到购物车：', resp_addToCart)
 }
 
 const user = reactive({})
 const noRead = ref(false)
+// const arr = reactive([])
+const notificationList = reactive([])
 
 onBeforeMount(async () => {
   await nextTick()
 
   // 获取用户信息
-  const { data: resp } = await axios({
-    method: 'get',
-    url: '/onlineShop/getUserInfo',
-    params: {},
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'application/json; charset=utf-8'
-    }
-  })
-  Object.assign(user, resp.data)
-  console.log('用户信息resp', resp)
+  getUserInfo(user)
 
   // 获取通知get请求
-  const { data: resp_getNotification } = await axios({
-    method: 'get',
-    url: '/onlineShop/getNotification',
-    params: {
-      size: 10,
-      page: 1
-    },
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'application/json; charset=utf-8'
-    }
-  })
+  getNoctice(notificationList, noRead)
+  console.log(noRead.value)
+  // const { data: resp_getNotification } = await axios({
+  //   method: 'get',
+  //   url: '/onlineShop/getNotification',
+  //   params: {
+  //     size: 10,
+  //     page: 1
+  //   },
+  //   headers: {
+  //     Authorization: `Bearer ${token_info}`,
+  //     'Content-Type': 'application/json; charset=utf-8'
+  //   }
+  // })
 
-  const arr = reactive([])
-  toRaw(resp_getNotification.data.list).forEach((item) => {
-    if (item.read == 0) {
-      toRaw(arr).push({
-        noread: item.read
-      })
-    }
-  })
-  if (arr.length == 0) {
-    noRead.value = true
-  }
-  console.log(resp_getNotification)
-  console.log(arr.length)
+  // const arr = reactive([])
+  // toRaw(resp_getNotification.data.list).forEach((item) => {
+  //   if (item.read == 0) {
+  //     toRaw(arr).push({
+  //       noread: item.read
+  //     })
+  //   }
+  // })
+  // if (arr.length == 0) {
+  //   noRead.value = true
+  // }
+  // console.log(resp_getNotification)
+  // console.log(arr.length)
   //   // 获取notification页面消息是否已读
   // const noRead = ref(route.query.noRead)
   // console.log(noRead.value)
@@ -908,6 +904,8 @@ onBeforeMount(async () => {
           width: 327px;
           height: 164px;
           overflow-x: scroll;
+          display: -webkit-box;
+          white-space: nowrap;
           display: flex;
           // margin-left: 15px;
           // li

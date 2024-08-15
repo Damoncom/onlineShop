@@ -175,14 +175,7 @@ const locationDetails = reactive({})
 const queryOrder = reactive([])
 
 // post请求创建通知
-const createNotice = reactive(
-  []
-  //   {
-  //   content: 'Your Order just arrived',
-  //   vendor: 'demo',
-  //   read: 0
-  // }
-)
+const createNotice = reactive([])
 // 购物车变量
 const cartList = reactive([])
 
@@ -315,6 +308,7 @@ const linkToDone = async () => {
   }
   console.log(await Promise.all(arrReq))
   console.log(queryOrderId)
+  console.log(createNotice)
 
   // 创建通知
   const arrReq2 = createNotice.map((item) => {

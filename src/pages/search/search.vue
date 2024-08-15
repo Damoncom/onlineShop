@@ -81,7 +81,7 @@
               <div class="title">{{ product.name }}</div>
               <div class="brand">{{ product.brand }}</div>
               <div class="price">$ {{ Number(product.price).toFixed(2) }}</div>
-              <div class="card_cart" @click.stop="addToCart">
+              <div class="card_cart" @click.stop="addToCart(product, $event)">
                 <i
                   class="iconfont icon-gouwudai"
                   :class="
@@ -123,7 +123,7 @@
               <div class="title">{{ product.name }}</div>
               <div class="brand">{{ product.brand }}</div>
               <div class="price">$ {{ Number(product.price).toFixed(2) }}</div>
-              <div class="card_cart" @click.stop="addToCart">
+              <div class="card_cart" @click.stop="addToCart(product, $event)">
                 <i
                   class="iconfont icon-gouwudai"
                   :class="
@@ -158,6 +158,8 @@ import {
 import TabBar from '@/components/tabBar'
 import product from '@/assets/prodoct_img.jpg'
 import { useRouter, useRoute } from 'vue-router'
+import getGoodsList from '@/utils/getGoodsList'
+import editCart from '@/utils/addToCart'
 
 const router = useRouter()
 const route = useRoute()
@@ -254,26 +256,27 @@ const deleteHistory = async () => {
   historyList.length = 0
 
   // 获取商品列表数据
-  const { data: resp_product } = await axios({
-    method: 'get',
-    url: '/onlineShop/getGoodsList',
-    params: {
-      size: 6,
-      page: 1,
-      barCode: '',
-      name: ''
-    },
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'application/json; charset=utf-8'
-    }
-  })
-  if (resp_product.errCode == 1000) {
-    Object.assign(productList, resp_product.data.list)
-    count_product.value = productList.length
-  } else {
-  }
-  console.log('获取商品列表数据:', resp_product)
+  getGoodsList(productList)
+  // const { data: resp_product } = await axios({
+  //   method: 'get',
+  //   url: '/onlineShop/getGoodsList',
+  //   params: {
+  //     size: 10,
+  //     page: 1,
+  //     barCode: '',
+  //     name: ''
+  //   },
+  //   headers: {
+  //     Authorization: `Bearer ${token_info}`,
+  //     'Content-Type': 'application/json; charset=utf-8'
+  //   }
+  // })
+  // if (resp_product.errCode == 1000) {
+  //   Object.assign(productList, resp_product.data.list)
+  //   count_product.value = productList.length
+  // } else {
+  // }
+  // console.log('获取商品列表数据:', resp_product)
 }
 
 // 商品显示方式选择
@@ -300,9 +303,11 @@ const chooseProduct = (product) => {
 }
 
 const actived_cardIndex = ref('')
-const addToCart = (e) => {
-  actived_cardIndex.value = e.currentTarget.parentElement.parentElement.dataset.index
+const addToCart = (product, event) => {
+  actived_cardIndex.value = event.currentTarget.parentElement.parentElement.dataset.index
   isAdd.value = !isAdd.value
+
+  editCart(product)
 }
 
 // 下拉加载，上拉刷新

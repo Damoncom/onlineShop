@@ -39,6 +39,7 @@ import {
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
 import dayjs from 'dayjs'
+import getNoctice from '@/utils/getNotice'
 
 const router = useRouter()
 const route = useRoute()
@@ -54,36 +55,37 @@ const token_info = localStorage.getItem('token')
 onBeforeMount(async () => {
   await nextTick()
 
-  // 获取通知get请求
-  const { data: resp_getNotification } = await axios({
-    method: 'get',
-    url: '/onlineShop/getNotification',
-    params: {
-      size: 10,
-      page: 1
-    },
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'application/json; charset=utf-8'
-    }
-  })
-  if (resp_getNotification.errCode == 1000) {
-    Object.assign(notificationList, resp_getNotification.data.list)
-  } else {
-  }
-  console.log('get获取通知：', resp_getNotification)
+  getNoctice(notificationList)
+  // // 获取通知get请求
+  // const { data: resp_getNotification } = await axios({
+  //   method: 'get',
+  //   url: '/onlineShop/getNotification',
+  //   params: {
+  //     size: 10,
+  //     page: 1
+  //   },
+  //   headers: {
+  //     Authorization: `Bearer ${token_info}`,
+  //     'Content-Type': 'application/json; charset=utf-8'
+  //   }
+  // })
+  // if (resp_getNotification.errCode == 1000) {
+  //   Object.assign(notificationList, resp_getNotification.data.list)
+  // } else {
+  // }
+  // console.log('get获取通知：', resp_getNotification)
 
-  // 时间差处理
-  notificationList.forEach((item) => {
-    let time = item.createdAt
-    time = dayjs(time).format('YYYY-MM-DD HH:mm:ss')
-    let nowTime = dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss')
+  // // 时间差处理
+  // notificationList.forEach((item) => {
+  //   let time = item.createdAt
+  //   time = dayjs(time).format('YYYY-MM-DD HH:mm:ss')
+  //   let nowTime = dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss')
 
-    const date1 = dayjs(nowTime)
-    const timediff = date1.diff(nowTime, 'minute')
+  //   const date1 = dayjs(nowTime)
+  //   const timediff = date1.diff(nowTime, 'minute')
 
-    item.timediff = timediff + ' m ago'
-  })
+  //   item.timediff = timediff + ' m ago'
+  // })
 })
 
 // 已读通知put请求
@@ -189,3 +191,4 @@ const readNotice = async (notification) => {
   }
 }
 </style>
+@/utils/getNotice

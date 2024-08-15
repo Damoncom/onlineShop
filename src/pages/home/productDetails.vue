@@ -60,6 +60,7 @@ import { onBeforeMount, reactive, ref, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import product from '@/assets/details_img.jpg'
 import axios from 'axios'
+
 const router = useRouter()
 const route = useRoute()
 
@@ -179,7 +180,28 @@ const add = async () => {
 }
 
 // 跳转cart页面
-const addToCart = () => {
+const addToCart = async () => {
+  await nextTick()
+
+  const { data: resp_addToCart } = await axios({
+    method: 'post',
+    url: '/onlineShop/editCart',
+    data: {
+      goodsId: productId.productId,
+      amount: 1
+    },
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+  if (resp_addToCart.errCode == 1000) {
+    isAdd.value = true
+  } else {
+    isAdd.value = false
+  }
+  console.log('post加入购物车：', resp_addToCart)
+
   router.push({
     path: '/cart'
   })

@@ -116,11 +116,11 @@
 </template>
 
 <script setup>
-import { ref, onUpdated, nextTick, unref, isReactive, isRef, onBeforeMount } from 'vue'
+import { ref, onUpdated, nextTick, unref, isReactive, isRef, onBeforeMount, reactive } from 'vue'
 import Nav from '@/components/nav'
 import Toast from '../../components/toast.vue'
 import { useRouter, useRoute } from 'vue-router'
-import { reactive } from 'vue'
+import getUserInfo from '@/utils/getUserInfo'
 
 const router = useRouter()
 const route = useRoute()
@@ -273,20 +273,22 @@ console.log(user)
 // 页面默认显示
 // get请求获取用户信息
 onBeforeMount(async () => {
-  const token_info = localStorage.getItem('token')
-  const { data: resp } = await axios({
-    method: 'get',
-    url: '/onlineShop/getUserInfo',
-    params: {},
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'application/json; charset=utf-8'
-    }
-  })
-  Object.assign(user, resp.data)
-  // Reflect.set(user.value, 'id', resp.data.id)
-  console.log('resp', resp)
-  console.log('编辑页请求的数据：', user)
+  // 获取用户信息
+  getUserInfo(user)
+  // const token_info = localStorage.getItem('token')
+  // const { data: resp } = await axios({
+  //   method: 'get',
+  //   url: '/onlineShop/getUserInfo',
+  //   params: {},
+  //   headers: {
+  //     Authorization: `Bearer ${token_info}`,
+  //     'Content-Type': 'application/json; charset=utf-8'
+  //   }
+  // })
+  // Object.assign(user, resp.data)
+  // // Reflect.set(user.value, 'id', resp.data.id)
+  // console.log('resp', resp)
+  // console.log('编辑页请求的数据：', user)
 })
 
 // 保存修改按钮
