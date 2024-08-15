@@ -50,7 +50,6 @@
           <p class="box_text">{{ banner[2].name }}</p>
         </swiper-slide>
       </swiper-container>
-      <!-- TODO:右边留空隙 -->
       <!-- TODO:手机不一样，是否可以滑动 -->
       <!-- 分类 -->
       <div class="categories">
@@ -226,7 +225,6 @@
     <div class="info_version">Version 1.0.0</div>
   </div>
 
-  <!-- TODO:退出后返回在刷新还有登录状态 -->
   <!-- 退出登录面板 -->
   <div class="logout" v-if="isLogOut == true">
     <div class="line_box">
@@ -625,6 +623,9 @@ const activeUse = (e) => {
 
 // 退出登录
 const linkToSignIn = () => {
+  // 清除localstorage缓存
+  localStorage.clear()
+
   router.push({
     path: '/signIn'
   })
