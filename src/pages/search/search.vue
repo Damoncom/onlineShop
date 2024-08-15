@@ -20,7 +20,6 @@
           </div>
         </div>
       </div>
-      <!-- TODO:清空搜索历史 -->
       <!-- 搜索历史 -->
       <div class="search_history" v-if="isWay == false">
         <div class="history_use">
@@ -194,7 +193,6 @@ onBeforeMount(async () => {
   Object.assign(historyList, search_history)
 })
 
-// TODO:没有搜索结果时，更新获取结果
 //搜索功能
 // 搜索功能(回车后添加li)
 const inputText = ref('')
@@ -233,6 +231,10 @@ const search = async () => {
     isWay.value = true
   } else {
     isWay.value = false
+  }
+  if (resp_search.data.list.length == 0) {
+    productList.length = 0
+    count_product.value = 0
   }
   console.log('模糊搜索获取商品列表数据:', resp_search)
 }
