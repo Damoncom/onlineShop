@@ -71,7 +71,6 @@
         </div>
         <div class="product_card">
           <ul class="product_list">
-            <!-- TODO:价格保0操作 -->
             <li
               class="product_item"
               v-for="(product, product_index) of recommendedList"
