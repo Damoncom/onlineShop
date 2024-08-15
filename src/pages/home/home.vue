@@ -839,11 +839,15 @@ onBeforeMount(async () => {
       width: 375px;
       height: 32px;
       margin-top: 20px;
-      overflow-x: scroll;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       // ul
       .categories_list {
-        margin-left: 20px;
+        width: 327px;
         height: 32px;
+        overflow-x: scroll;
         display: flex;
         align-items: center;
         // li
@@ -851,7 +855,7 @@ onBeforeMount(async () => {
           width: auto;
           height: 29px;
           padding: 0 10px;
-          margin: 0 5px 0 5px;
+          margin: 0 10px 0 0;
           border-radius: 100px;
           border: 1px solid #e0e0e0;
           display: flex;
@@ -870,10 +874,11 @@ onBeforeMount(async () => {
           color: #a456dd;
         }
       }
+      .categories_list::-webkit-scrollbar {
+        display: none;
+      }
     }
-    .categories::-webkit-scrollbar {
-      display: none;
-    }
+
     .recommended {
       width: 327px;
       height: 198px;
@@ -894,19 +899,24 @@ onBeforeMount(async () => {
         height: 164px;
         margin-top: 6px;
         padding-bottom: 70px;
-        overflow-x: scroll;
-        overflow-y: hidden;
+        overflow: hidden;
+        display: flex;
+        // align-items: center;
+        justify-content: center;
         // ul
         .product_list {
+          width: 327px;
+          height: 164px;
+          overflow-x: scroll;
           display: flex;
-          margin-left: 15px;
+          // margin-left: 15px;
           // li
           .product_item {
             width: 128px;
             height: 164px;
             border-radius: 8px;
             background-color: #f9f9fb;
-            margin: 0 7.5px;
+            margin-right: 15px;
             .img_box {
               .product_img {
                 width: 128px;
@@ -955,9 +965,9 @@ onBeforeMount(async () => {
             }
           }
         }
-      }
-      .product_card::-webkit-scrollbar {
-        display: none;
+        .product_list::-webkit-scrollbar {
+          display: none;
+        }
       }
     }
     .popular {

@@ -37,7 +37,6 @@ const navTitle = 'Payment History'
 
 const token_info = localStorage.getItem('token')
 
-//TODO:获取订单信息
 // 商品列表信息
 const orderList = reactive([])
 
