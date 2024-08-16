@@ -6,7 +6,6 @@
 
 <script setup>
 const props = defineProps(['init'])
-// console.log(props.init)
 </script>
 
 <style lang="scss" scoped>
