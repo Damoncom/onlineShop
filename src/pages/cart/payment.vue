@@ -176,6 +176,10 @@ const queryOrder = reactive([])
 
 // post请求创建通知
 const createNotice = reactive([])
+
+// post请求支付
+const payment = reactive([])
+
 // 购物车变量
 const cartList = reactive([])
 
@@ -201,10 +205,15 @@ onBeforeMount(async () => {
       toRaw(createNotice).push({
         content: '您购买的' + item.goods.name + '商品已下单'
       })
+      toRaw(payment).push({
+        userId: item.userId,
+        type: 'payment'
+      })
     })
   } else {
   }
   console.log('get购物车数据:', resp_cart)
+  console.log(payment)
 
   // 获取用户数据
   const { data: resp_user } = await axios({
@@ -275,9 +284,21 @@ const queryOrderId = reactive([])
 const linkToDone = async () => {
   // 前端生成订单号：order_${yyyMMddHHmmss}_${uuid}【多个商品时，使用相同的OrderId】
   const time = yy + mm + dd + hh + mf + ss
-  toRaw(queryOrder).forEach((item) => {
-    item.orderId = 'order_' + time + '_' + item.goodsId
+  toRaw(cartList).forEach((item) => {
+    toRaw(queryOrder).forEach((item2) => {
+      item2.orderId = 'order_' + time + '_' + item.goodsId
+    })
+
+    toRaw(payment).forEach((item2) => {
+      item2.orderId = ['order_' + time + '_' + item.goodsId]
+    })
+    // toRaw(payment).forEach((item3) => {
+    //   item3.orderId = 'order_' + time + '_' + item.goodsId
+    // })
   })
+  // console.log('cartlist', cartList)
+  // console.log('queryOrder', queryOrder)
+  console.log('payment', payment)
 
   // promise.all(并起发送请求)
   // 创建订单
@@ -335,14 +356,43 @@ const linkToDone = async () => {
   }
   console.log(await Promise.all(arrReq2))
 
-  if (!respStateList.includes(false) && !respStateList2.includes(false)) {
-    router.push({
-      path: '/done',
-      query: {
-        orderId: queryOrderId
+  // post支付
+  const arrReq3 = payment.map((item) => {
+    return axios({
+      method: 'post',
+      url: '/onlineShop/pay',
+      data: item,
+      headers: {
+        Authorization: `Bearer ${token_info}`,
+        'Content-Type': 'multipart/form-data'
       }
     })
+  })
+
+  const respList3 = await Promise.all(arrReq3)
+  const respStateList3 = respList3.map((item) => {
+    if (item.data.errCode == 1000) return true
+    else return false
+  })
+  console.log(respStateList3)
+  if (!respStateList3.includes(false)) {
+    // 全部接口放回正确后需要操作
+    console.log('创建所有通知success')
   }
+  console.log(await Promise.all(arrReq3))
+
+  // if (
+  //   !respStateList.includes(false) &&
+  //   !respStateList2.includes(false) &&
+  //   !respStateList3.includes(false)
+  // ) {
+  //   router.push({
+  //     path: '/done',
+  //     query: {
+  //       orderId: queryOrderId
+  //     }
+  //   })
+  // }
 }
 </script>
 <style lang="scss" scoped>
