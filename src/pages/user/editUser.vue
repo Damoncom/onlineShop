@@ -274,7 +274,7 @@ console.log(user)
 // get请求获取用户信息
 onBeforeMount(async () => {
   // 获取用户信息
-  getUserInfo(user)
+  getUserInfo(user, input_gender)
   // const token_info = localStorage.getItem('token')
   // const { data: resp } = await axios({
   //   method: 'get',
@@ -289,6 +289,7 @@ onBeforeMount(async () => {
   // // Reflect.set(user.value, 'id', resp.data.id)
   // console.log('resp', resp)
   // console.log('编辑页请求的数据：', user)
+  console.log(input_gender.value)
 })
 
 // 保存修改按钮
