@@ -290,7 +290,7 @@ const linkToDone = async () => {
     })
 
     toRaw(payment).forEach((item2) => {
-      item2.orderId = ['order_' + time + '_' + item.goodsId]
+      item2.orderIdList = ['order_' + time + '_' + item.goodsId]
     })
     // toRaw(payment).forEach((item3) => {
     //   item3.orderId = 'order_' + time + '_' + item.goodsId
