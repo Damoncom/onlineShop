@@ -205,7 +205,7 @@ const signIn = async (user) => {
     })
     console.log(resp_signIn)
 
-    if (resp_signIn.status != 200) {
+    if (resp_signIn.status == 404) {
       router.push({
         path: '/notFound'
       })
