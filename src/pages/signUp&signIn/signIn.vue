@@ -43,6 +43,7 @@
                 placeholder="Enter your password"
                 class="pwd"
                 v-model="user.pwd"
+                @keyup.enter="signInButton(user)"
               />
               <img src="@/assets/right.svg" class="right" v-if="isRightPwd == true" />
             </div>
@@ -63,7 +64,7 @@
       </div>
 
       <div class="button_box">
-        <div class="create_button" @click="signIn(user)">
+        <div class="create_button" @click="signInButton(user)">
           <p class="text">Sign In</p>
         </div>
       </div>
@@ -92,13 +93,22 @@
 </template>
 
 <script setup>
-import { ref, onUpdated, nextTick, onMounted, onBeforeMount } from 'vue'
+import {
+  ref,
+  onUpdated,
+  nextTick,
+  onMounted,
+  onBeforeMount,
+  unref,
+  toValue,
+  reactive,
+  isReactive,
+  isRef
+} from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
 import Toast from '@/components/toast.vue'
-import { useRouter, useRoute } from 'vue-router'
-import { reactive, isReactive, isRef } from 'vue'
-import { unref } from 'vue'
-import { toValue } from 'vue'
+import { signIn } from '@/utils/api'
 
 const router = useRouter()
 const route = useRoute()
@@ -129,14 +139,12 @@ const linkToReset = () => {
 
 onBeforeMount(async () => {
   await nextTick()
+
   const isRemember_info = JSON.parse(localStorage.getItem('isRemember'))
-  const user_details = JSON.parse(localStorage.getItem('user_details'))
   if (isRemember_info == false) {
     // 清除localstorage缓存
     localStorage.clear()
   } else {
-    // user.phoneNumber = user_details.phoneNumber
-    // user.pwd = user_details.pwd
   }
 })
 
@@ -169,20 +177,17 @@ onUpdated(async () => {
 })
 
 // 登录按钮
-const signIn = async (user) => {
+const signInButton = async (user) => {
   await nextTick()
 
+  // 控制toast出现
   isActivedSignin.value = true
   setTimeout(async () => {
     await nextTick()
     isActivedSignin.value = false
   }, 4000)
 
-  // 需发送的数据
-  let obj = JSON.parse(JSON.stringify(user))
-  console.log(obj)
-
-  // 综合判断
+  // 输入格式正确与否判断
   if (isRightPhone.value === false && isRightPwd.value === false) {
     msg.value = 'Incorrect phone number and password input'
   } else if (isRightPhone.value === true && isRightPwd.value === false) {
@@ -192,29 +197,14 @@ const signIn = async (user) => {
   } else if (isRightPhone.value === true && isRightPwd.value === true) {
     signin.value = true
 
+    // post登录须提交的数据
+    let obj = JSON.parse(JSON.stringify(user))
+
     // post登录
-
-    // post请求
-    const resp_signIn = await axios({
-      method: 'post',
-      url: '/onlineShop/signIn',
-      data: obj,
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    })
-    console.log(resp_signIn)
-
-    if (resp_signIn.status == 404) {
-      router.push({
-        path: '/notFound'
-      })
-    }
-
-    if (resp_signIn.data.errCode == 1000) {
+    const resp = await signIn(obj)
+    if (resp.errCode == 1000) {
       // 存储token
-      localStorage.setItem('token', resp_signIn.data.data.token)
-
+      localStorage.setItem('token', resp.data.token)
       // 存储isRemember的值
       localStorage.setItem('isRemember', JSON.stringify(obj.isRemember))
 
@@ -223,9 +213,9 @@ const signIn = async (user) => {
         path: '/home'
       })
     } else {
-      msg.value = resp_signIn.data.errMsg
+      msg.value = resp.errMsg
     }
-    console.log('post请求登录：', resp_signIn)
+    console.log('post请求siginIn', resp)
   }
 }
 

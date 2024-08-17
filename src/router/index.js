@@ -10,7 +10,7 @@ const router = createRouter({
       name: 'walkthrough',
       component: walkthrough
     },
-    // signIn  &   signUp 页面
+    // signIn  &  signUp 页面
     {
       path: '/signUp',
       name: 'signUp',

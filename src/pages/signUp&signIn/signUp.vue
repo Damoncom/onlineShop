@@ -72,13 +72,13 @@
           <p class="text">Or Sign Up With</p>
         </div>
         <div class="social_buttons">
-          <div class="google" @click="googleRegister">
+          <div class="google">
             <img src="@/assets/google.svg" class="google_img" />
           </div>
-          <div class="facebook" @click="facebookRegister">
+          <div class="facebook">
             <img src="@/assets/facebook.svg" class="facebook_img" />
           </div>
-          <div class="apple" @click="appleRegister">
+          <div class="apple">
             <img src="@/assets/apple.svg" class="apple_img" />
           </div>
         </div>
@@ -92,11 +92,9 @@
 
 <script setup>
 import { ref, unref, onUpdated, nextTick, onMounted } from 'vue'
-import signUP from './signUp'
-import Nav from '@/components/nav'
-import Toast from '../../components/toast.vue'
-import axios from 'axios'
 import { useRouter, useRoute } from 'vue-router'
+import Nav from '@/components/nav'
+import Toast from '@/components/toast.vue'
 import md5 from 'js-md5'
 
 const router = useRouter()
@@ -126,8 +124,11 @@ let isRightPhone = ref(false)
 let isRightPwd = ref(false)
 let create = ref(false)
 let isActivedCreate = ref(false)
+
+// 实时判断输入正确与否
 onUpdated(async () => {
   await nextTick()
+
   // 判断用户名是否为空
   if (user.value.name !== '') {
     isRightName.value = true
@@ -156,11 +157,15 @@ onUpdated(async () => {
 
 // 创建账户按钮
 const createAccount = async () => {
+  await nextTick()
+
+  // 控制toast出现
   isActivedCreate.value = true
   setTimeout(() => {
     isActivedCreate.value = false
   }, 3900)
 
+  // 输入判断
   if (isRightName.value === false) {
     msg.value = 'Name cannot be empty'
     return
@@ -176,32 +181,16 @@ const createAccount = async () => {
   if (isRightPhone.value === true && isRightPwd.value === true && isRightName.value === true) {
     msg.value = 'Successfully!'
     create.value = true
-    // console.log(
-    //   '名字：' + user.value.name + '手机号：' + user.value.phoneNumber + ' 密码：' + user.value.pwd
-    // )
 
     user.value.pwd = md5(user.value.pwd)
     // Object.assign(user.value.pwd, md5(user.value.pwd))
+
     // 跳转到验证码页面
     router.push({
       path: '/verificationCode',
       query: unref(user)
     })
   }
-}
-
-// 其他渠道注册
-let isGoogle = ref(false)
-let isFacebook = ref(false)
-let isApple = ref(false)
-const googleRegister = () => {
-  isGoogle.value = true
-}
-const facebookRegister = () => {
-  isFacebook.value = true
-}
-const appleRegister = () => {
-  isApple.value = true
 }
 </script>
 

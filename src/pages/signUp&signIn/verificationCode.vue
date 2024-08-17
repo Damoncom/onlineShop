@@ -67,15 +67,19 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick, onUpdated, toRaw } from 'vue'
-import Nav from '@/components/nav'
-import Toast from '../../components/toast.vue'
-import axios from 'axios'
+import { ref, onMounted, nextTick, onUpdated, toRaw, reactive, isReactive } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { reactive, isReactive } from 'vue'
+import Nav from '@/components/nav'
+import Toast from '@/components/toast.vue'
+import axios from 'axios'
+import { signIn, signUp } from '@/utils/api'
 
 // 导入导航栏
 const navTitle = ''
+
+// 定义变量
+const msg = ref('')
+let isRecend = ref(false)
 
 // 倒计时
 const fitZero = (num) => {
@@ -105,12 +109,8 @@ const router = useRouter()
 const route = useRoute()
 let user = route.query
 const phone = user.phoneNumber
-let user_signIn = {
-  phoneNumber: user.phoneNumber,
-  pwd: user.pwd
-}
 
-// 页面载入完毕获取验证码
+// 页面载入完毕获取验证码get请求
 onMounted(async () => {
   const { data: resp } = await axios({
     method: 'get',
@@ -122,13 +122,11 @@ onMounted(async () => {
       'Content-Type': 'application/json; charset=utf-8'
     }
   })
-  console.log(resp)
   alert(resp.verificationCode)
 })
 
 // 验证码框
 const verificationCodes = ref(['', '', '', ''])
-
 const handleInput = (index, event) => {
   const value = event.target.value
   verificationCodes.value[index] = value
@@ -160,60 +158,44 @@ let isSubmit = ref(false)
 const submit = async (user) => {
   await nextTick()
 
+  // 控制toast出现
   isRecend.value = true
   setTimeout(async () => {
     await nextTick()
     isRecend.value = false
   }, 4000)
 
+  // 处理验证码数字
   const arr = toRaw(verificationCodes.value)
   const sum = arr.join('')
   Reflect.set(user, 'verificationCode', sum)
 
   // post注册
-  const resp_signUp = await axios({
-    method: 'post',
-    url: '/onlineShop/signUp',
-    data: user,
-    headers: {
-      'Content-Type': 'multipart/form-data'
-    }
-  })
+  const resp_signUp = await signUp(user)
   console.log(resp_signUp)
 
-  if (resp_signUp.data.errCode == 1000) {
-    // 存储注册时的信息
-    localStorage.setItem('user', JSON.stringify(user))
+  if (resp_signUp.errCode == 1000) {
+    msg.value = 'Successfully!'
 
+    // post登录须提交的数据
+    let obj = JSON.parse(JSON.stringify(user))
     // post登录
-    const resp_signIn = await axios({
-      method: 'post',
-      url: '/onlineShop/signIn',
-      data: obj,
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    })
-    console.log(resp_signIn)
-    if (resp_signIn.status != 200) {
-      router.push({
-        path: '/notFound'
-      })
-    }
-    if (resp_signIn.data.errCode == 1000) {
+    const resp = await signIn(obj)
+    if (resp.errCode == 1000) {
       // 存储token
-      localStorage.setItem('token', resp_signIn.data.data.token)
+      localStorage.setItem('token', resp.data.token)
       // 存储isRemember的值
-      localStorage.setItem('isRemember', JSON.stringify(obj.isRemember))
+      localStorage.setItem('isRemember', true)
+
       // 跳转到home页面
       router.push({
         path: '/home'
       })
     } else {
-      msg.value = resp_signIn.data.errMsg
+      msg.value = resp.errMsg
     }
-    console.log('post请求登录：', resp_signIn)
-  } else if (resp_signUp.data.errCode == 1001) {
+    console.log('post请求siginIn', resp)
+  } else if (resp_signUp.errCode == 1001) {
     msg.value = '该用户已注册！'
     setTimeout(async () => {
       await nextTick()
@@ -221,21 +203,15 @@ const submit = async (user) => {
         path: '/signIn'
       })
     }, 2000)
-  } else if (resp_signUp.data.errCode == 1002) {
+  } else if (resp_signUp.errCode == 1002) {
     msg.value = '验证码错误！'
     router.go(0)
   } else {
-    isActivedCreate.value = true
-    msg.value = resp_signUp.data.errMsg
-    setTimeout(() => {
-      isActivedCreate.value = false
-    }, 4000)
+    msg.value = resp_signUp.errMsg
   }
 }
 
 // 重新发送验证码
-const msg = ref('')
-let isRecend = ref(false)
 let recendColor = ref(false)
 const recendFunc = () => {
   isRecend.value = true

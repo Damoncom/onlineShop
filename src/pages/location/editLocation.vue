@@ -66,6 +66,7 @@ import { onUpdated, nextTick, reactive, ref, onBeforeMount } from 'vue'
 import Nav from '@/components/nav'
 import AreaSelect from '@/components/areaSelect'
 import { useRouter, useRoute } from 'vue-router'
+import { getUserInfo } from '@/utils/api'
 
 // 导入导航栏
 const navTitle = 'Edit Location'
@@ -85,19 +86,13 @@ const token_info = localStorage.getItem('token')
 onBeforeMount(async () => {
   await nextTick()
 
-  const { data: resp_user } = await axios({
-    method: 'get',
-    url: '/onlineShop/getUserInfo',
-    params: {},
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'application/json; charset=utf-8'
-    }
-  })
-  if (resp_user.errCode == 1000) {
-    Object.assign(user, resp_user.data)
+  // get用户信息
+  const resp_userInfo = await getUserInfo()
+  if (resp_userInfo.errCode == 1000) {
+    Object.assign(user, resp_userInfo.data)
   } else {
   }
+  console.log('get用户信息：', resp_userInfo)
 })
 
 // 发送put请求，修改配送地址

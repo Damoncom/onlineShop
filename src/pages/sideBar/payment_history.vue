@@ -25,10 +25,9 @@
 </template>
 <script setup>
 import { reactive, onBeforeMount, nextTick, toRaw } from 'vue'
-import order from '@/assets/details_img.jpg'
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
-import getOrderList from '@/utils/getOrderList'
+import { getOrderList } from '@/utils/api'
 
 const router = useRouter()
 const route = useRoute()
@@ -36,46 +35,27 @@ const route = useRoute()
 // 导入导航栏
 const navTitle = 'Payment History'
 
-const token_info = localStorage.getItem('token')
-
-// 商品列表信息
+// 订单列表信息
 const orderList = reactive([])
 
 onBeforeMount(async () => {
   await nextTick()
 
-  getOrderList(orderList)
   // 获取订单列表
-  // const { data: resp_orderList } = await axios({
-  //   method: 'get',
-  //   url: '/onlineShop/getOrderList',
-  //   params: {
-  //     size: 10,
-  //     page: 1
-  //   },
-  //   headers: {
-  //     Authorization: `Bearer ${token_info}`,
-  //     'Content-Type': 'application/json; charset=utf-8'
-  //   }
-  // })
-
-  // if (resp_orderList.errCode == 1000) {
-  //   Object.assign(orderList, resp_orderList.data.list)
-  //   toRaw(orderList).forEach((item) => {
-  //     if (item.status == -1) {
-  //       item.state = 'cancelled'
-  //     } else if (item.status == 1) {
-  //       item.state = 'pending'
-  //     } else if (item.status == 2) {
-  //       item.state = 'on going'
-  //     } else if (item.status == 3) {
-  //       item.state = 'pending'
-  //     }
-  //   })
-  // } else {
-  // }
-  // console.log('get订单列表:', resp_orderList)
-  // console.log(orderList)
+  const resp = await getOrderList()
+  Object.assign(orderList, resp.data.list)
+  toRaw(orderList).forEach((item) => {
+    if (item.status == -1) {
+      item.state = 'cancelled'
+    } else if (item.status == 1) {
+      item.state = 'pending'
+    } else if (item.status == 2) {
+      item.state = 'on going'
+    } else if (item.status == 3) {
+      item.state = 'pending'
+    }
+  })
+  console.log('获取订单列表', resp)
 })
 </script>
 

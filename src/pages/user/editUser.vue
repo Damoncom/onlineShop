@@ -117,10 +117,10 @@
 
 <script setup>
 import { ref, onUpdated, nextTick, unref, isReactive, isRef, onBeforeMount, reactive } from 'vue'
-import Nav from '@/components/nav'
-import Toast from '../../components/toast.vue'
 import { useRouter, useRoute } from 'vue-router'
-import getUserInfo from '@/utils/getUserInfo'
+import Nav from '@/components/nav'
+import Toast from '@/components/toast.vue'
+import { getUserInfo, updateUserInfo, uploadImage } from '@/utils/api'
 
 const router = useRouter()
 const route = useRoute()
@@ -152,35 +152,27 @@ const takePhoto = async () => {
   let formData1 = new FormData()
   formData1.append('file', unref(cameraInput).files[0])
 
-  // post请求
-  const token_info = localStorage.getItem('token')
-  axios.defaults.headers.post['Content-Type'] = 'multipart/form-data'
-  axios.defaults.headers.post['Authorization'] = `Bearer ${token_info}`
-  axios
-    .post('/onlineShop/uploadImage', formData1)
-    .then(function ({ data: response }) {
-      console.log(response)
-      // 获取上传图片的路径
-      imgUrl.value = 'http://192.168.100.7:7001' + response.url
-      user.iconImage = 'http://192.168.100.7:7001' + response.url
-      console.log(imgUrl.value)
-      if (response.code == 1000) {
-      } else {
-        isActivedCreate.value = true
-        msg.value = response.errMsg
-        setTimeout(() => {
-          isActivedCreate.value = false
-        }, 4000)
-      }
-    })
-    .catch(function (error) {
-      console.log(error)
-    })
+  // post上传用户头像
+  const resp_upload_photo = await uploadImage(formData1)
+  if (resp_upload_photo.errCode == 1000) {
+    // 获取上传图片的路径
+    imgUrl.value = 'http://192.168.100.7:7001' + resp_upload_photo.url
+    user.iconImage = 'http://192.168.100.7:7001' + resp_upload_photo.url
+  } else {
+  }
+  console.log(resp_upload_photo)
 }
 
 // 上传照片
 
 const handleFileUpload = async (file, fileList) => {
+  // 控制toast出现
+  isSave.value = true
+  msg.value = response.errMsg
+  setTimeout(() => {
+    isSave.value = false
+  }, 3900)
+
   isChange.value = false
   console.log(uploadInput)
 
@@ -204,30 +196,15 @@ const handleFileUpload = async (file, fileList) => {
     return [f]
   }
 
-  // post请求
-  const token_info = localStorage.getItem('token')
-  axios.defaults.headers.post['Content-Type'] = 'multipart/form-data'
-  axios.defaults.headers.post['Authorization'] = `Bearer ${token_info}`
-  axios
-    .post('/onlineShop/uploadImage', formData)
-    .then(function ({ data: response }) {
-      console.log(response)
-      // 获取上传图片的路径
-      imgUrl.value = 'http://192.168.100.7:7001' + response.url
-      user.iconImage = 'http://192.168.100.7:7001' + response.url
-      console.log(imgUrl.value)
-      if (response.code == 1000) {
-      } else {
-        isActivedCreate.value = true
-        msg.value = response.errMsg
-        setTimeout(() => {
-          isActivedCreate.value = false
-        }, 4000)
-      }
-    })
-    .catch(function (error) {
-      console.log(error)
-    })
+  // post上传用户头像
+  const resp_upload_picture = await uploadImage(formData)
+  if (resp_upload_picture.errCode == 1000) {
+    // 获取上传图片的路径
+    imgUrl.value = 'http://192.168.100.7:7001' + resp_upload_picture.url
+    user.iconImage = 'http://192.168.100.7:7001' + resp_upload_picture.url
+  } else {
+  }
+  console.log(resp_upload_picture)
 }
 
 // 性别选择
@@ -256,51 +233,35 @@ const selectGender = () => {
 }
 
 // 用户信息
-// 获取存储的用户数据
-const user_info = JSON.parse(localStorage.getItem('user'))
-const user_details = JSON.parse(localStorage.getItem('user_details'))
-
 const user = reactive({
   address: '',
   cardNum: '',
-  ...user_info,
-  ...user_details,
   iconImage: 'src/assets/imgurl.jpg'
 })
 
-console.log(user)
-
-// 页面默认显示
 // get请求获取用户信息
 onBeforeMount(async () => {
-  // 获取用户信息
-  getUserInfo(user, input_gender)
-  // const token_info = localStorage.getItem('token')
-  // const { data: resp } = await axios({
-  //   method: 'get',
-  //   url: '/onlineShop/getUserInfo',
-  //   params: {},
-  //   headers: {
-  //     Authorization: `Bearer ${token_info}`,
-  //     'Content-Type': 'application/json; charset=utf-8'
-  //   }
-  // })
-  // Object.assign(user, resp.data)
-  // // Reflect.set(user.value, 'id', resp.data.id)
-  // console.log('resp', resp)
-  // console.log('编辑页请求的数据：', user)
-  console.log(input_gender.value)
+  // get用户信息
+  const resp_userInfo = await getUserInfo()
+  if (resp_userInfo.errCode == 1000) {
+    Object.assign(user, resp_userInfo.data)
+  } else {
+  }
+  console.log('get用户信息：', resp_userInfo)
 })
 
 // 保存修改按钮
 let msg = ref('')
 let isSave = ref(false)
-const save = () => {
+const save = async () => {
+  await nextTick()
+
+  // 控制toast出现
   isSave.value = true
   msg.value = 'Successfully Saved!'
   setTimeout(() => {
     isSave.value = false
-  }, 3000)
+  }, 3900)
 
   // 性别判断
   if (input_gender.value == 'Male') {
@@ -309,42 +270,18 @@ const save = () => {
     user.gender = '1'
   }
 
-  console.log(user)
-
-  // 需发送的数据
+  // 修改过的用户信息
   let obj = JSON.parse(JSON.stringify(user))
-  console.log(obj)
 
-  // 发送数据
-  const token_info = localStorage.getItem('token')
-  axios.defaults.headers.put['Content-Type'] = 'application/json; charset=utf-8'
-  axios.defaults.headers.put['Authorization'] = `Bearer ${token_info}`
-  axios
-    .put('/onlineShop/updateUserInfo', obj)
-    .then(function ({ data: response }) {
-      console.log(response)
-      if (response.errCode == 1000) {
-        // 存储修改过的用户数据
-        localStorage.setItem('user_details', JSON.stringify(obj))
-
-        // 跳转到profile页面
-        router.push({
-          path: '/profile'
-        })
-      } else {
-        isActivedCreate.value = true
-        msg.value = response.errMsg
-        setTimeout(() => {
-          isActivedCreate.value = false
-        }, 4000)
-      }
+  // put修改用户信息
+  const resp_update = await updateUserInfo(obj)
+  if (resp_update.errCode == 1000) {
+    // 跳转到profile页面
+    router.push({
+      path: '/profile'
     })
-    .catch(function (error) {
-      console.log(error)
-    })
-
-  console.log('修改过的数据：', obj)
-  console.log(obj)
+  }
+  console.log(resp_update)
 }
 </script>
 

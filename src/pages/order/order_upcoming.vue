@@ -41,14 +41,10 @@ import { ref, onMounted, nextTick, reactive, onBeforeMount, toRaw } from 'vue'
 import TabBar from '@/components/tabBar'
 import Nav from '@/components/nav'
 import { useRouter, useRoute } from 'vue-router'
-import order from '@/assets/prodoct_img.jpg'
-import order2 from '@/assets/order2.jpg'
-import getOrderList from '@/utils/getOrderList'
+import { getOrderList } from '@/utils/api'
 
 const router = useRouter()
 const route = useRoute()
-
-const token_info = localStorage.getItem('token')
 
 // 导入导航栏
 const navTitle = 'Order'
@@ -63,44 +59,27 @@ const linkToHistory = () => {
 // 确认是Order页面
 const isOrderPage = true
 
-// 商品列表信息
+// 订单列表信息
 const orderList = reactive([])
 
 onBeforeMount(async () => {
   await nextTick()
 
   // 获取订单列表
-  getOrderList(orderList)
-  // const { data: resp_orderList } = await axios({
-  //   method: 'get',
-  //   url: '/onlineShop/getOrderList',
-  //   params: {
-  //     size: 10,
-  //     page: 1
-  //   },
-  //   headers: {
-  //     Authorization: `Bearer ${token_info}`,
-  //     'Content-Type': 'application/json; charset=utf-8'
-  //   }
-  // })
-
-  // if (resp_orderList.errCode == 1000) {
-  //   Object.assign(orderList, resp_orderList.data.list)
-  //   toRaw(orderList).forEach((item) => {
-  //     if (item.status == -1) {
-  //       item.state = 'cancelled'
-  //     } else if (item.status == 1) {
-  //       item.state = 'pending'
-  //     } else if (item.status == 2) {
-  //       item.state = 'on going'
-  //     } else if (item.status == 3) {
-  //       item.state = 'completed'
-  //     }
-  //   })
-  // } else {
-  // }
-  // console.log('get订单列表:', resp_orderList)
-  // console.log(orderList)
+  const resp = await getOrderList()
+  Object.assign(orderList, resp.data.list)
+  toRaw(orderList).forEach((item) => {
+    if (item.status == -1) {
+      item.state = 'cancelled'
+    } else if (item.status == 1) {
+      item.state = 'pending'
+    } else if (item.status == 2) {
+      item.state = 'on going'
+    } else if (item.status == 3) {
+      item.state = 'pending'
+    }
+  })
+  console.log('获取订单列表', resp)
 
   // // put修改订单状态
   // const { data: resp_editState } = await axios({

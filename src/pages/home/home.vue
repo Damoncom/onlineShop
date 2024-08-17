@@ -250,15 +250,13 @@
 import { ref, reactive, onBeforeMount, nextTick, toRaw } from 'vue'
 import TabBar from '@/components/tabBar'
 import { useRouter, useRoute } from 'vue-router'
-import getUserInfo from '@/utils/getUserInfo'
-import getNoctice from '@/utils/getNotice'
-import editCart from '@/utils/addToCart'
+import { getUserInfo } from '@/utils/api'
 
 const router = useRouter()
 const route = useRoute()
+
 // 引入swiper
 import { register } from 'swiper/element/bundle'
-
 register()
 
 // 翻页
@@ -272,8 +270,6 @@ const onSlideChange = (e) => {
 }
 
 let swiper = ref(null)
-
-const token_info = localStorage.getItem('token')
 
 // 确认是Home页面
 const isHomePage = true
@@ -473,7 +469,7 @@ const addToCart = async (product, event) => {
   isAdd.value = !isAdd.value
 
   // post请求
-  editCart(product)
+  // editCart(product)
   // const { data: resp_addToCart } = await axios({
   //   method: 'post',
   //   url: '/onlineShop/editCart',
@@ -498,44 +494,34 @@ const user = reactive({})
 const noRead = ref(false)
 const notificationList = reactive([])
 
+// 获取首页数据
 onBeforeMount(async () => {
-  await nextTick()
+  const token_info = localStorage.getItem('token')
+  const { data: resp } = await axios({
+    method: 'get',
+    url: '/onlineShop/getHomeData',
+    params: {},
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'application/json; charset=utf-8'
+    }
+  })
+  Object.assign(recommendedList, resp.data.recommended)
+  Object.assign(popularList, resp.data.popular)
+  Object.assign(banner, resp.data.banner)
+  console.log('首页数据resp', resp)
 
-  // 获取用户信息
-  getUserInfo(user)
-
-  // 获取通知get请求
-  getNoctice(notificationList, noRead)
-  // console.log(noRead.value)
-  // const { data: resp_getNotification } = await axios({
-  //   method: 'get',
-  //   url: '/onlineShop/getNotification',
-  //   params: {
-  //     size: 10,
-  //     page: 1
-  //   },
-  //   headers: {
-  //     Authorization: `Bearer ${token_info}`,
-  //     'Content-Type': 'application/json; charset=utf-8'
-  //   }
+  // toRaw(banner).forEach((item) => {
+  //   item.image = item.image.slice(item.image.indexOf('/public') + 1)
   // })
+  // console.log(banner)
 
-  // const arr = reactive([])
-  // toRaw(resp_getNotification.data.list).forEach((item) => {
-  //   if (item.read == 0) {
-  //     toRaw(arr).push({
-  //       noread: item.read
-  //     })
-  //   }
-  // })
-  // if (arr.length == 0) {
-  //   noRead.value = true
-  // }
-  // console.log(resp_getNotification)
-  // console.log(arr.length)
-  //   // 获取notification页面消息是否已读
-  // const noRead = ref(route.query.noRead)
-  // console.log(noRead.value)
+  // get用户信息
+  const resp_userInfo = await getUserInfo()
+  if (resp_userInfo.errCode == 1000) {
+    Object.assign(user, resp_userInfo.data)
+  }
+  console.log(resp_userInfo)
 })
 
 // sideBar页面
@@ -628,29 +614,6 @@ const linkToTest = () => {
     path: '/test'
   })
 }
-
-// 获取首页数据
-onBeforeMount(async () => {
-  const token_info = localStorage.getItem('token')
-  const { data: resp } = await axios({
-    method: 'get',
-    url: '/onlineShop/getHomeData',
-    params: {},
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'application/json; charset=utf-8'
-    }
-  })
-  Object.assign(recommendedList, resp.data.recommended)
-  Object.assign(popularList, resp.data.popular)
-  Object.assign(banner, resp.data.banner)
-  console.log('首页数据resp', resp)
-
-  // toRaw(banner).forEach((item) => {
-  //   item.image = item.image.slice(item.image.indexOf('/public') + 1)
-  // })
-  // console.log(banner)
-})
 </script>
 
 <style lang="scss" scoped>

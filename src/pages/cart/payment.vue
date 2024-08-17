@@ -96,6 +96,7 @@ import Nav from '@/components/nav'
 import Toast from '@/components/toast'
 import currency from 'currency.js'
 import axios from 'axios'
+import { getUserInfo } from '@/utils/api'
 
 const router = useRouter()
 const route = useRoute()
@@ -215,25 +216,17 @@ onBeforeMount(async () => {
   console.log('get购物车数据:', resp_cart)
   console.log(payment)
 
-  // 获取用户数据
-  const { data: resp_user } = await axios({
-    method: 'get',
-    url: '/onlineShop/getUserInfo',
-    params: {},
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'application/json; charset=utf-8'
-    }
-  })
-  if (resp_user.errCode == 1000) {
+  // get用户信息
+  const resp_userInfo = await getUserInfo()
+  if (resp_userInfo.errCode == 1000) {
     toRaw(createNotice).forEach((item) => {
-      Reflect.set(item, 'userId', resp_user.data.id)
+      Reflect.set(item, 'userId', resp_userInfo.data.id)
       Reflect.set(item, 'vendor', 'system')
       Reflect.set(item, 'read', 0)
     })
   } else {
   }
-  console.log('get用户信息：', resp_user)
+  console.log('get用户信息：', resp_userInfo)
 
   // 重新整合商品数据
   const arr = toRaw(resp_cart.data.list)

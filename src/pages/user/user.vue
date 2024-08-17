@@ -67,7 +67,7 @@ import { ref, onMounted, onServerPrefetch, onBeforeUpdate, onBeforeMount, reacti
 import TabBar from '@/components/tabBar'
 import Nav from '@/components/nav'
 import { useRouter, useRoute } from 'vue-router'
-import getUserInfo from '@/utils/getUserInfo'
+import { getUserInfo } from '@/utils/api'
 
 const router = useRouter()
 const route = useRoute()
@@ -75,13 +75,8 @@ const route = useRoute()
 // 导入导航栏
 const navTitle = 'Profile'
 
-const user_info = JSON.parse(localStorage.getItem('user'))
-const user_details = JSON.parse(localStorage.getItem('user_details'))
-
 // 用户信息
 const user = reactive({
-  ...user_info,
-  ...user_details,
   iconImage: 'src/assets/imgurl.jpg'
 })
 
@@ -90,21 +85,13 @@ const locationDetails = reactive({})
 const token_info = localStorage.getItem('token')
 
 onBeforeMount(async () => {
-  // 获取用户信息
-  getUserInfo(user)
-
-  // // 获取用户信息
-  // const { data: resp } = await axios({
-  //   method: 'get',
-  //   url: '/onlineShop/getUserInfo',
-  //   params: {},
-  //   headers: {
-  //     Authorization: `Bearer ${token_info}`,
-  //     'Content-Type': 'application/json; charset=utf-8'
-  //   }
-  // })
-  // Object.assign(user, resp.data)
-  // console.log('get获取用户信息：', resp)
+  // get用户信息
+  const resp_userInfo = await getUserInfo()
+  if (resp_userInfo.errCode == 1000) {
+    Object.assign(user, resp_userInfo.data)
+  } else {
+  }
+  console.log('get用户信息：', resp_userInfo)
 
   // 获取地址信息
   const { data: resp_getLocation } = await axios({
