@@ -50,8 +50,8 @@ async function getNoctice(notificationList, noRead) {
   if (arr.length == 0) {
     noRead.value = true
   }
-  console.log(resp_getNotification)
-  console.log(arr.length)
+  // console.log(resp_getNotification)
+  // console.log(arr.length)
   // console.log(noRead.value)
 }
 

@@ -24,7 +24,7 @@
             v-model="inputText"
           />
         </div>
-        <div class="scan" @click="linkToTest">
+        <div class="scan" @click.stop="linkToTest">
           <i class="iconfont icon-saoyisao"></i>
         </div>
       </div>
@@ -63,6 +63,7 @@
           </li>
         </ul>
       </div>
+      <!-- TODO:商品图片前缀地址去掉 -->
       <!-- recommend -->
       <div class="recommended">
         <div class="recommended_title">
@@ -248,9 +249,6 @@
 <script setup>
 import { ref, reactive, onBeforeMount, nextTick, toRaw } from 'vue'
 import TabBar from '@/components/tabBar'
-import product from '@/assets/prodoct_img.jpg'
-import product2 from '@/assets/popular_img1.jpg'
-import product3 from '@/assets/popular_img2.jpg'
 import { useRouter, useRoute } from 'vue-router'
 import getUserInfo from '@/utils/getUserInfo'
 import getNoctice from '@/utils/getNotice'
@@ -498,7 +496,6 @@ const addToCart = async (product, event) => {
 
 const user = reactive({})
 const noRead = ref(false)
-// const arr = reactive([])
 const notificationList = reactive([])
 
 onBeforeMount(async () => {
@@ -509,7 +506,7 @@ onBeforeMount(async () => {
 
   // 获取通知get请求
   getNoctice(notificationList, noRead)
-  console.log(noRead.value)
+  // console.log(noRead.value)
   // const { data: resp_getNotification } = await axios({
   //   method: 'get',
   //   url: '/onlineShop/getNotification',
@@ -648,6 +645,11 @@ onBeforeMount(async () => {
   Object.assign(popularList, resp.data.popular)
   Object.assign(banner, resp.data.banner)
   console.log('首页数据resp', resp)
+
+  // toRaw(banner).forEach((item) => {
+  //   item.image = item.image.slice(item.image.indexOf('/public') + 1)
+  // })
+  // console.log(banner)
 })
 </script>
 

@@ -27,6 +27,7 @@ async function getGoodsList(productList) {
 
   console.log('获取商品列表数据:', resp_orderList)
   console.log(productList)
+  // console.log(axios)
 }
 
 export default getGoodsList

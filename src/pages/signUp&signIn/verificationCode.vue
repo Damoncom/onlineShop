@@ -104,27 +104,22 @@ onMounted(async () => {
 const router = useRouter()
 const route = useRoute()
 let user = route.query
-console.log(user)
 const phone = user.phoneNumber
 let user_signIn = {
   phoneNumber: user.phoneNumber,
   pwd: user.pwd
 }
-console.log(user_signIn)
 
 // 页面载入完毕获取验证码
 onMounted(async () => {
   const { data: resp } = await axios({
     method: 'get',
-    // url: `${baseUrl}/getVerificationCode`,
     url: '/onlineShop/getVerificationCode',
     params: {
-      // verificationCode: '1234',
       phoneNumber: user.phoneNumber
     },
     headers: {
       'Content-Type': 'application/json; charset=utf-8'
-      // Authorization: `Bearer ${resp.data.token}`
     }
   })
   console.log(resp)
@@ -162,7 +157,9 @@ const handleKeyDown = (index, event) => {
 
 // 提交验证码（submit按钮）
 let isSubmit = ref(false)
-const submit = (user) => {
+const submit = async (user) => {
+  await nextTick()
+
   isRecend.value = true
   setTimeout(async () => {
     await nextTick()
@@ -172,70 +169,68 @@ const submit = (user) => {
   const arr = toRaw(verificationCodes.value)
   const sum = arr.join('')
   Reflect.set(user, 'verificationCode', sum)
-  console.log(user)
 
-  // 发送数据
-  axios.defaults.headers.post['Content-Type'] = 'application/json; charset=utf-8'
-  axios
-    .post('/onlineShop/signUp', user)
-    .then(function ({ data: response }) {
-      console.log(response)
-      console.log(user)
-      if (response.errCode == 1000) {
-        // 存储注册时的信息
-        localStorage.setItem('user', JSON.stringify(user))
-        const user_info = JSON.parse(localStorage.getItem('user'))
-        console.log(user_info)
+  // post注册
+  const resp_signUp = await axios({
+    method: 'post',
+    url: '/onlineShop/signUp',
+    data: user,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+  console.log(resp_signUp)
 
-        // 发送数据
-        axios.defaults.headers.post['Content-Type'] = 'application/json; charset=utf-8'
-        axios
-          .post('/onlineShop/signIn', user_signIn)
-          .then(function ({ data: response }) {
-            console.log(response)
-            localStorage.setItem('token', response.data.token)
-            const token_info = localStorage.getItem('token')
-            console.log(token_info)
+  if (resp_signUp.data.errCode == 1000) {
+    // 存储注册时的信息
+    localStorage.setItem('user', JSON.stringify(user))
 
-            if (response.errCode == 1000) {
-              msg.value = 'Successfully!'
-              // 跳转
-              router.push({
-                path: '/home'
-              })
-            } else {
-              isActivedCreate.value = true
-              msg.value = response.errMsg
-              setTimeout(() => {
-                isActivedCreate.value = false
-              }, 4000)
-            }
-          })
-          .catch(function (error) {
-            console.log(error)
-          })
-      } else if (response.errCode == 1001) {
-        msg.value = '该用户已注册！'
-        setTimeout(async () => {
-          await nextTick()
-          router.push({
-            path: '/signIn'
-          })
-        }, 2000)
-      } else if (response.errCode == 1002) {
-        msg.value = '验证码错误！'
-        router.go(0)
-      } else {
-        isActivedCreate.value = true
-        msg.value = response.errMsg
-        setTimeout(() => {
-          isActivedCreate.value = false
-        }, 4000)
+    // post登录
+    const resp_signIn = await axios({
+      method: 'post',
+      url: '/onlineShop/signIn',
+      data: obj,
+      headers: {
+        'Content-Type': 'multipart/form-data'
       }
     })
-    .catch(function (error) {
-      console.log(error)
-    })
+    console.log(resp_signIn)
+    if (resp_signIn.status != 200) {
+      router.push({
+        path: '/notFound'
+      })
+    }
+    if (resp_signIn.data.errCode == 1000) {
+      // 存储token
+      localStorage.setItem('token', resp_signIn.data.data.token)
+      // 存储isRemember的值
+      localStorage.setItem('isRemember', JSON.stringify(obj.isRemember))
+      // 跳转到home页面
+      router.push({
+        path: '/home'
+      })
+    } else {
+      msg.value = resp_signIn.data.errMsg
+    }
+    console.log('post请求登录：', resp_signIn)
+  } else if (resp_signUp.data.errCode == 1001) {
+    msg.value = '该用户已注册！'
+    setTimeout(async () => {
+      await nextTick()
+      router.push({
+        path: '/signIn'
+      })
+    }, 2000)
+  } else if (resp_signUp.data.errCode == 1002) {
+    msg.value = '验证码错误！'
+    router.go(0)
+  } else {
+    isActivedCreate.value = true
+    msg.value = resp_signUp.data.errMsg
+    setTimeout(() => {
+      isActivedCreate.value = false
+    }, 4000)
+  }
 }
 
 // 重新发送验证码

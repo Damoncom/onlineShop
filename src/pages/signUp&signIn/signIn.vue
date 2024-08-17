@@ -119,7 +119,7 @@ const user = reactive({
   pwd: '',
   isRemember: true
 })
-console.log(user)
+// console.log(user)
 
 const linkToReset = () => {
   router.push({
@@ -135,8 +135,8 @@ onBeforeMount(async () => {
     // 清除localstorage缓存
     localStorage.clear()
   } else {
-    user.phoneNumber = user_details.phoneNumber
-    user.pwd = user_details.pwd
+    // user.phoneNumber = user_details.phoneNumber
+    // user.pwd = user_details.pwd
   }
 })
 
@@ -169,7 +169,9 @@ onUpdated(async () => {
 })
 
 // 登录按钮
-const signIn = (user) => {
+const signIn = async (user) => {
+  await nextTick()
+
   isActivedSignin.value = true
   setTimeout(async () => {
     await nextTick()
@@ -188,53 +190,42 @@ const signIn = (user) => {
   } else if (isRightPhone.value === false && isRightPwd.value === true) {
     msg.value = 'Incorrect phone number input'
   } else if (isRightPhone.value === true && isRightPwd.value === true) {
-    // msg.value = 'Successfully!'
     signin.value = true
-    console.log('手机号：' + user.phoneNumber + ' 密码：' + user.pwd + '  登录成功！')
 
-    // 发送数据
-    axios.defaults.headers.post['Content-Type'] = 'application/json; charset=utf-8'
-    axios
-      .post('/onlineShop/signIn', obj)
-      .then(function ({ data: response }) {
-        console.log(response)
+    // post登录
 
-        // 存储token
-        localStorage.setItem('token', response.data.token)
-        const token_info = localStorage.getItem('token')
-        console.log(token_info)
+    // post请求
+    const resp_signIn = await axios({
+      method: 'post',
+      url: '/onlineShop/signIn',
+      data: obj,
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+    console.log(resp_signIn)
 
-        // 存储isRemember的值
-        localStorage.setItem('isRemember', JSON.stringify(obj.isRemember))
-
-        if (response.errCode == 1000) {
-          msg.value = 'Successfully!'
-
-          // 跳转
-          router.push({
-            path: '/home'
-          })
-        } else if (response.errCode == 1003) {
-          msg.value = response.errMsg
-          setTimeout(async () => {
-            await nextTick()
-            router.push({
-              path: '/signUp'
-            })
-          }, 2000)
-        } else if (response.errCode == 1004) {
-          msg.value = response.errMsg
-        } else {
-          isActivedCreate.value = true
-          msg.value = response.errMsg
-          setTimeout(() => {
-            isActivedCreate.value = false
-          }, 4000)
-        }
+    if (resp_signIn.status != 200) {
+      router.push({
+        path: '/notFound'
       })
-      .catch(function (error) {
-        console.log(error)
+    }
+
+    if (resp_signIn.data.errCode == 1000) {
+      // 存储token
+      localStorage.setItem('token', resp_signIn.data.data.token)
+
+      // 存储isRemember的值
+      localStorage.setItem('isRemember', JSON.stringify(obj.isRemember))
+
+      // 跳转到home页面
+      router.push({
+        path: '/home'
       })
+    } else {
+      msg.value = resp_signIn.data.errMsg
+    }
+    console.log('post请求登录：', resp_signIn)
   }
 }
 

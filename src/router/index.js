@@ -153,11 +153,18 @@ const router = createRouter({
       component: () => import('../pages/settingss/language')
     },
 
+    //404页面
+    {
+      path: '/notFound',
+      name: 'notFound',
+      component: () => import('@/components/notFound')
+    },
+
     // 测试页面
     {
       path: '/test',
       name: 'test',
-      component: () => import('../pages/Test')
+      component: () => import('@/pages/Test')
     }
   ]
 })

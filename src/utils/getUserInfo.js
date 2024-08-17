@@ -26,7 +26,6 @@ async function getUserInfo(user, input_gender) {
   }
 
   console.log('用户信息resp', resp)
-  console.log(createNotice)
 }
 
 export default getUserInfo

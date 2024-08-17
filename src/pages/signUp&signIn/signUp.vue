@@ -176,9 +176,9 @@ const createAccount = async () => {
   if (isRightPhone.value === true && isRightPwd.value === true && isRightName.value === true) {
     msg.value = 'Successfully!'
     create.value = true
-    console.log(
-      '名字：' + user.value.name + '手机号：' + user.value.phoneNumber + ' 密码：' + user.value.pwd
-    )
+    // console.log(
+    //   '名字：' + user.value.name + '手机号：' + user.value.phoneNumber + ' 密码：' + user.value.pwd
+    // )
 
     user.value.pwd = md5(user.value.pwd)
     // Object.assign(user.value.pwd, md5(user.value.pwd))
