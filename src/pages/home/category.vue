@@ -266,8 +266,10 @@ const doScroll = async (event) => {
       }
     }
     .bottom_text {
+      position: absolute;
+      bottom: 30px;
       color: #a456dd;
-      padding: 0 0 10px 0;
+      padding: 10px 0;
     }
   }
 }

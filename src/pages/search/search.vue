@@ -702,10 +702,10 @@ const doScroll = async (event) => {
       }
     }
     .bottom_text {
-      color: #a456dd;
-      padding: 0 0 10px 0;
       position: absolute;
-      bottom: 0;
+      bottom: 30px;
+      color: #a456dd;
+      padding: 10px 0;
     }
   }
 }
