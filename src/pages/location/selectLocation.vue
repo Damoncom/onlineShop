@@ -4,7 +4,13 @@
     <div class="content">
       <div class="search_box">
         <i class="iconfont icon-sousuo"></i>
-        <input type="text" class="search" placeholder="Search..." v-model="inputText" />
+        <input
+          type="text"
+          class="search"
+          placeholder="Search..."
+          v-model="inputText"
+          @keyup.enter="searchLocation"
+        />
       </div>
       <div class="select_box">
         <div class="active">
@@ -30,7 +36,7 @@
   </div>
 </template>
 <script setup>
-import { ref, onUpdated, nextTick, onBeforeMount, reactive } from 'vue'
+import { ref, onUpdated, nextTick, onBeforeMount, reactive, toRaw } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
 import { getLocation } from '@/utils/api'
@@ -53,6 +59,22 @@ const chooseRegion = (e) => {
 let inputText = ref('')
 let searchElement = ref('')
 let searchIndex = ref('')
+const searchList = reactive([])
+const searchLocation = async () => {
+  await nextTick()
+
+  toRaw(regionList).forEach((item, index) => {
+    if (item.location.search(inputText.value) == -1) {
+      // toRaw(searchList).push(item)
+      toRaw(regionList).splice(index)
+    } else {
+    }
+  })
+  // regionList = Object.assign([], searchList)
+  Object.assign(regionList, regionList)
+  // console.log(searchList)
+  console.log(regionList)
+}
 
 // 跳到编辑地址页面
 const linkToEditLocation = (region) => {

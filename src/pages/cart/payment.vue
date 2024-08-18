@@ -209,6 +209,7 @@ onBeforeMount(async () => {
       Reflect.set(item, 'vendor', 'system')
       Reflect.set(item, 'read', 0)
     })
+    balance.value = resp_userInfo.data.payment
   } else {
   }
   console.log('get用户信息：', resp_userInfo)
@@ -325,8 +326,8 @@ const linkToDone = async () => {
   }
   console.log(await Promise.all(arrReq2))
 
-  const isPay = ref(false)
   // post支付
+  const isPay = ref(false)
   const resp_pay = await pay(payment)
   if (resp_pay.errCode == 1000) {
     isPay.value = true

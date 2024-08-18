@@ -162,7 +162,6 @@ import { getGoodsList, editCart } from '@/utils/api'
 const router = useRouter()
 const route = useRoute()
 
-//TODO:所有文件的生命周期合并
 // 商品列表数据
 const productList = reactive([])
 const count_product = ref()
@@ -318,6 +317,8 @@ const doScroll = async (event) => {
   const clientHeight = event.target.clientHeight
 
   // 触底
+  // TODO:page页面123……
+  // TODO:push新的内容
   if (scrollTop + clientHeight >= scrollHeight) {
     bottom.value = true
     const data2 = {

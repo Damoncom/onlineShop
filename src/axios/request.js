@@ -32,11 +32,7 @@ request.interceptors.response.use(
   (response) => {
     console.log(response)
     if (response.status == 200) {
-      if (response.data.errCode == 1000) {
-        return response.data
-      } else {
-        return response.data
-      }
+      return response.data
     } else {
       router.push('/notFound')
     }
@@ -57,8 +53,10 @@ request.interceptors.response.use(
   (error) => {
     // 对响应错误做处理
     console.log('err' + error) // for debug
+
+    //TODO:toast显示：服务器异常
     return Promise.reject(error)
   }
 )
-
+// TODO: 打断动作
 export default request
