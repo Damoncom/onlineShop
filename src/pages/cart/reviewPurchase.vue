@@ -75,9 +75,9 @@
 import { reactive, ref, toRaw, nextTick, onBeforeMount } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Toast from '@/components/toast.vue'
-import product from '@/assets/details_img.jpg'
 import Nav from '@/components/nav'
 import currency from 'currency.js'
+import { getLocation, getCart, calculateCost } from '@/utils/api'
 
 const router = useRouter()
 const route = useRoute()
@@ -135,28 +135,21 @@ const queryOrder = reactive([])
 onBeforeMount(async () => {
   await nextTick()
 
-  // 获取购物车信息
-  const { data: resp_cart } = await axios({
-    method: 'get',
-    url: '/onlineShop/getCart',
-    params: {
-      size: 10,
-      page: 1
-    },
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'application/json; charset=utf-8'
-    }
+  // get购物车
+  const postData = reactive({
+    size: 10,
+    page: 1
   })
-  if (resp_cart.errCode == 1000) {
-    Object.assign(cartList, resp_cart.data.list)
+  const resp_getCart = await getCart(postData)
+  if (resp_getCart.errCode == 1000) {
+    Object.assign(cartList, resp_getCart.data.list)
   } else {
   }
-  console.log('get购物车数据:', resp_cart)
+  console.log('get购物车：', resp_getCart)
 
   // 重新整合商品数据
   const postgoods = reactive([])
-  const arr = toRaw(resp_cart.data.list)
+  const arr = toRaw(resp_getCart.data.list)
   arr.forEach((item, index) => {
     postgoods.push({
       id: item.goodsId,
@@ -164,19 +157,12 @@ onBeforeMount(async () => {
     })
   })
 
-  // 获取配送地址
-  const { data: resp_getLocation } = await axios({
-    method: 'get',
-    url: '/onlineShop/getLocation',
-    params: {
-      size: 1,
-      page: 1
-    },
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'application/json; charset=utf-8'
-    }
+  // get配送地址
+  const locationPost = reactive({
+    size: 1,
+    page: 1
   })
+  const resp_getLocation = await getLocation(locationPost)
   if (resp_getLocation.errCode == 1000) {
     Object.assign(locationDetails, ...resp_getLocation.data.list)
   } else {
@@ -186,22 +172,15 @@ onBeforeMount(async () => {
   } else {
     isHaveLocation.value = true
   }
-  console.log('get配送地址数据:', resp_getLocation)
+  console.log('get地址信息：', resp_getLocation)
 
   // post计算费用
-  const { data: resp_calculate } = await axios({
-    method: 'post',
-    url: '/onlineShop/calculateCost',
-    data: {
-      goods: toRaw(postgoods),
-      subtotal: pre.sum,
-      locationId: locationDetails.id
-    },
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'multipart/form-data'
-    }
+  const moneyPost = reactive({
+    goods: toRaw(postgoods),
+    subtotal: pre.sum,
+    locationId: locationDetails.id
   })
+  const resp_calculate = await calculateCost(moneyPost)
   if (resp_calculate.errCode == 1000) {
     Object.assign(plus, resp_calculate.data)
     total.value = currency(pre.sum)
@@ -209,6 +188,7 @@ onBeforeMount(async () => {
       .add(currency(resp_calculate.data.tax))
   } else {
   }
+
   console.log('post计算费用：', resp_calculate)
 })
 

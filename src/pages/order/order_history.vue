@@ -47,6 +47,14 @@
           </li>
         </ul>
       </div>
+      <div class="askBuy">
+        <i class="iconfont icon-404"></i>
+        <p class="askBuy_text">
+          You haven't bought anything yet!
+          <br />
+          Go take a look ~
+        </p>
+      </div>
     </div>
   </div>
 
@@ -58,7 +66,7 @@ import { ref, onMounted, nextTick, onBeforeMount, reactive, toRaw } from 'vue'
 import TabBar from '@/components/tabBar'
 import Nav from '@/components/nav'
 import { useRouter, useRoute } from 'vue-router'
-import { getOrderList } from '@/utils/api'
+import { getOrderList, editCart } from '@/utils/api'
 
 const router = useRouter()
 const route = useRoute()
@@ -80,6 +88,7 @@ const isOrderPage = true
 
 // 订单列表信息
 const orderList = reactive([])
+const askBuy = ref(false)
 
 // -1:cancelled 1:pending 2:on going 3:completed
 onBeforeMount(async () => {
@@ -87,42 +96,43 @@ onBeforeMount(async () => {
 
   // 获取订单列表
   const resp = await getOrderList()
-  Object.assign(orderList, resp.data.list)
-  toRaw(orderList).forEach((item) => {
-    if (item.status == -1) {
-      item.state = 'cancelled'
-    } else if (item.status == 1) {
-      item.state = 'pending'
-    } else if (item.status == 2) {
-      item.state = 'on going'
-    } else if (item.status == 3) {
-      item.state = 'pending'
-    }
-  })
+  if (resp.errCode == 1000) {
+    Object.assign(orderList, resp.data.list)
+    toRaw(orderList).forEach((item) => {
+      if (item.status == -1) {
+        item.state = 'cancelled'
+      } else if (item.status == 1) {
+        item.state = 'pending'
+      } else if (item.status == 2) {
+        item.state = 'on going'
+      } else if (item.status == 3) {
+        item.state = 'pending'
+      }
+    })
+  } else {
+  }
+  if (resp.data.list.length == 0) {
+    askBuy.value = true
+  } else {
+    askBuy.value = false
+  }
   console.log('获取订单列表', resp)
 })
 
 // reorder重新添加到购物车
 const reOrder = async (order) => {
   await nextTick()
-  console.log(order)
 
-  const { data: resp_addToCart } = await axios({
-    method: 'post',
-    url: '/onlineShop/editCart',
-    data: {
-      goodsId: order.goods.id,
-      amount: '1'
-    },
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'multipart/form-data'
-    }
+  // post修改购物车
+  const addToCartPost = reactive({
+    goodsId: order.goods.id,
+    amount: '1'
   })
+  const resp_addToCart = await editCart(addToCartPost)
   if (resp_addToCart.errCode == 1000) {
   } else {
   }
-  console.log('post增加到购物车：', resp_addToCart)
+  console.log('post加入购物车：', resp_addToCart)
 }
 </script>
 
@@ -287,6 +297,26 @@ const reOrder = async (order) => {
             }
           }
         }
+      }
+    }
+    .askBuy {
+      margin-top: 40px;
+      width: 327px;
+      height: 100px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      .icon-404 {
+        font-size: 50px;
+        color: #a456dd;
+        line-height: 70px;
+      }
+      .askBuy_text {
+        font-size: 20px;
+        color: #a456dd;
+        line-height: 30px;
+        text-align: center;
       }
     }
   }

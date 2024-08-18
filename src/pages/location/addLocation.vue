@@ -6,13 +6,13 @@
         <div class="name_box">
           <div class="name_text">Name</div>
           <div class="input_box">
-            <input type="text" class="name_input" />
+            <input type="text" class="name_input" v-model="user.name" />
           </div>
         </div>
         <div class="phone_box">
           <div class="phone_text">phone</div>
           <div class="input_box">
-            <input type="number" class="phone_input" />
+            <input type="number" class="phone_input" v-model="user.phoneNumber" />
           </div>
         </div>
         <div class="area_box">
@@ -47,10 +47,11 @@
 </template>
 
 <script setup>
-import { onUpdated, nextTick, reactive, ref } from 'vue'
+import { onUpdated, nextTick, reactive, ref, onBeforeMount } from 'vue'
 import Nav from '@/components/nav'
 import AreaSelect from '@/components/areaSelect'
 import { useRouter, useRoute } from 'vue-router'
+import { getUserInfo, createLocation } from '@/utils/api'
 
 // 导入导航栏
 const navTitle = 'Add Location'
@@ -58,9 +59,22 @@ const navTitle = 'Add Location'
 const router = useRouter()
 const route = useRoute()
 
-const token_info = localStorage.getItem('token')
+const user = reactive({})
 
 const detailsText = ref()
+
+// 获取用户信息
+onBeforeMount(async () => {
+  await nextTick()
+
+  // get用户信息
+  const resp_userInfo = await getUserInfo()
+  if (resp_userInfo.errCode == 1000) {
+    Object.assign(user, resp_userInfo.data)
+  } else {
+  }
+  console.log('get用户信息：', resp_userInfo)
+})
 
 // 发送post请求，添加配送地址
 const save = async () => {
@@ -72,22 +86,15 @@ const save = async () => {
     lat: '22.684308'
   })
 
-  const { data: resp_location } = await axios({
-    method: 'post',
-    url: '/onlineShop/createLocation',
-    data: postData,
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'multipart/form-data'
-    }
-  })
-  if (resp_location.errCode == 1000) {
+  const resp_createLocation = await createLocation(postData)
+  console.log('post添加配送地址', resp_createLocation)
+
+  if (resp_createLocation.errCode == 1000) {
     router.push({
-      path: '/profile'
+      path: '/select_location'
     })
   } else {
   }
-  console.log('post添加配送地址：', resp_location)
 }
 </script>
 

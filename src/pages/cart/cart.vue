@@ -64,14 +64,12 @@ import {
   onMounted
 } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import product from '@/assets/details_img.jpg'
 import Nav from '@/components/nav'
 import currency from 'currency.js'
+import { getCart, editCart } from '@/utils/api'
 
 const router = useRouter()
 const route = useRoute()
-
-const token_info = localStorage.getItem('token')
 
 // 导入导航栏
 const navTitle = 'Cart'
@@ -97,19 +95,12 @@ const minus = async (cart) => {
     sumShow.value = currency(sum.value).value
   })
 
-  // post请求
-  const { data: resp_minus } = await axios({
-    method: 'post',
-    url: '/onlineShop/editCart',
-    data: {
-      goodsId: cart.goodsId,
-      amount: cart.amount
-    },
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'multipart/form-data'
-    }
+  // post修改购物车
+  const minusPost = reactive({
+    goodsId: cart.goodsId,
+    amount: cart.amount
   })
+  const resp_minus = await editCart(minusPost)
   if (resp_minus.errCode == 1000) {
   } else {
   }
@@ -124,19 +115,12 @@ const add = async (cart, arr) => {
     sumShow.value = currency(sum.value).value
   })
 
-  // post请求
-  const { data: resp_add } = await axios({
-    method: 'post',
-    url: '/onlineShop/editCart',
-    data: {
-      goodsId: cart.goodsId,
-      amount: cart.amount
-    },
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'multipart/form-data'
-    }
+  // post修改购物车
+  const addPost = reactive({
+    goodsId: cart.goodsId,
+    amount: cart.amount
   })
+  const resp_add = await editCart(addPost)
   if (resp_add.errCode == 1000) {
   } else {
   }
@@ -153,34 +137,30 @@ const linkToReviewPurchase = () => {
   })
 }
 
-// 获取购物车数据
 onBeforeMount(async () => {
   await nextTick()
 
-  const { data: resp_cart } = await axios({
-    method: 'get',
-    url: '/onlineShop/getCart',
-    params: {
-      size: 10,
-      page: 1
-    },
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'application/json; charset=utf-8'
-    }
+  // get购物车
+  const postData = reactive({
+    size: 10,
+    page: 1
   })
-  if (resp_cart.errCode == 1000) {
-    Object.assign(cartList, resp_cart.data.list)
+  const resp_getCart = await getCart(postData)
+  if (resp_getCart.errCode == 1000) {
+    Object.assign(cartList, resp_getCart.data.list)
   } else {
   }
-
-  console.log('获取购物车数据:', resp_cart)
+  console.log('get购物车：', resp_getCart)
 
   // pre计算总数
   arr.forEach((item, index) => {
     sum.value = currency(item.goods.price).multiply(item.amount).add(currency(sum.value))
     sumShow.value = currency(sum.value).value
   })
+
+  if (resp_getCart.data.list.length == 0) {
+    sumShow.value = '0.00'
+  }
 })
 </script>
 

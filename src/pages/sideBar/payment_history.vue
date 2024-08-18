@@ -20,11 +20,19 @@
           </div>
         </li>
       </ul>
+      <div class="askBuy">
+        <i class="iconfont icon-404"></i>
+        <p class="askBuy_text">
+          You haven't bought anything yet!
+          <br />
+          Go take a look ~
+        </p>
+      </div>
     </div>
   </div>
 </template>
 <script setup>
-import { reactive, onBeforeMount, nextTick, toRaw } from 'vue'
+import { reactive, onBeforeMount, nextTick, toRaw, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
 import { getOrderList } from '@/utils/api'
@@ -37,24 +45,33 @@ const navTitle = 'Payment History'
 
 // 订单列表信息
 const orderList = reactive([])
+const askBuy = ref(false)
 
 onBeforeMount(async () => {
   await nextTick()
 
   // 获取订单列表
   const resp = await getOrderList()
-  Object.assign(orderList, resp.data.list)
-  toRaw(orderList).forEach((item) => {
-    if (item.status == -1) {
-      item.state = 'cancelled'
-    } else if (item.status == 1) {
-      item.state = 'pending'
-    } else if (item.status == 2) {
-      item.state = 'on going'
-    } else if (item.status == 3) {
-      item.state = 'pending'
-    }
-  })
+  if (resp.errCode == 1000) {
+    Object.assign(orderList, resp.data.list)
+    toRaw(orderList).forEach((item) => {
+      if (item.status == -1) {
+        item.state = 'cancelled'
+      } else if (item.status == 1) {
+        item.state = 'pending'
+      } else if (item.status == 2) {
+        item.state = 'on going'
+      } else if (item.status == 3) {
+        item.state = 'pending'
+      }
+    })
+  } else {
+  }
+  if (resp.data.list.length == 0) {
+    askBuy.value = true
+  } else {
+    askBuy.value = false
+  }
   console.log('获取订单列表', resp)
 })
 </script>
@@ -122,6 +139,26 @@ onBeforeMount(async () => {
             color: #20cf47;
           }
         }
+      }
+    }
+    .askBuy {
+      margin-top: 40px;
+      width: 327px;
+      height: 100px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      .icon-404 {
+        font-size: 50px;
+        color: #a456dd;
+        line-height: 70px;
+      }
+      .askBuy_text {
+        font-size: 20px;
+        color: #a456dd;
+        line-height: 30px;
+        text-align: center;
       }
     }
   }

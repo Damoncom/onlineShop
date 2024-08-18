@@ -1,9 +1,5 @@
 import request from '@/axios/request.js'
 
-// get订单列表
-export async function getOrderList() {
-  return request.get('/onlineShop/getOrderList', { params: { size: 10, page: 1 } })
-}
 // 用户信息-----------------------------------
 // post注册
 export function signUp(data) {
@@ -61,4 +57,52 @@ export function deleteWishlist(data) {
 // get收藏列表
 export async function getWishlist() {
   return request.get('/onlineShop/getWishlist', { params: { size: 10, page: 1 } })
+}
+
+// 配送地址-------------------------------------
+// post添加地址
+export function createLocation(data) {
+  return request.post('/onlineShop/createLocation', data)
+}
+
+// delete删除地址
+export function removeLocation(data) {
+  return request.delete('/onlineShop/removeLocation', { data })
+}
+
+// get获取地址
+export async function getLocation(data) {
+  return request.get('/onlineShop/getLocation', { params: data })
+}
+
+// put修改地址
+export function updateLocation(data) {
+  return request.put('/onlineShop/updateLocation', data)
+}
+
+// 购物车-------------------------------------
+// post修改购物车
+export function editCart(data) {
+  return request.post('/onlineShop/editCart', data)
+}
+
+// get购物车
+export async function getCart(data) {
+  return request.get('/onlineShop/getCart', { params: data })
+}
+
+// 订单-------------------------------------
+// post计算费用
+export function calculateCost(data) {
+  return request.post('/onlineShop/calculateCost', data)
+}
+
+// get订单列表
+export async function getOrderList() {
+  return request.get('/onlineShop/getOrderList', { params: { size: 10, page: 1 } })
+}
+
+// post支付
+export function pay(data) {
+  return request.post('/onlineShop/pay', data)
 }

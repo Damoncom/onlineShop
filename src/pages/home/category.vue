@@ -46,7 +46,7 @@
 import { reactive, ref, onBeforeMount, nextTick, toRaw } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
-import { getGoodsList } from '@/utils/api'
+import { getGoodsList, editCart } from '@/utils/api'
 
 const router = useRouter()
 const route = useRoute()
@@ -76,26 +76,18 @@ const addToCart = async (product, event) => {
   actived_cardIndex.value = event.currentTarget.parentElement.parentElement.dataset.index
   isAdd.value = true
 
-  // post请求
-  editCart(product)
-  // const { data: resp_addToCart } = await axios({
-  //   method: 'post',
-  //   url: '/onlineShop/editCart',
-  //   data: {
-  //     goodsId: product.id,
-  //     amount: '1'
-  //   },
-  //   headers: {
-  //     Authorization: `Bearer ${token_info}`,
-  //     'Content-Type': 'multipart/form-data'
-  //   }
-  // })
-  // if (resp_addToCart.errCode == 1000) {
-  //   isAdd.value = true
-  // } else {
-  //   isAdd.value = false
-  // }
-  // console.log('post增加到购物车：', resp_addToCart)
+  // post修改购物车
+  const addToCartPost = reactive({
+    goodsId: product.id,
+    amount: '1'
+  })
+  const resp_addToCart = await editCart(addToCartPost)
+  if (resp_addToCart.errCode == 1000) {
+    isAdd.value = true
+  } else {
+    isAdd.value = false
+  }
+  console.log('post加入购物车：', resp_addToCart)
 }
 
 // 获取商品列表信息

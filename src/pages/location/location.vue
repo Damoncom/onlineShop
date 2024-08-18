@@ -49,12 +49,10 @@
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import AMap from '@amap/amap-jsapi-loader'
-// import MapLoader from '../../utils/unti'
+import { createLocation } from '@/utils/api'
 
 const router = useRouter()
 const route = useRoute()
-
-const token_info = localStorage.getItem('token')
 
 // 添加配送地址
 const postData = reactive({})
@@ -136,22 +134,15 @@ const comfirm = async () => {
 
   isActivedCurrent.value = false
 
-  const { data: resp_location } = await axios({
-    method: 'post',
-    url: '/onlineShop/createLocation',
-    data: postData,
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'multipart/form-data'
-    }
-  })
-  if (resp_location.errCode == 1000) {
+  const resp_createLocation = await createLocation(postData)
+  console.log('post添加配送地址', resp_createLocation)
+
+  if (resp_createLocation.errCode == 1000) {
     isActivedCurrent.value = false
     router.go(-1)
   } else {
     isActivedCurrent.value = true
   }
-  console.log('post添加配送地址：', resp_location)
 }
 </script>
 
@@ -192,7 +183,7 @@ const comfirm = async () => {
     .current_button {
       width: 335px;
       height: 46px;
-      margin-top: 147px;
+      margin-top: 100px;
       display: flex;
       justify-content: center;
       align-items: center;

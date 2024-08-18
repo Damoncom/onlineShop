@@ -67,7 +67,7 @@ import { ref, onMounted, onServerPrefetch, onBeforeUpdate, onBeforeMount, reacti
 import TabBar from '@/components/tabBar'
 import Nav from '@/components/nav'
 import { useRouter, useRoute } from 'vue-router'
-import { getUserInfo } from '@/utils/api'
+import { getUserInfo, getLocation } from '@/utils/api'
 
 const router = useRouter()
 const route = useRoute()
@@ -82,8 +82,6 @@ const user = reactive({
 
 const locationDetails = reactive({})
 
-const token_info = localStorage.getItem('token')
-
 onBeforeMount(async () => {
   // get用户信息
   const resp_userInfo = await getUserInfo()
@@ -93,24 +91,17 @@ onBeforeMount(async () => {
   }
   console.log('get用户信息：', resp_userInfo)
 
-  // 获取地址信息
-  const { data: resp_getLocation } = await axios({
-    method: 'get',
-    url: '/onlineShop/getLocation',
-    params: {
-      size: 1,
-      page: 1
-    },
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'application/json; charset=utf-8'
-    }
+  // get地址信息
+  const locationPost = reactive({
+    size: 1,
+    page: 1
   })
+  const resp_getLocation = await getLocation(locationPost)
   if (resp_getLocation.errCode == 1000) {
     Object.assign(locationDetails, ...resp_getLocation.data.list)
   } else {
   }
-  console.log('get配送地址数据:', resp_getLocation)
+  console.log('get地址信息：', resp_getLocation)
 })
 
 // 确认是Profile页面

@@ -157,7 +157,7 @@ import {
 } from 'vue'
 import TabBar from '@/components/tabBar'
 import { useRouter, useRoute } from 'vue-router'
-import { getGoodsList } from '@/utils/api'
+import { getGoodsList, editCart } from '@/utils/api'
 
 const router = useRouter()
 const route = useRoute()
@@ -287,11 +287,24 @@ const chooseProduct = (product) => {
 }
 
 const actived_cardIndex = ref('')
-const addToCart = (product, event) => {
+const addToCart = async (product, event) => {
+  await nextTick()
+
   actived_cardIndex.value = event.currentTarget.parentElement.parentElement.dataset.index
   isAdd.value = !isAdd.value
 
-  editCart(product)
+  // post修改购物车
+  const addToCartPost = reactive({
+    goodsId: toRaw(product.id),
+    amount: 1
+  })
+  const resp_addToCart = await editCart(addToCartPost)
+  if (resp_addToCart.errCode == 1000) {
+    isAdd.value = true
+  } else {
+    isAdd.value = false
+  }
+  console.log('post加入购物车：', resp_addToCart)
 }
 
 // 下拉加载，上拉刷新

@@ -61,7 +61,7 @@ import { onBeforeMount, reactive, ref, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import axios from 'axios'
 import StarRating from 'vue-star-rating'
-import { getGoodsDetail, createWishlist, deleteWishlist } from '@/utils/api'
+import { getGoodsDetail, createWishlist, deleteWishlist, editCart } from '@/utils/api'
 
 const router = useRouter()
 const route = useRoute()
@@ -137,19 +137,12 @@ const add = async () => {
 
   isAdd.value = true
 
-  // post请求
-  const { data: resp_addToCart } = await axios({
-    method: 'post',
-    url: '/onlineShop/editCart',
-    data: {
-      goodsId: productId.productId,
-      amount: 1
-    },
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'multipart/form-data'
-    }
+  // post修改购物车
+  const addToCartPost = reactive({
+    goodsId: productId.productId,
+    amount: 1
   })
+  const resp_addToCart = await editCart(addToCartPost)
   if (resp_addToCart.errCode == 1000) {
     isAdd.value = true
   } else {
@@ -162,18 +155,12 @@ const add = async () => {
 const addToCart = async () => {
   await nextTick()
 
-  const { data: resp_addToCart } = await axios({
-    method: 'post',
-    url: '/onlineShop/editCart',
-    data: {
-      goodsId: productId.productId,
-      amount: 1
-    },
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'multipart/form-data'
-    }
+  // post修改购物车
+  const addToCartPost = reactive({
+    goodsId: productId.productId,
+    amount: 1
   })
+  const resp_addToCart = await editCart(addToCartPost)
   if (resp_addToCart.errCode == 1000) {
     isAdd.value = true
   } else {

@@ -33,11 +33,10 @@
 import { ref, onUpdated, nextTick, onBeforeMount, reactive } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
+import { getLocation } from '@/utils/api'
 
 const router = useRouter()
 const route = useRoute()
-
-const token_info = localStorage.getItem('token')
 
 // 导入导航栏
 const navTitle = 'Select Location'
@@ -50,7 +49,7 @@ const chooseRegion = (e) => {
   console.log(e.currentTarget)
 }
 
-// 搜索功能
+// TODO:地址搜索功能
 let inputText = ref('')
 let searchElement = ref('')
 let searchIndex = ref('')
@@ -64,27 +63,20 @@ const linkToEditLocation = (region) => {
   })
 }
 
-// 获取配送地址
+// get配送地址
 onBeforeMount(async () => {
   await nextTick()
 
-  const { data: resp_getLocation } = await axios({
-    method: 'get',
-    url: '/onlineShop/getLocation',
-    params: {
-      size: 10,
-      page: 1
-    },
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'application/json; charset=utf-8'
-    }
+  const locationPost = reactive({
+    size: 10,
+    page: 1
   })
+  const resp_getLocation = await getLocation(locationPost)
   if (resp_getLocation.errCode == 1000) {
     Object.assign(regionList, resp_getLocation.data.list)
   } else {
   }
-  console.log('get配送地址:', resp_getLocation)
+  console.log('get地址信息：', resp_getLocation)
 })
 </script>
 <style lang="scss" scoped>

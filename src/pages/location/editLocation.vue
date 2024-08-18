@@ -47,15 +47,17 @@
   <div class="mask" v-if="isMask == true" @click="activedMask"></div>
 
   <!-- 删除面板 -->
-  <div class="delete_box" v-if="isMask == true">
-    <i class="iconfont icon-shanchu"></i>
-    <div class="delete_text">Are you sure to delete this address information?</div>
-    <div class="choose_button">
-      <div class="cancel_button" @click="cancelDelete">
-        <p>no</p>
-      </div>
-      <div class="delete_button" @click="comfirmDelete">
-        <p>yes</p>
+  <div class="delete_bigBox" @click.self="activedMask">
+    <div class="delete_box" v-if="isMask == true">
+      <i class="iconfont icon-shanchu"></i>
+      <div class="delete_text">Are you sure to delete this address information?</div>
+      <div class="choose_button">
+        <div class="cancel_button" @click="cancelDelete">
+          <p>no</p>
+        </div>
+        <div class="delete_button" @click="comfirmDelete">
+          <p>yes</p>
+        </div>
       </div>
     </div>
   </div>
@@ -64,9 +66,8 @@
 <script setup>
 import { onUpdated, nextTick, reactive, ref, onBeforeMount } from 'vue'
 import Nav from '@/components/nav'
-import AreaSelect from '@/components/areaSelect'
 import { useRouter, useRoute } from 'vue-router'
-import { getUserInfo } from '@/utils/api'
+import { removeLocation, updateLocation, getUserInfo } from '@/utils/api'
 
 // 导入导航栏
 const navTitle = 'Edit Location'
@@ -79,8 +80,6 @@ const locationInfo = route.query
 const str = ref(locationInfo.location)
 const areaText = ref(str.value?.slice(0, str.value?.indexOf('区') + 1))
 const detailsText = ref(str.value?.slice(str.value?.indexOf('区') + 1))
-
-const token_info = localStorage.getItem('token')
 
 // 获取用户信息
 onBeforeMount(async () => {
@@ -108,22 +107,14 @@ const save = async () => {
   })
   console.log(postData)
 
-  const { data: resp_editLocation } = await axios({
-    method: 'put',
-    url: '/onlineShop/updateLocation',
-    data: postData,
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'multipart/form-data'
-    }
-  })
-  if (resp_editLocation.errCode == 1000) {
+  const resp_updateLocation = await updateLocation(postData)
+  if (resp_updateLocation.errCode == 1000) {
     router.push({
       path: '/select_location'
     })
   } else {
   }
-  console.log('put修改地址：', resp_editLocation)
+  console.log('put修改地址：', resp_updateLocation)
 }
 
 // 控制蒙层
@@ -143,28 +134,23 @@ const cancelDelete = () => {
   isMask.value = !isMask.value
 }
 
+// delete删除配送地址
 const comfirmDelete = async () => {
   await nextTick()
 
-  // delete请求
-  const { data: resp_deleteAddress } = await axios({
-    method: 'delete',
-    url: '/onlineShop/removeLocation',
-    data: {
-      id: locationInfo.id
-    },
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'application/json; charset=utf-8'
-    }
+  const postData = reactive({
+    id: locationInfo.id
   })
-  if (resp_deleteAddress.errCode == 1000) {
+  const resp_removeLocation = await removeLocation(postData)
+  console.log('delete删除配送地址', resp_removeLocation)
+
+  if (resp_removeLocation.errCode == 1000) {
     router.push({
       path: '/select_location'
     })
   } else {
+    isActivedCurrent.value = true
   }
-  console.log('delete删除地址：', resp_deleteAddress)
 }
 </script>
 
@@ -372,63 +358,70 @@ const comfirmDelete = async () => {
 }
 
 // 删除面板
-.delete_box {
+.delete_bigBox {
   position: absolute;
-  top: 25vh;
-  left: 8.5vh;
-  width: 250px;
-  height: 250px;
-  border-radius: 10px;
-  background-color: white;
+  top: 0;
+  width: 375px;
+  height: 812px;
   z-index: 2;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  .icon-shanchu {
-    font-size: 40px;
-    color: rgb(255, 51, 51);
-    line-height: 60px;
-  }
-  .delete_text {
-    font-size: 16px;
-    text-align: center;
-    line-height: 25px;
-    width: 200px;
-    margin-bottom: 20px;
-  }
-  .choose_button {
+  .delete_box {
     width: 250px;
-    height: 50px;
+    height: 250px;
+    border-radius: 10px;
+    background-color: white;
+    z-index: 4;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    .cancel_button {
-      width: 70px;
-      height: 30px;
-      border-radius: 6px;
-      background-color: #a456dd;
-      margin-right: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      p {
-        font-size: 17px;
-        color: white;
-      }
+    .icon-shanchu {
+      font-size: 40px;
+      color: rgb(255, 51, 51);
+      line-height: 60px;
     }
-    .delete_button {
-      width: 70px;
-      height: 30px;
-      border-radius: 6px;
-      background-color: #a456dd;
-      margin-left: 10px;
+    .delete_text {
+      font-size: 16px;
+      text-align: center;
+      line-height: 25px;
+      width: 200px;
+      margin-bottom: 20px;
+    }
+    .choose_button {
+      width: 250px;
+      height: 50px;
       display: flex;
       align-items: center;
       justify-content: center;
-      p {
-        font-size: 17px;
-        color: white;
+      .cancel_button {
+        width: 70px;
+        height: 30px;
+        border-radius: 6px;
+        background-color: #a456dd;
+        margin-right: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        p {
+          font-size: 17px;
+          color: white;
+        }
+      }
+      .delete_button {
+        width: 70px;
+        height: 30px;
+        border-radius: 6px;
+        background-color: #a456dd;
+        margin-left: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        p {
+          font-size: 17px;
+          color: white;
+        }
       }
     }
   }

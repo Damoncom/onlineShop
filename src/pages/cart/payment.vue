@@ -96,7 +96,7 @@ import Nav from '@/components/nav'
 import Toast from '@/components/toast'
 import currency from 'currency.js'
 import axios from 'axios'
-import { getUserInfo } from '@/utils/api'
+import { getUserInfo, getLocation, getCart, pay } from '@/utils/api'
 
 const router = useRouter()
 const route = useRoute()
@@ -178,43 +178,28 @@ const queryOrder = reactive([])
 // post请求创建通知
 const createNotice = reactive([])
 
-// post请求支付
-const payment = reactive([])
-
 // 购物车变量
 const cartList = reactive([])
 
 onBeforeMount(async () => {
   await nextTick()
 
-  // 获取购物车信息
-  const { data: resp_cart } = await axios({
-    method: 'get',
-    url: '/onlineShop/getCart',
-    params: {
-      size: 10,
-      page: 1
-    },
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'application/json; charset=utf-8'
-    }
+  // get购物车
+  const postData = reactive({
+    size: 10,
+    page: 1
   })
-  if (resp_cart.errCode == 1000) {
-    Object.assign(cartList, resp_cart.data.list)
+  const resp_getCart = await getCart(postData)
+  if (resp_getCart.errCode == 1000) {
+    Object.assign(cartList, resp_getCart.data.list)
     toRaw(cartList).forEach((item) => {
       toRaw(createNotice).push({
         content: '您购买的' + item.goods.name + '商品已下单'
       })
-      toRaw(payment).push({
-        userId: item.userId,
-        type: 'payment'
-      })
     })
   } else {
   }
-  console.log('get购物车数据:', resp_cart)
-  console.log(payment)
+  console.log('get购物车：', resp_getCart)
 
   // get用户信息
   const resp_userInfo = await getUserInfo()
@@ -229,26 +214,19 @@ onBeforeMount(async () => {
   console.log('get用户信息：', resp_userInfo)
 
   // 重新整合商品数据
-  const arr = toRaw(resp_cart.data.list)
+  const arr = toRaw(resp_getCart.data.list)
 
-  // 获取配送地址
-  const { data: resp_getLocation } = await axios({
-    method: 'get',
-    url: '/onlineShop/getLocation',
-    params: {
-      size: 1,
-      page: 1
-    },
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'application/json; charset=utf-8'
-    }
+  // get配送地址
+  const locationPost = reactive({
+    size: 1,
+    page: 1
   })
+  const resp_getLocation = await getLocation(locationPost)
   if (resp_getLocation.errCode == 1000) {
     Object.assign(locationDetails, ...resp_getLocation.data.list)
   } else {
   }
-  console.log('get配送地址数据:', resp_getLocation)
+  console.log('get地址信息：', resp_getLocation)
 
   // 整理订单数据
   const queryOrderPre = reactive([])
@@ -272,9 +250,14 @@ onBeforeMount(async () => {
 })
 
 const queryOrderId = reactive([])
+const payment = reactive({
+  type: 'payment'
+})
 
 // 提交订单按钮
 const linkToDone = async () => {
+  await nextTick()
+
   // 前端生成订单号：order_${yyyMMddHHmmss}_${uuid}【多个商品时，使用相同的OrderId】
   const time = yy + mm + dd + hh + mf + ss
   toRaw(cartList).forEach((item) => {
@@ -282,19 +265,12 @@ const linkToDone = async () => {
       item2.orderId = 'order_' + time + '_' + item.goodsId
     })
 
-    toRaw(payment).forEach((item2) => {
-      item2.orderIdList = ['order_' + time + '_' + item.goodsId]
-    })
-    // toRaw(payment).forEach((item3) => {
-    //   item3.orderId = 'order_' + time + '_' + item.goodsId
-    // })
+    Reflect.set(payment, 'orderIdList', ['order_' + time + '_' + item.goodsId])
   })
-  // console.log('cartlist', cartList)
-  // console.log('queryOrder', queryOrder)
-  console.log('payment', payment)
 
+  console.log(payment)
   // promise.all(并起发送请求)
-  // 创建订单
+  // post创建订单
   const arrReq = queryOrder.map((item) => {
     return axios({
       method: 'post',
@@ -349,43 +325,24 @@ const linkToDone = async () => {
   }
   console.log(await Promise.all(arrReq2))
 
+  const isPay = ref(false)
   // post支付
-  const arrReq3 = payment.map((item) => {
-    return axios({
-      method: 'post',
-      url: '/onlineShop/pay',
-      data: item,
-      headers: {
-        Authorization: `Bearer ${token_info}`,
-        'Content-Type': 'multipart/form-data'
+  const resp_pay = await pay(payment)
+  if (resp_pay.errCode == 1000) {
+    isPay.value = true
+  } else {
+    isPay.value = false
+  }
+  console.log('get用户信息：', resp_pay)
+
+  if (!respStateList.includes(false) && !respStateList2.includes(false) && isPay.value == true) {
+    router.push({
+      path: '/done',
+      query: {
+        orderId: queryOrderId
       }
     })
-  })
-
-  const respList3 = await Promise.all(arrReq3)
-  const respStateList3 = respList3.map((item) => {
-    if (item.data.errCode == 1000) return true
-    else return false
-  })
-  console.log(respStateList3)
-  if (!respStateList3.includes(false)) {
-    // 全部接口放回正确后需要操作
-    console.log('创建所有通知success')
   }
-  console.log(await Promise.all(arrReq3))
-
-  // if (
-  //   !respStateList.includes(false) &&
-  //   !respStateList2.includes(false) &&
-  //   !respStateList3.includes(false)
-  // ) {
-  //   router.push({
-  //     path: '/done',
-  //     query: {
-  //       orderId: queryOrderId
-  //     }
-  //   })
-  // }
 }
 </script>
 <style lang="scss" scoped>
