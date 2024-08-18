@@ -54,7 +54,6 @@ onBeforeMount(async () => {
   }
 })
 
-// TODO:取消收藏功能失效
 // delete取消收藏
 const cancelLike = async (wish) => {
   await nextTick()

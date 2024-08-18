@@ -55,7 +55,7 @@ export function createWishlist(data) {
 
 // delete取消收藏
 export function deleteWishlist(data) {
-  return request.delete('/onlineShop/deleteWishlist', data)
+  return request.delete('/onlineShop/deleteWishlist', { data })
 }
 
 // get收藏列表
