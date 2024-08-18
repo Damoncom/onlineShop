@@ -13,7 +13,7 @@
             :data-name="product.name"
             :data-brand="product.brand"
             :data-price="product.price"
-            @click="chooseProduct"
+            @click="chooseProduct(product)"
           >
             <div class="img_box">
               <img :src="product.image" class="product_img" />
@@ -37,23 +37,19 @@
         </ul>
       </div>
       <i class="iconfont icon-jiazaizhong2 icon_bottom" v-if="bottom == true"></i>
-      <p class="bottom_text">All products are here ~</p>
+      <p class="bottom_text" v-if="bottom == true">All products are here ~</p>
     </div>
   </div>
 </template>
 
 <script setup>
-import { reactive, ref, onBeforeMount, nextTick } from 'vue'
+import { reactive, ref, onBeforeMount, nextTick, toRaw } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
-import product from '@/assets/prodoct_img.jpg'
-import getGoodsList from '@/utils/getGoodsList'
-import editCart from '@/utils/addToCart'
+import { getGoodsList } from '@/utils/api'
 
 const router = useRouter()
 const route = useRoute()
-
-const token_info = localStorage.getItem('token')
 
 // 导入导航栏
 const navTitle = 'Category'
@@ -61,26 +57,18 @@ const navTitle = 'Category'
 // 商品列表数据
 const productList = reactive([])
 
-// 将商品添加至cart
-const actived_index = ref('')
-const isAdd = ref(false)
-
-const chooseProduct = (e) => {
-  actived_index.value = e.currentTarget.dataset.index
-
-  const detail = ref({
-    name: e.currentTarget.dataset.name,
-    brand: e.currentTarget.dataset.brand,
-    price: e.currentTarget.dataset.price
-  })
-
-  //   跳转到productDetail页面
+//  跳转到productDetail页面
+const chooseProduct = (product) => {
   router.push({
     path: '/product_details',
-    query: detail.value
+    query: {
+      productId: toRaw(product).id
+    }
   })
 }
 
+// 将商品添加至cart
+const isAdd = ref(false)
 const actived_cardIndex = ref('')
 const addToCart = async (product, event) => {
   await nextTick()
@@ -114,28 +102,20 @@ const addToCart = async (product, event) => {
 onBeforeMount(async () => {
   await nextTick()
 
-  getGoodsList(productList)
-  // const { data: resp_orderList } = await axios({
-  //   method: 'get',
-  //   url: '/onlineShop/getGoodsList',
-  //   params: {
-  //     size: 10,
-  //     page: 1,
-  //     barCode: '',
-  //     name: ''
-  //   },
-  //   headers: {
-  //     Authorization: `Bearer ${token_info}`,
-  //     'Content-Type': 'application/json; charset=utf-8'
-  //   }
-  // })
-  // if (resp_orderList.errCode == 1000) {
-  //   Object.assign(productList, resp_orderList.data.list)
-  // } else {
-  // }
+  const data = {
+    size: 10,
+    page: 1,
+    barCode: '',
+    name: ''
+  }
+  // get商品列表信息
+  const resp_getGoodsList = await getGoodsList(data)
+  console.log('get商品列表信息', resp_getGoodsList)
 
-  // console.log('获取商品列表数据:', resp_orderList)
-  // console.log(productList)
+  if (resp_getGoodsList.errCode == 1000) {
+    Object.assign(productList, resp_getGoodsList.data.list)
+  } else {
+  }
 })
 
 // 下拉加载，上拉刷新
@@ -147,32 +127,25 @@ const doScroll = async (event) => {
   const scrollHeight = event.target.scrollHeight
   const scrollTop = event.target.scrollTop
   const clientHeight = event.target.clientHeight
+
+  // 触底
   if (scrollTop + clientHeight >= scrollHeight) {
-    console.log('到底了!')
     bottom.value = true
-
-    const token_info = localStorage.getItem('token')
-    const { data: resp_product } = await axios({
-      method: 'get',
-      url: '/onlineShop/getGoodsList',
-      params: {
-        size: 20,
-        page: 1,
-        barCode: '',
-        name: ''
-      },
-      headers: {
-        Authorization: `Bearer ${token_info}`,
-        'Content-Type': 'application/json; charset=utf-8'
-      }
-    })
-
-    if (resp_product.errCode == 1000) {
-      Object.assign(productList, resp_product.data.list)
+    const data2 = {
+      size: 20,
+      page: 1,
+      barCode: '',
+      name: ''
     }
-    console.log('下拉加载更多获取商品列表数据:', resp_product)
-    console.log(productList)
+    // get更多商品列表信息
+    const resp_getGoodsList = await getGoodsList(data2)
+    console.log('get商品列表信息', resp_getGoodsList)
+    if (resp_getGoodsList.errCode == 1000) {
+      Object.assign(productList, resp_getGoodsList.data.list)
+    } else {
+    }
 
+    // 控制加载动画出现
     setTimeout(async () => {
       bottom.value = false
     }, 1000)
@@ -180,8 +153,8 @@ const doScroll = async (event) => {
     bottom.value = false
   }
 
+  // 到顶
   if (scrollTop <= 0) {
-    console.log('顶部!')
     top.value = true
     setTimeout(async () => {
       top.value = false

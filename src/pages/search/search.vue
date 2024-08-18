@@ -156,19 +156,16 @@ import {
   onUpdated
 } from 'vue'
 import TabBar from '@/components/tabBar'
-import product from '@/assets/prodoct_img.jpg'
 import { useRouter, useRoute } from 'vue-router'
-import getGoodsList from '@/utils/getGoodsList'
-import editCart from '@/utils/addToCart'
+import { getGoodsList } from '@/utils/api'
 
 const router = useRouter()
 const route = useRoute()
 
+//TODO:所有文件的生命周期合并
 // 商品列表数据
 const productList = reactive([])
 const count_product = ref()
-
-const token_info = localStorage.getItem('token')
 
 // 确认是Home页面
 const isSearchPage = true
@@ -177,8 +174,6 @@ const isWay = ref(false)
 
 // 搜索数据
 const historyList = reactive([])
-
-console.log(historyList)
 
 // 页面取消挂载时存储搜索历史
 onUnmounted(async () => {
@@ -212,33 +207,28 @@ const search = async () => {
   isWay.value = true
 
   // 模糊搜索
-  // 有条件获取商品列表数据
-  const { data: resp_search } = await axios({
-    method: 'get',
-    url: '/onlineShop/getGoodsList',
-    params: {
-      size: 10,
-      page: 1,
-      barCode: '',
-      name: inputText.value
-    },
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'application/json; charset=utf-8'
-    }
-  })
-  if (resp_search.errCode == 1000) {
-    Object.assign(productList, resp_search.data.list)
+  // get商品列表
+  const data = {
+    size: 10,
+    page: 1,
+    barCode: '',
+    name: inputText.value
+  }
+  // get商品列表信息
+  const resp_getGoodsList = await getGoodsList(data)
+  console.log('get模糊搜索商品列表信息', resp_getGoodsList)
+
+  if (resp_getGoodsList.errCode == 1000) {
+    Object.assign(productList, resp_getGoodsList.data.list)
     count_product.value = productList.length
     isWay.value = true
   } else {
     isWay.value = false
   }
-  if (resp_search.data.list.length == 0) {
+  if (resp_getGoodsList.data.list.length == 0) {
     productList.length = 0
     count_product.value = 0
   }
-  console.log('模糊搜索获取商品列表数据:', resp_search)
 }
 
 // 取消功能
@@ -255,28 +245,22 @@ const deleteHistory = async () => {
 
   historyList.length = 0
 
-  // 获取商品列表数据
-  getGoodsList(productList)
-  // const { data: resp_product } = await axios({
-  //   method: 'get',
-  //   url: '/onlineShop/getGoodsList',
-  //   params: {
-  //     size: 10,
-  //     page: 1,
-  //     barCode: '',
-  //     name: ''
-  //   },
-  //   headers: {
-  //     Authorization: `Bearer ${token_info}`,
-  //     'Content-Type': 'application/json; charset=utf-8'
-  //   }
-  // })
-  // if (resp_product.errCode == 1000) {
-  //   Object.assign(productList, resp_product.data.list)
-  //   count_product.value = productList.length
-  // } else {
-  // }
-  // console.log('获取商品列表数据:', resp_product)
+  // get商品列表
+  const data = {
+    size: 10,
+    page: 1,
+    barCode: '',
+    name: ''
+  }
+  // get商品列表信息
+  const resp_getGoodsList = await getGoodsList(data)
+  console.log('get商品列表信息', resp_getGoodsList)
+
+  if (resp_getGoodsList.errCode == 1000) {
+    Object.assign(productList, resp_getGoodsList.data.list)
+    count_product.value = productList.length
+  } else {
+  }
 }
 
 // 商品显示方式选择
@@ -319,32 +303,26 @@ const doScroll = async (event) => {
   const scrollHeight = event.target.scrollHeight
   const scrollTop = event.target.scrollTop
   const clientHeight = event.target.clientHeight
+
+  // 触底
   if (scrollTop + clientHeight >= scrollHeight) {
-    console.log('到底了!')
     bottom.value = true
-
-    const { data: resp_product } = await axios({
-      method: 'get',
-      url: '/onlineShop/getGoodsList',
-      params: {
-        size: 20,
-        page: 1,
-        barCode: '',
-        name: ''
-      },
-      headers: {
-        Authorization: `Bearer ${token_info}`,
-        'Content-Type': 'application/json; charset=utf-8'
-      }
-    })
-
-    if (resp_product.errCode == 1000) {
-      Object.assign(productList, resp_product.data.list)
-      count_product.value = productList.length
+    const data2 = {
+      size: 20,
+      page: 1,
+      barCode: '',
+      name: ''
     }
-    console.log('下拉加载更多获取商品列表数据:', resp_product)
-    console.log(productList)
+    // get更多商品列表信息
+    const resp_getGoodsList = await getGoodsList(data2)
+    console.log('get更多商品列表信息', resp_getGoodsList)
+    if (resp_getGoodsList.errCode == 1000) {
+      Object.assign(productList, resp_getGoodsList.data.list)
+      count_product.value = productList.length
+    } else {
+    }
 
+    // 控制加载动画出现
     setTimeout(async () => {
       bottom.value = false
     }, 1000)
@@ -352,8 +330,8 @@ const doScroll = async (event) => {
     bottom.value = false
   }
 
+  // 到顶
   if (scrollTop <= 0) {
-    console.log('顶部!')
     top.value = true
     setTimeout(async () => {
       top.value = false

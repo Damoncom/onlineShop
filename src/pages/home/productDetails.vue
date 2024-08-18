@@ -59,9 +59,9 @@
 <script setup>
 import { onBeforeMount, reactive, ref, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import product from '@/assets/details_img.jpg'
 import axios from 'axios'
 import StarRating from 'vue-star-rating'
+import { getGoodsDetail, createWishlist, deleteWishlist } from '@/utils/api'
 
 const router = useRouter()
 const route = useRoute()
@@ -79,27 +79,17 @@ console.log('传参的数据', productId)
 const details = reactive({})
 const token_info = localStorage.getItem('token')
 
-// 获取商品详情信息
 onBeforeMount(async () => {
   await nextTick()
 
-  const { data: resp_product_details } = await axios({
-    method: 'get',
-    url: '/onlineShop/getGoodsDetail',
-    params: {
-      id: productId.productId
-    },
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'application/json; charset=utf-8'
-    }
-  })
-  if (resp_product_details.errCode == 1000) {
-    Object.assign(details, resp_product_details.data)
+  // get商品详情信息
+  const resp_getGoodsDetails = await getGoodsDetail(productId.productId)
+  console.log('get商品详情信息', resp_getGoodsDetails)
+
+  if (resp_getGoodsDetails.errCode == 1000) {
+    Object.assign(details, resp_getGoodsDetails.data)
   } else {
   }
-
-  console.log('获取商品详情数据:', resp_product_details)
 })
 
 const postData = reactive({
@@ -112,22 +102,15 @@ const comfirmShouCang = async () => {
 
   details.inWishlist = true
 
-  // post请求
-  const { data: resp_notification } = await axios({
-    method: 'post',
-    url: '/onlineShop/createWishlist',
-    data: postData,
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'multipart/form-data'
-    }
-  })
-  if (resp_notification.errCode == 1000) {
+  // post收藏
+  const resp_shoucang = await createWishlist(postData)
+  console.log('post收藏', resp_shoucang)
+
+  if (resp_shoucang.errCode == 1000) {
     details.inWishlist = true
   } else {
     details.inWishlist = false
   }
-  console.log('post请求收藏：', resp_notification)
 }
 
 // 取消收藏
@@ -136,22 +119,15 @@ const cancelShouCang = async () => {
 
   details.inWishlist = false
 
-  // delete请求
-  const { data: resp_cancelNotidication } = await axios({
-    method: 'delete',
-    url: '/onlineShop/deleteWishlist',
-    data: postData,
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'application/json; charset=utf-8'
-    }
-  })
-  if (resp_cancelNotidication.errCode == 1000) {
+  // delete取消收藏
+  const resp_cancelShoucang = await deleteWishlist(postData)
+  console.log('delete取消收藏', resp_cancelShoucang)
+
+  if (resp_cancelShoucang.errCode == 1000) {
     details.inWishlist = false
   } else {
     details.inWishlist = true
   }
-  console.log('delete请求取消收藏：', resp_cancelNotidication)
 }
 
 // 是否加入购物车右上角图标

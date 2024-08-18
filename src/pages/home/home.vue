@@ -250,7 +250,7 @@
 import { ref, reactive, onBeforeMount, nextTick, toRaw } from 'vue'
 import TabBar from '@/components/tabBar'
 import { useRouter, useRoute } from 'vue-router'
-import { getUserInfo } from '@/utils/api'
+import { getUserInfo, getNotification } from '@/utils/api'
 
 const router = useRouter()
 const route = useRoute()
@@ -268,7 +268,6 @@ const onProgress = (e) => {
 const onSlideChange = (e) => {
   console.log('slide changed')
 }
-
 let swiper = ref(null)
 
 // 确认是Home页面
@@ -331,7 +330,7 @@ const linkToBanner3 = () => {
     }
   })
 }
-// 分类标签数据
+// category数据
 const categoriesList = ref([
   {
     id: '1',
@@ -375,7 +374,6 @@ const categoriesList = ref([
   }
 ])
 
-// 商品列表数据
 // recommended数据
 const recommendedList = reactive([])
 
@@ -494,8 +492,8 @@ const user = reactive({})
 const noRead = ref(false)
 const notificationList = reactive([])
 
-// 获取首页数据
 onBeforeMount(async () => {
+  // 获取首页数据
   const token_info = localStorage.getItem('token')
   const { data: resp } = await axios({
     method: 'get',
@@ -522,6 +520,27 @@ onBeforeMount(async () => {
     Object.assign(user, resp_userInfo.data)
   }
   console.log(resp_userInfo)
+
+  // get通知列表
+  const resp_getNotice = await getNotification()
+  console.log(resp_getNotice)
+  if (resp_getNotice.errCode == 1000) {
+    Object.assign(notificationList, resp_getNotice.data.list)
+  }
+
+  // 判断通知小红点是否出现
+  const arr = reactive([])
+  toRaw(resp_getNotice.data.list).forEach((item) => {
+    if (item.read == 0) {
+      toRaw(arr).push({
+        noread: item.read
+      })
+    }
+  })
+  if (arr.length == 0) {
+    noRead.value = true
+  }
+  console.log('未读消息数：', arr.length)
 })
 
 // sideBar页面

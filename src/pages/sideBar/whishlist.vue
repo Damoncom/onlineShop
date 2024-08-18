@@ -30,7 +30,7 @@
 import { reactive, ref, onBeforeMount, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
-import product from '@/assets/details_img.jpg'
+import { deleteWishlist, getWishlist } from '@/utils/api'
 
 const router = useRouter()
 const route = useRoute()
@@ -41,53 +41,34 @@ const navTitle = 'Wishlist'
 // 定义收藏列表变量
 const wishlist = reactive([])
 
-const token_info = localStorage.getItem('token')
-
-// 获取收藏列表数据
+// get收藏列表
 onBeforeMount(async () => {
   await nextTick()
 
-  const { data: resp_wishlist } = await axios({
-    method: 'get',
-    url: '/onlineShop/getWishlist',
-    params: {
-      size: 10,
-      page: 1
-    },
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'application/json; charset=utf-8'
-    }
-  })
-  if (resp_wishlist.errCode == 1000) {
-    Object.assign(wishlist, resp_wishlist.data.list)
+  const resp_getWishList = await getWishlist()
+  console.log('get收藏列表', resp_getWishList)
+
+  if (resp_getWishList.errCode == 1000) {
+    Object.assign(wishlist, resp_getWishList.data.list)
   } else {
   }
-
-  console.log('获取收藏列表数据:', resp_wishlist)
 })
 
-// 取消收藏功能
+// TODO:取消收藏功能失效
+// delete取消收藏
 const cancelLike = async (wish) => {
   await nextTick()
 
-  // delete请求
-  const { data: resp_cancelNotidication } = await axios({
-    method: 'delete',
-    url: '/onlineShop/deleteWishlist',
-    data: {
-      id: wish.goodsId
-    },
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'application/json; charset=utf-8'
-    }
+  const postData = reactive({
+    id: wish.goodsId
   })
-  if (resp_cancelNotidication.errCode == 1000) {
+  const resp_cancelShoucang = await deleteWishlist(postData)
+  console.log('delete取消收藏', resp_cancelShoucang)
+
+  if (resp_cancelShoucang.errCode == 1000) {
     router.go(0)
   } else {
   }
-  console.log('delete请求取消收藏：', resp_cancelNotidication)
 }
 
 // 跳转到home页面
