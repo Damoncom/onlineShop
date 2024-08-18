@@ -30,7 +30,7 @@
           </li>
         </ul>
       </div>
-      <div class="askBuy">
+      <div class="askBuy" v-if="askBuy == true">
         <i class="iconfont icon-404"></i>
         <p class="askBuy_text">
           You haven't bought anything yet!
