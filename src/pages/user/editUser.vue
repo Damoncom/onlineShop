@@ -247,6 +247,12 @@ onBeforeMount(async () => {
     Object.assign(user, resp_userInfo.data)
   } else {
   }
+
+  if (resp_userInfo.data.gender == '1') {
+    input_gender.value = 'Female'
+  } else {
+    input_gender.value = 'Male'
+  }
   console.log('get用户信息：', resp_userInfo)
 })
 
