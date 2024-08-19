@@ -65,8 +65,6 @@ const detailsText = ref()
 
 // 获取用户信息
 onBeforeMount(async () => {
-  await nextTick()
-
   // get用户信息
   const resp_userInfo = await getUserInfo()
   if (resp_userInfo.errCode == 1000) {
@@ -78,8 +76,6 @@ onBeforeMount(async () => {
 
 // 发送post请求，添加配送地址
 const save = async () => {
-  await nextTick()
-
   const postData = reactive({
     location: route.query.area + detailsText.value,
     lng: '114.215767',

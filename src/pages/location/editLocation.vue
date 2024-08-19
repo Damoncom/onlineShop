@@ -83,8 +83,6 @@ const detailsText = ref(str.value?.slice(str.value?.indexOf('区') + 1))
 
 // 获取用户信息
 onBeforeMount(async () => {
-  await nextTick()
-
   // get用户信息
   const resp_userInfo = await getUserInfo()
   if (resp_userInfo.errCode == 1000) {
@@ -136,8 +134,6 @@ const cancelDelete = () => {
 
 // delete删除配送地址
 const comfirmDelete = async () => {
-  await nextTick()
-
   const postData = reactive({
     id: locationInfo.id
   })

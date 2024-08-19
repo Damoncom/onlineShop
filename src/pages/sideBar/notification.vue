@@ -53,8 +53,6 @@ const notificationList = reactive([])
 const token_info = localStorage.getItem('token')
 
 onBeforeMount(async () => {
-  await nextTick()
-
   // get通知列表
   const resp_getNotice = await getNotification()
   console.log('get通知列表', resp_getNotice)

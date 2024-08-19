@@ -92,8 +92,6 @@ const addToCart = async (product, event) => {
 
 // 获取商品列表信息
 onBeforeMount(async () => {
-  await nextTick()
-
   const data = {
     size: 10,
     page: 1,

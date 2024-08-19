@@ -72,8 +72,6 @@ const orderList = reactive([])
 const askBuy = ref(false)
 
 onBeforeMount(async () => {
-  await nextTick()
-
   // 获取订单列表
   const resp = await getOrderList()
   if (resp.errCode == 1000) {

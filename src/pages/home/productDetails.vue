@@ -80,8 +80,6 @@ const details = reactive({})
 const token_info = localStorage.getItem('token')
 
 onBeforeMount(async () => {
-  await nextTick()
-
   // get商品详情信息
   const resp_getGoodsDetails = await getGoodsDetail(productId.productId)
   console.log('get商品详情信息', resp_getGoodsDetails)
@@ -98,8 +96,6 @@ const postData = reactive({
 
 // 收藏
 const comfirmShouCang = async () => {
-  await nextTick()
-
   details.inWishlist = true
 
   // post收藏
@@ -153,8 +149,6 @@ const add = async () => {
 
 // 跳转cart页面
 const addToCart = async () => {
-  await nextTick()
-
   // post修改购物车
   const addToCartPost = reactive({
     goodsId: productId.productId,

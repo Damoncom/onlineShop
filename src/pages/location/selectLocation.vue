@@ -87,8 +87,6 @@ const linkToEditLocation = (region) => {
 
 // get配送地址
 onBeforeMount(async () => {
-  await nextTick()
-
   const locationPost = reactive({
     size: 10,
     page: 1

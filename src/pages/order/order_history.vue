@@ -92,8 +92,6 @@ const askBuy = ref(false)
 
 // -1:cancelled 1:pending 2:on going 3:completed
 onBeforeMount(async () => {
-  await nextTick()
-
   // 获取订单列表
   const resp = await getOrderList()
   if (resp.errCode == 1000) {
@@ -121,8 +119,6 @@ onBeforeMount(async () => {
 
 // reorder重新添加到购物车
 const reOrder = async (order) => {
-  await nextTick()
-
   // post修改购物车
   const addToCartPost = reactive({
     goodsId: order.goods.id,

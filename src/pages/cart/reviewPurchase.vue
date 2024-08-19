@@ -133,8 +133,6 @@ const locationDetails = reactive({})
 const queryOrder = reactive([])
 
 onBeforeMount(async () => {
-  await nextTick()
-
   // get购物车
   const postData = reactive({
     size: 10,

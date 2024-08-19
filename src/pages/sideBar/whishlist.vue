@@ -43,8 +43,6 @@ const wishlist = reactive([])
 
 // get收藏列表
 onBeforeMount(async () => {
-  await nextTick()
-
   const resp_getWishList = await getWishlist()
   console.log('get收藏列表', resp_getWishList)
 
@@ -56,8 +54,6 @@ onBeforeMount(async () => {
 
 // delete取消收藏
 const cancelLike = async (wish) => {
-  await nextTick()
-
   const postData = reactive({
     id: wish.goodsId
   })

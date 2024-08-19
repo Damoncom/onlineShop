@@ -141,25 +141,6 @@ const onInput = () => {
   if (digit == 4 || digit == 9 || digit == 14) {
     card.value = card.value + ' '
   }
-
-  // const str = card.value.replace(/\s*/g, '')
-  // const panduan = ref(Number(str))
-  // // console.log(panduan)
-
-  // if (panduan.value == NaN) {
-  //   isShowToast.value = true
-  //   setTimeout(async () => {
-  //     await nextTick()
-  //     isShowToast.value = false
-  //   }, 4000)
-  //   msg.value = '银行卡格式有误'
-  //   console.log(isShowToast.value)
-  // } else {
-  //   console.log(panduan.value)
-  // }
-
-  // return card.replace(/\D/g, '') // 不允许输入非数字字符
-  // return aaa.replace(/(\d{4})(?=\d)/g, '$1 ') // 4位
 }
 
 // 获取当前时间
@@ -182,8 +163,6 @@ const createNotice = reactive([])
 const cartList = reactive([])
 
 onBeforeMount(async () => {
-  await nextTick()
-
   // get购物车
   const postData = reactive({
     size: 10,
