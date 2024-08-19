@@ -86,8 +86,6 @@
         </div>
       </div>
     </div>
-    <!-- 引入toast组件 -->
-    <Toast :init="msg" v-if="isSave == true" />
   </div>
   <div class="mask" v-if="isChange == true" @click="isChangeImg_box"></div>
   <div class="changeImg_box" v-if="isChange == true">
@@ -119,8 +117,8 @@
 import { ref, onUpdated, nextTick, unref, isReactive, isRef, onBeforeMount, reactive } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
-import Toast from '@/components/toast.vue'
 import { getUserInfo, updateUserInfo, uploadImage } from '@/utils/api'
+import { Toast_Success } from '@/utils/extract'
 
 const router = useRouter()
 const route = useRoute()
@@ -166,13 +164,6 @@ const takePhoto = async () => {
 // 上传照片
 
 const handleFileUpload = async (file, fileList) => {
-  // 控制toast出现
-  isSave.value = true
-  msg.value = response.errMsg
-  setTimeout(() => {
-    isSave.value = false
-  }, 3900)
-
   isChange.value = false
   console.log(uploadInput)
 
@@ -257,17 +248,8 @@ onBeforeMount(async () => {
 })
 
 // 保存修改按钮
-let msg = ref('')
-let isSave = ref(false)
 const save = async () => {
   await nextTick()
-
-  // 控制toast出现
-  isSave.value = true
-  msg.value = 'Successfully Saved!'
-  setTimeout(() => {
-    isSave.value = false
-  }, 3900)
 
   // 性别判断
   if (input_gender.value == 'Male') {
@@ -282,6 +264,7 @@ const save = async () => {
   // put修改用户信息
   const resp_update = await updateUserInfo(obj)
   if (resp_update.errCode == 1000) {
+    Toast_Success('Successfully!')
     // 跳转到profile页面
     router.push({
       path: '/profile'

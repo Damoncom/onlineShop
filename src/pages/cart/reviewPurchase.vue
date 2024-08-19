@@ -68,16 +68,14 @@
       </div>
     </div>
   </div>
-  <!-- 引入toast组件 -->
-  <Toast :init="msg" v-if="isActivedPurchase == true" />
 </template>
 <script setup>
 import { reactive, ref, toRaw, nextTick, onBeforeMount } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import Toast from '@/components/toast.vue'
 import Nav from '@/components/nav'
 import currency from 'currency.js'
 import { getLocation, getCart, calculateCost } from '@/utils/api'
+import { Toast } from '@/utils/extract'
 
 const router = useRouter()
 const route = useRoute()
@@ -190,8 +188,6 @@ onBeforeMount(async () => {
   console.log('post计算费用：', resp_calculate)
 })
 
-const msg = ref('')
-const isActivedPurchase = ref(false)
 // 跳转到Payment页面
 const linkToPayment = () => {
   if (isHaveLocation.value == true) {
@@ -199,11 +195,9 @@ const linkToPayment = () => {
       path: '/payment'
     })
   } else {
-    isActivedPurchase.value = !isActivedPurchase.value
-    msg.value = 'The delivery address cannot be empty'
+    Toast('The delivery address cannot be empty')
     setTimeout(async () => {
       await nextTick()
-      isActivedPurchase.value = !isActivedPurchase.value
     }, 3900)
   }
 }

@@ -53,11 +53,9 @@
         </div>
       </RouterLink>
     </div>
-
-    <!-- 引入toast组件 -->
-    <Toast :init="msg" v-if="isActivedReset == true" />
   </div>
   <div class="mask" v-if="isReset == true && isAllRight == true"></div>
+  <!-- TODO:bottom_sheet样式问题 -->
   <div class="bottom_sheet" v-if="isReset == true && isAllRight == true">
     <img src="@/assets/icon_index_daily.svg" class="img" />
     <div class="text">
@@ -75,17 +73,13 @@
       </div>
     </div>
   </div>
-
-  <!-- 引入toast组件 -->
-  <Toast :init="msg" v-if="isActivedReset == true" />
 </template>
 
 <script setup>
 import { ref, onUpdated, nextTick, onMounted } from 'vue'
 import Nav from '@/components/nav'
-import Toast from '../../components/toast.vue'
 import { useRouter, useRoute } from 'vue-router'
-import { checkPwd } from '@/utils/extract'
+import { checkPwd, Toast, Toast_Success } from '@/utils/extract'
 
 const router = useRouter()
 const route = useRoute()
@@ -100,7 +94,7 @@ const user = ref({
 })
 
 // 输入框验证
-let msg = ref('')
+let msg = ref('Incorrect password input')
 let isRightComfirmPwd = ref(false)
 let isRightPwd = ref(false)
 let isReset = ref(false)
@@ -129,7 +123,6 @@ onUpdated(async () => {
     isRightComfirmPwd.value == true &&
     user.value.pwd === user.value.comfirmPwd
   ) {
-    msg.value = 'Successfully!'
     isAllRight.value = true
   }
 })
@@ -138,10 +131,14 @@ onUpdated(async () => {
 const reset = () => {
   isReset.value = true
   isActivedReset.value = true
+
   if (isAllRight.value == true) {
+    Toast_Success('Successfully!')
     router.push({
       path: '/signIn'
     })
+  } else {
+    Toast(msg.value)
   }
   setTimeout(() => {
     isActivedReset.value = false

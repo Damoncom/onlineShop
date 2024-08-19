@@ -86,9 +86,6 @@
         </div>
       </div>
     </div>
-
-    <!-- 引入toast组件 -->
-    <Toast :init="msg" v-if="isActivedSignin == true" />
   </div>
 </template>
 
@@ -107,9 +104,9 @@ import {
 } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
-import Toast from '@/components/toast.vue'
 import { signIn } from '@/utils/api'
 import { checkPhoneNumber, checkPwd } from '@/utils/extract'
+import { Toast, Toast_Success } from '@/utils/extract'
 
 const router = useRouter()
 const route = useRoute()
@@ -154,7 +151,6 @@ let msg = ref('')
 let isRightPhone = ref(false)
 let isRightPwd = ref(false)
 let signin = ref(false)
-let isActivedSignin = ref(false)
 onUpdated(async () => {
   await nextTick()
 
@@ -172,13 +168,6 @@ onUpdated(async () => {
 const signInButton = async (user) => {
   await nextTick()
 
-  // 控制toast出现
-  isActivedSignin.value = true
-  setTimeout(async () => {
-    await nextTick()
-    isActivedSignin.value = false
-  }, 4000)
-
   // 输入格式正确与否判断
   if (isRightPhone.value === false && isRightPwd.value === false) {
     msg.value = 'Incorrect phone number and password input'
@@ -188,7 +177,6 @@ const signInButton = async (user) => {
     msg.value = 'Incorrect phone number input'
   } else if (isRightPhone.value === true && isRightPwd.value === true) {
     signin.value = true
-
     // post登录须提交的数据
     let obj = { ...user }
 
@@ -208,6 +196,12 @@ const signInButton = async (user) => {
       msg.value = resp.errMsg
     }
     console.log('post请求siginIn', resp)
+  }
+
+  if (isRightPhone.value === true && isRightPwd.value === true) {
+    Toast_Success('Successfully!')
+  } else {
+    Toast(msg.value)
   }
 }
 

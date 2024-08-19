@@ -85,15 +85,11 @@
       </div>
     </div>
   </div>
-
-  <!-- 引入toast组件 -->
-  <Toast :init="msg" v-if="isShowToast == true" />
 </template>
 <script setup>
 import { ref, reactive, onBeforeMount, nextTick, toRaw } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
-import Toast from '@/components/toast'
 import currency from 'currency.js'
 import axios from 'axios'
 import { getUserInfo, getLocation, getCart, pay } from '@/utils/api'
@@ -133,8 +129,6 @@ const chooseChange = () => {
 }
 
 // 银行卡的输入
-const isShowToast = ref(false)
-const msg = ref('')
 const card = ref('')
 const onInput = () => {
   const digit = card.value.toString().length

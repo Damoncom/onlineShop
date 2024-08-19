@@ -42,9 +42,6 @@
         </div>
       </div>
     </div>
-
-    <!-- 引入toast组件 -->
-    <Toast :init="msg" v-if="isRecend == true" />
   </div>
   <div class="mask" v-if="isSubmit == true"></div>
   <div class="bottom_sheet" v-if="isSubmit == true">
@@ -70,16 +67,15 @@
 import { ref, onMounted, nextTick, onUpdated, toRaw, reactive, isReactive } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
-import Toast from '@/components/toast.vue'
 import axios from 'axios'
 import { signIn, signUp } from '@/utils/api'
+import { Toast, Toast_Success } from '@/utils/extract'
 
 // 导入导航栏
 const navTitle = ''
 
 // 定义变量
 const msg = ref('')
-let isRecend = ref(false)
 
 // 倒计时
 const fitZero = (num) => {
@@ -158,13 +154,6 @@ let isSubmit = ref(false)
 const submit = async (user) => {
   await nextTick()
 
-  // 控制toast出现
-  isRecend.value = true
-  setTimeout(async () => {
-    await nextTick()
-    isRecend.value = false
-  }, 4000)
-
   // 处理验证码数字
   const arr = toRaw(verificationCodes.value)
   const sum = arr.join('')
@@ -175,8 +164,6 @@ const submit = async (user) => {
   console.log(resp_signUp)
 
   if (resp_signUp.errCode == 1000) {
-    msg.value = 'Successfully!'
-
     // post登录须提交的数据
     let obj = { ...user }
     // post登录
@@ -187,6 +174,7 @@ const submit = async (user) => {
       // 存储isRemember的值
       localStorage.setItem('isRemember', true)
 
+      Toast_Success('Successfully!')
       // 跳转到home页面
       router.push({
         path: '/home'
@@ -209,16 +197,20 @@ const submit = async (user) => {
   } else {
     msg.value = resp_signUp.errMsg
   }
+
+  if (resp.errCode == 1000) {
+    Toast_Success('Successfully!')
+  } else {
+    Toast(msg.value)
+  }
 }
 
 // 重新发送验证码
 let recendColor = ref(false)
 const recendFunc = () => {
-  isRecend.value = true
   recendColor.value = true
   msg.value = 'The verification code has been successfully sent!'
   setTimeout(() => {
-    isRecend.value = false
     router.go(0)
   }, 2000)
 }

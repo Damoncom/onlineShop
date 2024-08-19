@@ -37,7 +37,6 @@
         </ul>
       </div>
       <i class="iconfont icon-jiazaizhong2 icon_bottom" v-if="bottom == true"></i>
-      <p class="bottom_text" v-if="bottom == true">All products are here ~</p>
     </div>
   </div>
 </template>
@@ -47,6 +46,7 @@ import { reactive, ref, onBeforeMount, nextTick, toRaw } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
 import { getGoodsList, editCart } from '@/utils/api'
+import { Toast_Info } from '@/utils/extract'
 
 const router = useRouter()
 const route = useRoute()
@@ -135,6 +135,11 @@ const doScroll = async (event) => {
 
     // 控制加载动画出现
     setTimeout(async () => {
+      // 判断没有新数据了
+      if (resp_getGoodsList.data.list.length == 0) {
+        Toast_Info('All products are here ~')
+      }
+
       bottom.value = false
       if (resp_getGoodsList.errCode == 1000) {
         resp_getGoodsList.data.list.forEach((item) => {

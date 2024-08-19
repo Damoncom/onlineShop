@@ -1,6 +1,7 @@
 // 将Axios封装成模块
 import axios from 'axios'
 import router from '@/router/index.js'
+import { Toast } from '@/utils/extract'
 
 const token_info = localStorage.getItem('token')
 
@@ -36,6 +37,7 @@ request.interceptors.response.use(
     } else {
       router.push('/notFound')
     }
+
     // // 对响应数据做处理，例如只返回data部分
     // const res = response.data
     // // 如果返回的状态码为200，说明成功，可以直接返回数据
@@ -53,8 +55,7 @@ request.interceptors.response.use(
   (error) => {
     // 对响应错误做处理
     console.log('err' + error) // for debugd
-
-    //TODO:toast显示：服务器异常
+    Toast('服务器异常')
     return Promise.reject(error)
   }
 )

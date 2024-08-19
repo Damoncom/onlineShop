@@ -158,6 +158,7 @@ import {
 import TabBar from '@/components/tabBar'
 import { useRouter, useRoute } from 'vue-router'
 import { getGoodsList, editCart } from '@/utils/api'
+import { Toast_Info } from '@/utils/extract'
 
 const router = useRouter()
 const route = useRoute()
@@ -329,18 +330,23 @@ const doScroll = async (event) => {
     // get更多商品列表信息
     const resp_getGoodsList = await getGoodsList(data2)
     console.log('get更多商品列表信息', resp_getGoodsList)
-    if (resp_getGoodsList.errCode == 1000) {
-      resp_getGoodsList.data.list.forEach((item) => {
-        productList.push(item)
-      })
-      count_product.value = productList.length
-    } else {
-    }
 
     // 控制加载动画出现
     setTimeout(async () => {
       bottom.value = false
-    }, 1000)
+      // 判断没有新数据了
+      if (resp_getGoodsList.data.list.length == 0) {
+        Toast_Info('All products are here ~')
+      }
+
+      if (resp_getGoodsList.errCode == 1000) {
+        resp_getGoodsList.data.list.forEach((item) => {
+          productList.push(item)
+        })
+        count_product.value = productList.length
+      } else {
+      }
+    }, 1500)
   } else {
     bottom.value = false
   }
