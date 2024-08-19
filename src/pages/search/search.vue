@@ -354,9 +354,27 @@ const doScroll = async (event) => {
   // 到顶
   if (scrollTop <= 0) {
     top.value = true
+
+    const data3 = {
+      size: 10,
+      page: 1,
+      barCode: '',
+      name: ''
+    }
+    // get更多商品列表信息
+    const resp_getGoodsList = await getGoodsList(data3)
+    console.log('get商品列表信息', resp_getGoodsList)
+
     setTimeout(async () => {
       top.value = false
+      if (resp_getGoodsList.errCode == 1000) {
+        productList.length = 0
+        Object.assign(productList, resp_getGoodsList.data.list)
+      } else {
+      }
     }, 1000)
+  } else {
+    top.value = false
   }
 }
 </script>

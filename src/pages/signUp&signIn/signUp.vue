@@ -137,7 +137,6 @@ onUpdated(async () => {
     isRightName.value = false
   }
 
-  // TODO:正则表达式提取
   // 判断手机号码的输入格式正确与否
   const checkphone = await checkPhoneNumber(user.value.phoneNumber)
   isRightPhone.value = checkphone
