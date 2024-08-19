@@ -85,6 +85,7 @@ import { ref, onUpdated, nextTick, onMounted } from 'vue'
 import Nav from '@/components/nav'
 import Toast from '../../components/toast.vue'
 import { useRouter, useRoute } from 'vue-router'
+import { checkPwd } from '@/utils/extract'
 
 const router = useRouter()
 const route = useRoute()
@@ -109,18 +110,10 @@ onUpdated(async () => {
   await nextTick()
 
   // 判断密码的输入格式正确与否
-  // ^[a-zA-Z]\w{5,17}$  注：正确格式为：以字母开头，长度在6~18之间，只能包含字符、数字和下划线。
-  const pwdReg = /^[a-zA-Z]\w{5,17}$/
-  if (!pwdReg.test(user.value.pwd)) {
-    isRightPwd.value = false
-  } else {
-    isRightPwd.value = true
-  }
-  if (!pwdReg.test(user.value.comfirmPwd)) {
-    isRightComfirmPwd.value = false
-  } else {
-    isRightComfirmPwd.value = true
-  }
+  const checkOldpwd = await checkPwd(user.value.pwd)
+  isRightPwd.value = checkOldpwd
+  const checkNewpwd = await checkPwd(user.value.comfirmPwd)
+  isRightComfirmPwd.value = checkNewpwd
 
   // 综合判断
   if (isRightPwd.value == false || isRightComfirmPwd.value == false) {

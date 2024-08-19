@@ -110,7 +110,7 @@ onBeforeMount(async () => {
   }
 })
 
-// 下拉加载，上拉刷新
+// TODO:用插件写下拉加载，上拉刷新
 const card = ref()
 const top = ref(false)
 const bottom = ref(false)
@@ -134,21 +134,22 @@ const doScroll = async (event) => {
     // get更多商品列表信息
     const resp_getGoodsList = await getGoodsList(data2)
     console.log('get商品列表信息', resp_getGoodsList)
-    if (resp_getGoodsList.errCode == 1000) {
-      resp_getGoodsList.data.list.forEach((item) => {
-        productList.push(item)
-      })
-    } else {
-    }
 
     // 控制加载动画出现
     setTimeout(async () => {
       bottom.value = false
-    }, 1000)
+      if (resp_getGoodsList.errCode == 1000) {
+        resp_getGoodsList.data.list.forEach((item) => {
+          productList.push(item)
+        })
+      } else {
+      }
+    }, 1500)
   } else {
     bottom.value = false
   }
 
+  // TODO:数组清空，重新获取第一页数据
   // 到顶
   if (scrollTop <= 0) {
     top.value = true

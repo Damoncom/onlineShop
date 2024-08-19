@@ -60,3 +60,5 @@ request.interceptors.response.use(
 )
 // TODO: 打断动作
 export default request
+
+// TODO:建议把请求挂到stores，把所有收到的返回也挂上去，顺便做一下持久化，

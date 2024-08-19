@@ -2,12 +2,12 @@ import request from '@/axios/request.js'
 
 // 用户信息-----------------------------------
 // post注册
-export function signUp(data) {
+export async function signUp(data) {
   return request.post('/onlineShop/signUp', data)
 }
 
 // post登录
-export function signIn(data) {
+export async function signIn(data) {
   return request.post('/onlineShop/signIn', data)
 }
 
@@ -17,12 +17,12 @@ export async function getUserInfo() {
 }
 
 // put修改用户信息
-export function updateUserInfo(data) {
+export async function updateUserInfo(data) {
   return request.put('/onlineShop/updateUserInfo', data)
 }
 
 // post上传用户头像
-export function uploadImage(data) {
+export async function uploadImage(data) {
   return request.post('/onlineShop/uploadImage', data)
 }
 
@@ -45,12 +45,12 @@ export async function getGoodsList(data) {
 
 // 心愿清单-------------------------------------
 // post收藏
-export function createWishlist(data) {
+export async function createWishlist(data) {
   return request.post('/onlineShop/createWishlist', data)
 }
 
 // delete取消收藏
-export function deleteWishlist(data) {
+export async function deleteWishlist(data) {
   return request.delete('/onlineShop/deleteWishlist', { data })
 }
 
@@ -61,12 +61,12 @@ export async function getWishlist() {
 
 // 配送地址-------------------------------------
 // post添加地址
-export function createLocation(data) {
+export async function createLocation(data) {
   return request.post('/onlineShop/createLocation', data)
 }
 
 // delete删除地址
-export function removeLocation(data) {
+export async function removeLocation(data) {
   return request.delete('/onlineShop/removeLocation', { data })
 }
 
@@ -76,13 +76,13 @@ export async function getLocation(data) {
 }
 
 // put修改地址
-export function updateLocation(data) {
+export async function updateLocation(data) {
   return request.put('/onlineShop/updateLocation', data)
 }
 
 // 购物车-------------------------------------
 // post修改购物车
-export function editCart(data) {
+export async function editCart(data) {
   return request.post('/onlineShop/editCart', data)
 }
 
@@ -93,7 +93,7 @@ export async function getCart(data) {
 
 // 订单-------------------------------------
 // post计算费用
-export function calculateCost(data) {
+export async function calculateCost(data) {
   return request.post('/onlineShop/calculateCost', data)
 }
 
@@ -103,6 +103,6 @@ export async function getOrderList() {
 }
 
 // post支付
-export function pay(data) {
+export async function pay(data) {
   return request.post('/onlineShop/pay', data)
 }

@@ -96,6 +96,7 @@ import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
 import Toast from '@/components/toast.vue'
 import md5 from 'js-md5'
+import { checkPhoneNumber, checkPwd } from '@/utils/extract'
 
 const router = useRouter()
 const route = useRoute()
@@ -136,23 +137,14 @@ onUpdated(async () => {
     isRightName.value = false
   }
 
+  // TODO:正则表达式提取
   // 判断手机号码的输入格式正确与否
-  // /^[1][3-9][0-9]{9}$/   注:以数字1开头，第二位是3到9的数字，后面跟着9个数字，
-  const phoneReg = /^[1][3-9][0-9]{9}$/
-  if (!phoneReg.test(user.value.phoneNumber)) {
-    isRightPhone.value = false
-  } else {
-    isRightPhone.value = true
-  }
+  const checkphone = await checkPhoneNumber(user.value.phoneNumber)
+  isRightPhone.value = checkphone
 
   // 判断密码的输入格式正确与否
-  // ^[a-zA-Z]\w{5,17}$  注：正确格式为：以字母开头，长度在6~18之间，只能包含字符、数字和下划线。
-  const pwdReg = /^[a-zA-Z]\w{5,17}$/
-  if (!pwdReg.test(user.value.pwd)) {
-    isRightPwd.value = false
-  } else {
-    isRightPwd.value = true
-  }
+  const checkpwd = await checkPwd(user.value.pwd)
+  isRightPwd.value = checkpwd
 })
 
 // 创建账户按钮
