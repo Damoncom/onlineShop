@@ -277,7 +277,7 @@ const save = async () => {
   }
 
   // 修改过的用户信息
-  let obj = JSON.parse(JSON.stringify(user))
+  let obj = { ...user }
 
   // put修改用户信息
   const resp_update = await updateUserInfo(obj)

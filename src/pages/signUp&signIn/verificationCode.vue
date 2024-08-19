@@ -178,7 +178,7 @@ const submit = async (user) => {
     msg.value = 'Successfully!'
 
     // post登录须提交的数据
-    let obj = JSON.parse(JSON.stringify(user))
+    let obj = { ...user }
     // post登录
     const resp = await signIn(obj)
     if (resp.errCode == 1000) {

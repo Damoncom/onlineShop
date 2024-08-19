@@ -198,7 +198,7 @@ const signInButton = async (user) => {
     signin.value = true
 
     // post登录须提交的数据
-    let obj = JSON.parse(JSON.stringify(user))
+    let obj = { ...user }
 
     // post登录
     const resp = await signIn(obj)
