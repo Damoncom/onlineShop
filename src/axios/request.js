@@ -52,7 +52,7 @@ request.interceptors.response.use(
   },
   (error) => {
     // 对响应错误做处理
-    console.log('err' + error) // for debug
+    console.log('err' + error) // for debugd
 
     //TODO:toast显示：服务器异常
     return Promise.reject(error)
