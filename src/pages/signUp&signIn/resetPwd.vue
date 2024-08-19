@@ -1,5 +1,5 @@
 <template>
-  <div class="app">
+  <div class="app" :class="isReset == true && isAllRight == true ? 'app_regular' : 'app'">
     <Nav :init_title="navTitle" />
 
     <div class="content">
@@ -55,7 +55,6 @@
     </div>
   </div>
   <div class="mask" v-if="isReset == true && isAllRight == true"></div>
-  <!-- TODO:bottom_sheet样式问题 -->
   <div class="bottom_sheet" v-if="isReset == true && isAllRight == true">
     <img src="@/assets/icon_index_daily.svg" class="img" />
     <div class="text">
@@ -67,7 +66,7 @@
       </div>
     </div>
 
-    <div class="button">
+    <div class="sheet_button" @click="linkToSignIn">
       <div class="back_home_button">
         <p class="text1">Sign In</p>
       </div>
@@ -79,7 +78,7 @@
 import { ref, onUpdated, nextTick, onMounted } from 'vue'
 import Nav from '@/components/nav'
 import { useRouter, useRoute } from 'vue-router'
-import { checkPwd, Toast, Toast_Success } from '@/utils/extract'
+import { checkPwd, Toast } from '@/utils/extract'
 
 const router = useRouter()
 const route = useRoute()
@@ -132,17 +131,17 @@ const reset = () => {
   isReset.value = true
   isActivedReset.value = true
 
-  if (isAllRight.value == true) {
-    Toast_Success('Successfully!')
-    router.push({
-      path: '/signIn'
-    })
-  } else {
-    Toast(msg.value)
-  }
+  Toast(msg.value)
+
   setTimeout(() => {
     isActivedReset.value = false
   }, 4000)
+}
+
+const linkToSignIn = () => {
+  router.push({
+    path: '/signIn'
+  })
 }
 </script>
 
@@ -321,20 +320,23 @@ input {
     }
   }
 }
+.app_regular {
+  position: fixed;
+  top: 0;
+}
 .mask {
   width: 375px;
-  height: 812px;
+  height: 100vh;
   background-color: rgba($color: #000000, $alpha: 0.5);
   position: absolute;
   top: 0;
 }
 .bottom_sheet {
   width: 375px;
-  height: 554px;
-  margin-top: 82px;
-  position: absolute;
-  bottom: 0;
-  z-index: 999;
+  height: 70vh;
+  position: fixed;
+  bottom: 0px;
+  z-index: 3;
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
@@ -380,33 +382,31 @@ input {
       }
     }
   }
-  .link_location {
-    text-decoration: none;
-    .button {
+
+  .sheet_button {
+    width: 335px;
+    height: 46px;
+    margin-top: 46px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .back_home_button {
       width: 335px;
       height: 46px;
-      margin-top: 46px;
+      border-radius: 6px;
+      background-color: #a456dd;
       display: flex;
       justify-content: center;
       align-items: center;
-      .back_home_button {
-        width: 335px;
-        height: 46px;
-        border-radius: 6px;
-        background-color: #a456dd;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        transition: all 0.1s ease-in-out;
-        .text1 {
-          font-size: 16px;
-          color: #ffffff;
-        }
+      transition: all 0.1s ease-in-out;
+      .text1 {
+        font-size: 16px;
+        color: #ffffff;
       }
-      .back_home_button:active {
-        width: 325px;
-        height: 44px;
-      }
+    }
+    .back_home_button:active {
+      width: 325px;
+      height: 44px;
     }
   }
 }
@@ -415,7 +415,7 @@ input {
     height: 0px;
   }
   to {
-    height: 554px;
+    height: 70vh;
   }
 }
 </style>
