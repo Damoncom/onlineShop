@@ -196,7 +196,7 @@ const submit = async (user) => {
     }
     console.log('post请求siginIn', resp)
   } else if (resp_signUp.errCode == 1001) {
-    msg.value = '该用户已注册！'
+    msg.value = resp_signUp.errMsg
     setTimeout(async () => {
       await nextTick()
       router.push({
@@ -204,7 +204,7 @@ const submit = async (user) => {
       })
     }, 2000)
   } else if (resp_signUp.errCode == 1002) {
-    msg.value = '验证码错误！'
+    msg.value = resp_signUp.errMsg
     router.go(0)
   } else {
     msg.value = resp_signUp.errMsg
