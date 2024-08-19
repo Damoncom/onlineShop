@@ -624,6 +624,9 @@ const linkToTest = () => {
     path: '/test'
   })
 }
+
+// 在 Vue 组件或任何 JS 文件中
+console.log(import.meta.env.VITE_API_URL)
 </script>
 
 <style lang="scss" scoped>
