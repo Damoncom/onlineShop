@@ -114,6 +114,7 @@ onBeforeMount(async () => {
 const card = ref()
 const top = ref(false)
 const bottom = ref(false)
+const count = ref(1)
 
 const doScroll = async (event) => {
   const scrollHeight = event.target.scrollHeight
@@ -123,9 +124,10 @@ const doScroll = async (event) => {
   // 触底
   if (scrollTop + clientHeight >= scrollHeight) {
     bottom.value = true
+    count.value++
     const data2 = {
-      size: 20,
-      page: 1,
+      size: 10,
+      page: count.value,
       barCode: '',
       name: ''
     }
@@ -133,7 +135,9 @@ const doScroll = async (event) => {
     const resp_getGoodsList = await getGoodsList(data2)
     console.log('get商品列表信息', resp_getGoodsList)
     if (resp_getGoodsList.errCode == 1000) {
-      Object.assign(productList, resp_getGoodsList.data.list)
+      resp_getGoodsList.data.list.forEach((item) => {
+        productList.push(item)
+      })
     } else {
     }
 

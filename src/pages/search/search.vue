@@ -310,6 +310,7 @@ const addToCart = async (product, event) => {
 const card = ref()
 const top = ref(false)
 const bottom = ref(false)
+const count1 = ref(1)
 
 const doScroll = async (event) => {
   const scrollHeight = event.target.scrollHeight
@@ -317,13 +318,11 @@ const doScroll = async (event) => {
   const clientHeight = event.target.clientHeight
 
   // 触底
-  // TODO:page页面123……
-  // TODO:push新的内容
   if (scrollTop + clientHeight >= scrollHeight) {
     bottom.value = true
     const data2 = {
-      size: 20,
-      page: 1,
+      size: 10,
+      page: count1.value,
       barCode: '',
       name: ''
     }
@@ -331,7 +330,9 @@ const doScroll = async (event) => {
     const resp_getGoodsList = await getGoodsList(data2)
     console.log('get更多商品列表信息', resp_getGoodsList)
     if (resp_getGoodsList.errCode == 1000) {
-      Object.assign(productList, resp_getGoodsList.data.list)
+      resp_getGoodsList.data.list.forEach((item) => {
+        productList.push(item)
+      })
       count_product.value = productList.length
     } else {
     }
