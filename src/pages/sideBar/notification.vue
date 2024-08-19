@@ -79,24 +79,28 @@ onBeforeMount(async () => {
 const readNotice = async (notification) => {
   await nextTick()
 
-  notification.read = true
-
-  // put请求
-  const { data: resp_read } = await axios({
-    method: 'put',
-    url: '/onlineShop/readNotification',
-    data: { id: notification.id },
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'multipart/form-data'
-    }
-  })
-  if (resp_read.errCode == 1000) {
-    notification.read = true
+  if (notification.read == true) {
+    return notification
   } else {
-    notification.read = false
+    notification.read = true
+
+    // put请求
+    const { data: resp_read } = await axios({
+      method: 'put',
+      url: '/onlineShop/readNotification',
+      data: { id: notification.id },
+      headers: {
+        Authorization: `Bearer ${token_info}`,
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+    if (resp_read.errCode == 1000) {
+      notification.read = true
+    } else {
+      notification.read = false
+    }
+    console.log('put已读：', resp_read)
   }
-  console.log('put已读：', resp_read)
 }
 </script>
 
