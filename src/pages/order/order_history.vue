@@ -71,8 +71,6 @@ import { getOrderList, editCart } from '@/utils/api'
 const router = useRouter()
 const route = useRoute()
 
-const token_info = localStorage.getItem('token')
-
 // 导入导航栏
 const navTitle = 'Order'
 

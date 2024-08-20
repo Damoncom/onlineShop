@@ -77,7 +77,6 @@ const productId = route.query
 console.log('传参的数据', productId)
 
 const details = reactive({})
-const token_info = localStorage.getItem('token')
 
 onBeforeMount(async () => {
   // get商品详情信息
