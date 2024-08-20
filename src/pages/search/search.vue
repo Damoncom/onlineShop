@@ -200,15 +200,15 @@ const count = ref(historyList.length)
 const search = async () => {
   await nextTick()
 
-  count.value++
-
-  historyList.push({
-    id: count.value,
-    name: inputText.value
-  })
-
   isWay.value = true
+  if (inputText.value != '') {
+    count.value++
 
+    historyList.push({
+      id: count.value,
+      name: inputText.value
+    })
+  }
   // 模糊搜索
   // get商品列表
   const data = {

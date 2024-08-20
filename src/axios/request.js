@@ -8,7 +8,7 @@ const token_info = localStorage.getItem('token')
 // 创建axios实例
 const request = axios.create({
   // baseURL: process.env.VUE_APP_BASE_API, // api的base_url
-  timeout: 5000 // 请求超时时间
+  timeout: 10000 // 请求超时时间
 })
 
 // 请求拦截器
