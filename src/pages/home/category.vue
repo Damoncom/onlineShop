@@ -47,6 +47,7 @@ import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
 import { getGoodsList, editCart } from '@/utils/api'
 import { Toast_Info } from '@/utils/extract'
+import VueLoadmore from 'vuejs-loadmore'
 
 const router = useRouter()
 const route = useRoute()

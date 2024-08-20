@@ -84,9 +84,6 @@
         </div>
       </div>
     </div>
-
-    <!-- 引入toast组件 -->
-    <Toast :init="msg" v-if="isActivedCreate == true" />
   </div>
 </template>
 
@@ -94,9 +91,8 @@
 import { ref, unref, onUpdated, nextTick, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
-import Toast from '@/components/toast.vue'
 import md5 from 'js-md5'
-import { checkPhoneNumber, checkPwd } from '@/utils/extract'
+import { checkPhoneNumber, checkPwd, Toast, Toast_Success } from '@/utils/extract'
 
 const router = useRouter()
 const route = useRoute()
@@ -124,7 +120,6 @@ let isRightName = ref(false)
 let isRightPhone = ref(false)
 let isRightPwd = ref(false)
 let create = ref(false)
-let isActivedCreate = ref(false)
 
 // 实时判断输入正确与否
 onUpdated(async () => {
@@ -150,12 +145,6 @@ onUpdated(async () => {
 const createAccount = async () => {
   await nextTick()
 
-  // 控制toast出现
-  isActivedCreate.value = true
-  setTimeout(() => {
-    isActivedCreate.value = false
-  }, 3900)
-
   // 输入判断
   if (isRightName.value === false) {
     msg.value = 'Name cannot be empty'
@@ -170,7 +159,6 @@ const createAccount = async () => {
     return
   }
   if (isRightPhone.value === true && isRightPwd.value === true && isRightName.value === true) {
-    msg.value = 'Successfully!'
     create.value = true
 
     user.value.pwd = md5(user.value.pwd)
@@ -181,6 +169,12 @@ const createAccount = async () => {
       path: '/verificationCode',
       query: unref(user)
     })
+  }
+
+  if (isRightPhone.value === true && isRightPwd.value === true && isRightName.value === true) {
+    Toast_Success('Successfully!')
+  } else {
+    Toast(msg.value)
   }
 }
 </script>
