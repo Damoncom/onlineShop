@@ -47,7 +47,6 @@ import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
 import { getGoodsList, editCart } from '@/utils/api'
 import { Toast_Info } from '@/utils/extract'
-import VueLoadmore from 'vuejs-loadmore'
 
 const router = useRouter()
 const route = useRoute()
@@ -109,11 +108,12 @@ onBeforeMount(async () => {
   }
 })
 
-// TODO:用插件写下拉加载，上拉刷新
+// TODO:用插件写上拉加载新下拉刷新
 const card = ref()
 const top = ref(false)
 const bottom = ref(false)
 const count = ref(1)
+const isEnd = ref(false)
 
 const doScroll = async (event) => {
   const scrollHeight = event.target.scrollHeight
@@ -124,31 +124,39 @@ const doScroll = async (event) => {
   if (scrollTop + clientHeight >= scrollHeight) {
     bottom.value = true
     count.value++
-    const data2 = {
-      size: 10,
-      page: count.value,
-      barCode: '',
-      name: ''
-    }
-    // get更多商品列表信息
-    const resp_getGoodsList = await getGoodsList(data2)
-    console.log('get商品列表信息', resp_getGoodsList)
 
-    // 控制加载动画出现
-    setTimeout(async () => {
+    if (isEnd.value == true) {
+      Toast_Info('All products are here ~')
+      return (bottom.value = false)
+    } else {
+      const data2 = {
+        size: 10,
+        page: count.value,
+        barCode: '',
+        name: ''
+      }
+      // get更多商品列表信息
+      const resp_getGoodsList = await getGoodsList(data2)
+      console.log('get商品列表信息', resp_getGoodsList)
+
       // 判断没有新数据了
-      if (resp_getGoodsList.data.list.length == 0) {
+      if (productList.length == resp_getGoodsList.data.total) {
         Toast_Info('All products are here ~')
+        isEnd.value = true
       }
 
-      bottom.value = false
-      if (resp_getGoodsList.errCode == 1000) {
-        resp_getGoodsList.data.list.forEach((item) => {
-          productList.push(item)
-        })
-      } else {
-      }
-    }, 1500)
+      // 控制加载动画出现
+      setTimeout(async () => {
+        bottom.value = false
+        if (resp_getGoodsList.errCode == 1000) {
+          resp_getGoodsList.data.list.forEach((item) => {
+            productList.push(item)
+          })
+          console.log(productList.length)
+        } else {
+        }
+      }, 1500)
+    }
   } else {
     bottom.value = false
   }
@@ -156,6 +164,7 @@ const doScroll = async (event) => {
   // 到顶
   if (scrollTop <= 0) {
     top.value = true
+    isEnd.value = false
 
     const data3 = {
       size: 10,
@@ -172,6 +181,7 @@ const doScroll = async (event) => {
       if (resp_getGoodsList.errCode == 1000) {
         productList.length = 0
         Object.assign(productList, resp_getGoodsList.data.list)
+        console.log(productList.length)
       } else {
       }
     }, 1000)
@@ -191,7 +201,7 @@ const doScroll = async (event) => {
 
     .product_card {
       width: 350px;
-      height: 90vh;
+      height: 89vh;
       overflow: auto;
       margin-top: 16px;
       // ul

@@ -95,7 +95,7 @@
           </li>
         </ul>
       </div>
-      <i class="iconfont icon-jiazaizhong2 icon_bottom" v-if="bottom && isShow == true"></i>
+      <i class="iconfont icon-jiazaizhong2 icon_bottom" v-if="bottom == true && isShow == true"></i>
       <p class="bottom_text" v-if="bottom && isShow == false">All products are here ~</p>
       <!-- type2商品列表 -->
       <i class="iconfont icon-jiazaizhong2 icon_top" v-if="top && isShow == false"></i>
@@ -137,8 +137,11 @@
           </li>
         </ul>
       </div>
-      <i class="iconfont icon-jiazaizhong2 icon_bottom" v-if="bottom && isShow == false"></i>
-      <p class="bottom_text" v-if="bottom && isShow == false">All products are here ~</p>
+      <i
+        class="iconfont icon-jiazaizhong2 icon_bottom"
+        v-if="bottom == true && isShow == false"
+      ></i>
+      <!-- <p class="bottom_text" v-if="bottom && isShow == false">All products are here ~</p> -->
     </div>
   </div>
   <TabBar :init_search="isSearchPage" />
@@ -307,11 +310,12 @@ const addToCart = async (product, event) => {
   console.log('post加入购物车：', resp_addToCart)
 }
 
-// 下拉加载，上拉刷新
+// 下拉刷新，上拉加载
 const card = ref()
 const top = ref(false)
 const bottom = ref(false)
 const count1 = ref(1)
+const isEnd = ref(false)
 
 const doScroll = async (event) => {
   const scrollHeight = event.target.scrollHeight
@@ -321,32 +325,41 @@ const doScroll = async (event) => {
   // 触底
   if (scrollTop + clientHeight >= scrollHeight) {
     bottom.value = true
-    const data2 = {
-      size: 10,
-      page: count1.value,
-      barCode: '',
-      name: ''
-    }
-    // get更多商品列表信息
-    const resp_getGoodsList = await getGoodsList(data2)
-    console.log('get更多商品列表信息', resp_getGoodsList)
+    console.log('到底')
+    count1.value++
 
-    // 控制加载动画出现
-    setTimeout(async () => {
-      bottom.value = false
+    if (isEnd.value == true) {
+      Toast_Info('All products are here ~')
+      return (bottom.value = false)
+    } else {
+      const data2 = {
+        size: 10,
+        page: count1.value,
+        barCode: '',
+        name: ''
+      }
+      // get更多商品列表信息
+      const resp_getGoodsList = await getGoodsList(data2)
+      console.log('get商品列表信息', resp_getGoodsList)
+
       // 判断没有新数据了
-      if (resp_getGoodsList.data.list.length == 0) {
+      if (productList.length == resp_getGoodsList.data.total) {
         Toast_Info('All products are here ~')
+        isEnd.value = true
       }
 
-      if (resp_getGoodsList.errCode == 1000) {
-        resp_getGoodsList.data.list.forEach((item) => {
-          productList.push(item)
-        })
-        count_product.value = productList.length
-      } else {
-      }
-    }, 1500)
+      // 控制加载动画出现
+      setTimeout(async () => {
+        bottom.value = false
+        if (resp_getGoodsList.errCode == 1000) {
+          resp_getGoodsList.data.list.forEach((item) => {
+            productList.push(item)
+          })
+          count_product.value = productList.length
+        } else {
+        }
+      }, 1500)
+    }
   } else {
     bottom.value = false
   }
@@ -354,6 +367,7 @@ const doScroll = async (event) => {
   // 到顶
   if (scrollTop <= 0) {
     top.value = true
+    isEnd.value = false
 
     const data3 = {
       size: 10,
@@ -370,6 +384,7 @@ const doScroll = async (event) => {
       if (resp_getGoodsList.errCode == 1000) {
         productList.length = 0
         Object.assign(productList, resp_getGoodsList.data.list)
+        count_product.value = productList.length
       } else {
       }
     }, 1000)
@@ -552,7 +567,7 @@ const doScroll = async (event) => {
     }
     .product_card {
       width: 350px;
-      height: 75vh;
+      height: 76vh;
       overflow: auto;
       margin-top: 16px;
       // ul
@@ -617,7 +632,7 @@ const doScroll = async (event) => {
       }
     }
     .product_card::-webkit-scrollbar {
-      display: none;
+      // display: none;
     }
 
     .icon_bottom {
