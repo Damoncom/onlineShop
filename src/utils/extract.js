@@ -44,7 +44,7 @@ export function Toast_Info(data) {
   return toast(data, {
     theme: 'auto',
     type: 'info',
-    position: 'bottom-center',
+    position: 'top-center',
     autoClose: 1500,
     transition: 'flip',
     dangerouslyHTMLString: true

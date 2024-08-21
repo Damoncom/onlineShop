@@ -56,14 +56,21 @@
         </div>
       </div>
       <!-- type1商品列表 -->
-      <i class="iconfont icon-jiazaizhong2 icon_top" v-if="top && isShow == true"></i>
-      <div
+      <van-pull-refresh
+        v-model="loading"
+        @refresh="onRefresh"
         class="product_card"
         v-if="isShow == true && isWay == true"
-        ref="card"
-        @scroll="doScroll"
       >
-        <ul class="product_list">
+        <van-list
+          v-model="downLoading"
+          :finished="downFinished"
+          :immediate-check="false"
+          finished-text="All products are here ~"
+          @load="onLoad"
+          :offset="20"
+          class="product_list"
+        >
           <li
             class="product_item"
             v-for="(product, product_index) of productList"
@@ -93,19 +100,31 @@
               </div>
             </div>
           </li>
-        </ul>
-      </div>
-      <i class="iconfont icon-jiazaizhong2 icon_bottom" v-if="bottom == true && isShow == true"></i>
-      <p class="bottom_text" v-if="bottom && isShow == false">All products are here ~</p>
+        </van-list>
+      </van-pull-refresh>
+      <van-loading
+        type="spinner"
+        color="#a456dd"
+        size="24px"
+        v-if="downLoading == true"
+        class="loading_icon"
+      />
       <!-- type2商品列表 -->
-      <i class="iconfont icon-jiazaizhong2 icon_top" v-if="top && isShow == false"></i>
-      <div
+      <van-pull-refresh
+        v-model="loading"
+        @refresh="onRefresh"
         class="product_card2"
         v-if="isShow == false && isWay == true"
-        ref="card"
-        @scroll="doScroll"
       >
-        <ul class="product_list">
+        <van-list
+          v-model="downLoading"
+          :finished="downFinished"
+          :immediate-check="false"
+          finished-text="All products are here ~"
+          @load="onLoad"
+          :offset="20"
+          class="product_list"
+        >
           <li
             class="product_item"
             v-for="(product, product_index) of productList"
@@ -135,13 +154,15 @@
               </div>
             </div>
           </li>
-        </ul>
-      </div>
-      <i
-        class="iconfont icon-jiazaizhong2 icon_bottom"
-        v-if="bottom == true && isShow == false"
-      ></i>
-      <!-- <p class="bottom_text" v-if="bottom && isShow == false">All products are here ~</p> -->
+        </van-list>
+      </van-pull-refresh>
+      <van-loading
+        type="spinner"
+        color="#a456dd"
+        size="24px"
+        v-if="downLoading == true"
+        class="loading_icon"
+      />
     </div>
   </div>
   <TabBar :init_search="isSearchPage" />
@@ -162,6 +183,7 @@ import TabBar from '@/components/tabBar'
 import { useRouter, useRoute } from 'vue-router'
 import { getGoodsList, editCart } from '@/utils/api'
 import { Toast_Info } from '@/utils/extract'
+import { debounce } from 'lodash'
 
 const router = useRouter()
 const route = useRoute()
@@ -310,88 +332,66 @@ const addToCart = async (product, event) => {
   console.log('post加入购物车：', resp_addToCart)
 }
 
-// 下拉刷新，上拉加载
-const card = ref()
-const top = ref(false)
-const bottom = ref(false)
-const count1 = ref(1)
-const isEnd = ref(false)
-
-const doScroll = async (event) => {
-  const scrollHeight = event.target.scrollHeight
-  const scrollTop = event.target.scrollTop
-  const clientHeight = event.target.clientHeight
-
-  // 触底
-  if (scrollTop + clientHeight >= scrollHeight) {
-    bottom.value = true
-    console.log('到底')
-    count1.value++
-
-    if (isEnd.value == true) {
-      Toast_Info('All products are here ~')
-      return (bottom.value = false)
-    } else {
-      const data2 = {
-        size: 10,
-        page: count1.value,
-        barCode: '',
-        name: ''
-      }
-      // get更多商品列表信息
-      const resp_getGoodsList = await getGoodsList(data2)
-      console.log('get商品列表信息', resp_getGoodsList)
-
-      // 判断没有新数据了
-      if (productList.length == resp_getGoodsList.data.total) {
-        Toast_Info('All products are here ~')
-        isEnd.value = true
-      }
-
-      // 控制加载动画出现
-      setTimeout(async () => {
-        bottom.value = false
-        if (resp_getGoodsList.errCode == 1000) {
-          resp_getGoodsList.data.list.forEach((item) => {
-            productList.push(item)
-          })
-          count_product.value = productList.length
-        } else {
-        }
-      }, 1500)
-    }
-  } else {
-    bottom.value = false
+// 下拉刷新
+const loading = ref(false)
+const onRefresh = async () => {
+  setTimeout(async () => {
+    Toast_Info('刷新成功')
+    loading.value = false
+  }, 1000)
+  const data3 = {
+    size: 10,
+    page: 1,
+    barCode: '',
+    name: ''
   }
+  // get更多商品列表信息
+  const resp_getGoodsList = await getGoodsList(data3)
+  console.log('get商品列表信息', resp_getGoodsList)
 
-  // 到顶
-  if (scrollTop <= 0) {
-    top.value = true
-    isEnd.value = false
+  if (resp_getGoodsList.errCode == 1000) {
+    productList.length = 0
+    Object.assign(productList, resp_getGoodsList.data.list)
+    count_product.value = productList.length
+  } else {
+  }
+}
 
-    const data3 = {
+// 上拉加载
+const downLoading = ref(false)
+const downFinished = ref(false)
+const count1 = ref(1)
+const onLoad = debounce(async () => {
+  downLoading.value = true
+
+  setTimeout(async () => {
+    downLoading.value = false
+
+    count1.value++
+    const data2 = {
       size: 10,
-      page: 1,
+      page: count1.value,
       barCode: '',
       name: ''
     }
     // get更多商品列表信息
-    const resp_getGoodsList = await getGoodsList(data3)
+    const resp_getGoodsList = await getGoodsList(data2)
     console.log('get商品列表信息', resp_getGoodsList)
 
-    setTimeout(async () => {
-      top.value = false
-      if (resp_getGoodsList.errCode == 1000) {
-        productList.length = 0
-        Object.assign(productList, resp_getGoodsList.data.list)
-        count_product.value = productList.length
-      } else {
-      }
-    }, 1000)
-  } else {
-    top.value = false
-  }
-}
+    // 判断没有新数据了
+    if (productList.length == resp_getGoodsList.data.total) {
+      downFinished.value = true
+    }
+
+    if (resp_getGoodsList.errCode == 1000) {
+      resp_getGoodsList.data.list.forEach((item) => {
+        productList.push(item)
+      })
+      count_product.value = productList.length
+    } else {
+    }
+  }, 300)
+}, 1000)
 </script>
 
 <style lang="scss" scoped>
@@ -567,11 +567,12 @@ const doScroll = async (event) => {
     }
     .product_card {
       width: 350px;
-      height: 76vh;
+      height: 80vh;
       overflow: auto;
       margin-top: 16px;
       // ul
       .product_list {
+        list-style-type: none;
         display: flex;
         flex-wrap: wrap;
         // li
@@ -632,35 +633,21 @@ const doScroll = async (event) => {
       }
     }
     .product_card::-webkit-scrollbar {
-      // display: none;
+      display: none;
     }
-
-    .icon_bottom {
-      display: inline-block; /*需要设置为行内块元素动画才会生效*/
-      font-size: 26px;
-      color: #a456dd;
+    .loading_icon {
       position: absolute;
-      bottom: 0;
-      z-index: 3;
-      animation: rotating 1s infinite linear;
-    }
-    @keyframes rotating {
-      0% {
-        transform: rotate(0deg); /*动画起始位置为旋转0度*/
-      }
-
-      to {
-        transform: rotate(1turn); /*动画结束位置为旋转1圈*/
-      }
+      bottom: 3vh;
     }
 
     .product_card2 {
       width: 335px;
-      height: 75vh;
+      height: 80vh;
       overflow: auto;
       margin-top: 16px;
       // ul
       .product_list {
+        list-style-type: none;
         display: flex;
         flex-wrap: wrap;
         // li
@@ -723,30 +710,6 @@ const doScroll = async (event) => {
     }
     .product_card2::-webkit-scrollbar {
       display: none;
-    }
-    .icon_top {
-      display: inline-block;
-      font-size: 26px;
-      color: #a456dd;
-      position: absolute;
-      top: 70px;
-      z-index: 3;
-      animation: rotating2 1s infinite linear;
-    }
-    @keyframes rotating2 {
-      0% {
-        transform: rotate(0deg); /*动画起始位置为旋转0度*/
-      }
-
-      to {
-        transform: rotate(1turn); /*动画结束位置为旋转1圈*/
-      }
-    }
-    .bottom_text {
-      position: absolute;
-      bottom: 30px;
-      color: #a456dd;
-      padding: 10px 0;
     }
   }
 }
