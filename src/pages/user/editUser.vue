@@ -233,14 +233,10 @@ const user = reactive({
 
 // get请求获取用户信息
 onBeforeMount(async () => {
+  // 接口
+  const userStore = useUserStore()
   // get用户信息
-  const resp_userInfo = await useUserStore().getUserInfo()
-  console.log(resp_userInfo)
-
-  if (resp_userInfo.errCode == 1000) {
-    Object.assign(user, resp_userInfo.data)
-  } else {
-  }
+  Object.assign(user, userStore.userData)
 
   if (resp_userInfo.data.gender == '1') {
     input_gender.value = 'Female'

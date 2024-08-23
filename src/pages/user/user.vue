@@ -63,11 +63,11 @@
   <TabBar :init_profile="isProfilePage" />
 </template>
 <script setup>
-import { ref, onMounted, onServerPrefetch, onBeforeUpdate, onBeforeMount, reactive } from 'vue'
+import { onBeforeMount, reactive } from 'vue'
 import TabBar from '@/components/tabBar'
 import Nav from '@/components/nav'
 import { useRouter, useRoute } from 'vue-router'
-import { getUserInfo, getLocation } from '@/utils/api'
+import { getLocation } from '@/utils/api'
 import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
@@ -84,16 +84,10 @@ const user = reactive({
 const locationDetails = reactive({})
 
 onBeforeMount(async () => {
+  // 接口
   const userStore = useUserStore()
-  const resp_userInfo = userStore.getUserInfo()
-  console.log(resp_userInfo)
-  // // get用户信息
-  // const resp_userInfo = await getUserInfo()
-  // if (resp_userInfo.errCode == 1000) {
-  //   Object.assign(user, resp_userInfo.data)
-  // } else {
-  // }
-  // console.log('get用户信息：', resp_userInfo)
+  // get用户信息
+  Object.assign(user, userStore.userData)
 
   // get地址信息
   const locationPost = reactive({

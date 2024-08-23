@@ -250,10 +250,8 @@
 import { ref, reactive, onBeforeMount, nextTick, toRaw } from 'vue'
 import TabBar from '@/components/tabBar'
 import { useRouter, useRoute } from 'vue-router'
-import { getUserInfo, getNotification, editCart } from '@/utils/api'
+import { getNotification, editCart } from '@/utils/api'
 import { useUserStore } from '@/stores/user'
-
-const token_info = useUserStore().token
 
 const router = useRouter()
 const route = useRoute()
@@ -422,21 +420,23 @@ const noRead = ref(false)
 const notificationList = reactive([])
 
 onBeforeMount(async () => {
+  // 接口
+  const userStore = useUserStore()
+
   // 获取首页数据
-  // const token_info = localStorage.getItem('token')
-  const { data: resp } = await axios({
-    method: 'get',
-    url: '/onlineShop/getHomeData',
-    params: {},
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'application/json; charset=utf-8'
-    }
-  })
-  Object.assign(recommendedList, resp.data.recommended)
-  Object.assign(popularList, resp.data.popular)
-  Object.assign(banner, resp.data.banner)
-  console.log('首页数据resp', resp)
+  // const { data: resp } = await axios({
+  //   method: 'get',
+  //   url: '/onlineShop/getHomeData',
+  //   params: {},
+  //   headers: {
+  //     Authorization: `Bearer ${token_info}`,
+  //     'Content-Type': 'application/json; charset=utf-8'
+  //   }
+  // })
+  // Object.assign(recommendedList, resp.data.recommended)
+  // Object.assign(popularList, resp.data.popular)
+  // Object.assign(banner, resp.data.banner)
+  // console.log('首页数据resp', resp)
 
   // toRaw(banner).forEach((item) => {
   //   item.image = item.image.slice(item.image.indexOf('/public') + 1)
@@ -444,11 +444,7 @@ onBeforeMount(async () => {
   // console.log(banner)
 
   // get用户信息
-  const resp_userInfo = await getUserInfo()
-  if (resp_userInfo.errCode == 1000) {
-    Object.assign(user, resp_userInfo.data)
-  }
-  console.log(resp_userInfo)
+  Object.assign(user, userStore.userData)
 
   // get通知列表
   const resp_getNotice = await getNotification()

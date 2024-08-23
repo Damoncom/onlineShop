@@ -51,7 +51,8 @@ import { onUpdated, nextTick, reactive, ref, onBeforeMount } from 'vue'
 import Nav from '@/components/nav'
 import AreaSelect from '@/components/areaSelect'
 import { useRouter, useRoute } from 'vue-router'
-import { getUserInfo, createLocation } from '@/utils/api'
+import { createLocation } from '@/utils/api'
+import { useUserStore } from '@/stores/user'
 
 // 导入导航栏
 const navTitle = 'Add Location'
@@ -65,13 +66,10 @@ const detailsText = ref()
 
 // 获取用户信息
 onBeforeMount(async () => {
+  // 接口
+  const userStore = useUserStore()
   // get用户信息
-  const resp_userInfo = await getUserInfo()
-  if (resp_userInfo.errCode == 1000) {
-    Object.assign(user, resp_userInfo.data)
-  } else {
-  }
-  console.log('get用户信息：', resp_userInfo)
+  Object.assign(user, userStore.userData)
 })
 
 // 发送post请求，添加配送地址

@@ -3,10 +3,10 @@ import axios from 'axios'
 import router from '@/router/index.js'
 import { Toast } from '@/utils/extract'
 import { useUserStore } from '@/stores/user'
+import { ref } from 'vue'
 
-if (localStorage.getItem('user') != null) {
-  const token_info = useUserStore().token
-}
+// TODO:报错eferenceError: Cannot access 'useUserStore' before initialization
+const token_info = localStorage.getItem('token')
 
 // 创建axios实例
 const request = axios.create({

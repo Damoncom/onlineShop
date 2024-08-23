@@ -68,6 +68,7 @@ import { onUpdated, nextTick, reactive, ref, onBeforeMount } from 'vue'
 import Nav from '@/components/nav'
 import { useRouter, useRoute } from 'vue-router'
 import { removeLocation, updateLocation, getUserInfo } from '@/utils/api'
+import { useUserStore } from '@/stores/user'
 
 // 导入导航栏
 const navTitle = 'Edit Location'
@@ -83,13 +84,10 @@ const detailsText = ref(str.value?.slice(str.value?.indexOf('区') + 1))
 
 // 获取用户信息
 onBeforeMount(async () => {
+  // 接口
+  const userStore = useUserStore()
   // get用户信息
-  const resp_userInfo = await getUserInfo()
-  if (resp_userInfo.errCode == 1000) {
-    Object.assign(user, resp_userInfo.data)
-  } else {
-  }
-  console.log('get用户信息：', resp_userInfo)
+  Object.assign(user, userStore.userData)
 })
 
 // 发送put请求，修改配送地址

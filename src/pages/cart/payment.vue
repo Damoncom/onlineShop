@@ -92,7 +92,8 @@ import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
 import currency from 'currency.js'
 import axios from 'axios'
-import { getUserInfo, getLocation, getCart, pay } from '@/utils/api'
+import { getLocation, getCart, pay } from '@/utils/api'
+import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
 const route = useRoute()
@@ -157,6 +158,8 @@ const createNotice = reactive([])
 const cartList = reactive([])
 
 onBeforeMount(async () => {
+  // 接口
+  const userStore = useUserStore()
   // get购物车
   const postData = reactive({
     size: 10,
@@ -175,17 +178,12 @@ onBeforeMount(async () => {
   console.log('get购物车：', resp_getCart)
 
   // get用户信息
-  const resp_userInfo = await getUserInfo()
-  if (resp_userInfo.errCode == 1000) {
-    toRaw(createNotice).forEach((item) => {
-      Reflect.set(item, 'userId', resp_userInfo.data.id)
-      Reflect.set(item, 'vendor', 'system')
-      Reflect.set(item, 'read', 0)
-    })
-    balance.value = resp_userInfo.data.payment
-  } else {
-  }
-  console.log('get用户信息：', resp_userInfo)
+  toRaw(createNotice).forEach((item) => {
+    Reflect.set(item, 'userId', userStore.userData.id)
+    Reflect.set(item, 'vendor', 'system')
+    Reflect.set(item, 'read', 0)
+  })
+  balance.value = userStore.userData.payment
 
   // 重新整合商品数据
   const arr = toRaw(resp_getCart.data.list)
