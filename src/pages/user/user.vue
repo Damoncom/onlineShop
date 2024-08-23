@@ -105,8 +105,7 @@ onBeforeMount(async () => {
 
   // TODO:更新后的数据
   userStore.getUserInfo()
-  user = { ...userStore.userData }
-  // Object.assign(user, userStore.userData)
+  Object.assign(user, userStore.userData)
 })
 
 // 确认是Profile页面

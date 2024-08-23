@@ -61,6 +61,11 @@ export const useUserStore = defineStore(
       return await request.put('/onlineShop/updateUserInfo', data)
     }
 
+    // post注册
+    async function uploadImage(data) {
+      return await request.post('/onlineShop/uploadImage', data)
+    }
+
     return {
       resp_signIn,
       token,
@@ -70,7 +75,8 @@ export const useUserStore = defineStore(
       userData,
       resp_getUserInfo,
       getUserInfo,
-      updateUserInfo
+      updateUserInfo,
+      uploadImage
     }
   },
   {

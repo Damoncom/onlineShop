@@ -127,6 +127,9 @@ const route = useRoute()
 // 导入导航栏
 const navTitle = 'Edit Profile'
 
+// 接口
+const userStore = reactive({})
+
 // 修改头像
 const uploadInput = ref(null)
 const cameraInput = ref(null)
@@ -152,7 +155,7 @@ const takePhoto = async () => {
   formData1.append('file', unref(cameraInput).files[0])
 
   // post上传用户头像
-  const resp_upload_photo = await uploadImage(formData1)
+  const resp_upload_photo = await userStore.uploadImage(formData1)
   if (resp_upload_photo.errCode == 1000) {
     // 获取上传图片的路径
     imgUrl.value = 'http://192.168.100.7:7001' + resp_upload_photo.url
@@ -188,8 +191,9 @@ const handleFileUpload = async (file, fileList) => {
     return [f]
   }
 
+  // TODO:图片链接前缀
   // post上传用户头像
-  const resp_upload_picture = await uploadImage(formData)
+  const resp_upload_picture = await userStore.uploadImage(formData)
   if (resp_upload_picture.errCode == 1000) {
     // 获取上传图片的路径
     imgUrl.value = 'http://192.168.100.7:7001' + resp_upload_picture.url
@@ -231,8 +235,6 @@ const user = reactive({
   iconImage: 'src/assets/imgurl.jpg'
 })
 
-const userStore = reactive({})
-
 // get请求获取用户信息
 onBeforeMount(async () => {
   // 接口
@@ -245,6 +247,7 @@ onBeforeMount(async () => {
   } else {
     input_gender.value = 'Male'
   }
+  console.log(user)
 })
 
 // 保存修改按钮
