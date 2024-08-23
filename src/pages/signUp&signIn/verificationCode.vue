@@ -108,6 +108,7 @@ const phone = user.phoneNumber
 
 // 页面载入完毕获取验证码get请求
 onMounted(async () => {
+  // get验证码
   const { data: resp } = await axios({
     method: 'get',
     url: '/onlineShop/getVerificationCode',
@@ -159,8 +160,9 @@ const submit = async (user) => {
   const sum = arr.join('')
   Reflect.set(user, 'verificationCode', sum)
 
-  // post注册
+  // 接口
   const userStore = useUserStore()
+  // post注册
   const resp_signUp = await userStore.signUp(user)
 
   if (resp_signUp.errCode == 1000) {

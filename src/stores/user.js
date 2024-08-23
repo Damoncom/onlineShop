@@ -26,6 +26,7 @@ export const useUserStore = defineStore(
       } else {
         Toast(this.resp_signIn.errMsg)
       }
+      return token
     }
 
     // post注册
@@ -33,10 +34,13 @@ export const useUserStore = defineStore(
       return await request.post('/onlineShop/signUp', data)
     }
 
-    const user = reactive([])
+    const user = reactive({})
+    const resp_getUserInfo = reactive({})
     // get用户数据
     async function getUserInfo() {
-      return request.get('/onlineShop/getUserInfo', { params: {} })
+      this.resp_getUserInfo = await request.get('/onlineShop/getUserInfo', { params: {} })
+      this.user = this.resp_getUserInfo.data
+      return await request.get('/onlineShop/getUserInfo', { params: {} })
     }
 
     return {
@@ -45,10 +49,9 @@ export const useUserStore = defineStore(
       token,
       isRemember,
       signIn,
-      //   signUpData,
-      //   resp_signUp,
       signUp,
       user,
+      resp_getUserInfo,
       getUserInfo
     }
   },

@@ -4,7 +4,9 @@ import router from '@/router/index.js'
 import { Toast } from '@/utils/extract'
 import { useUserStore } from '@/stores/user'
 
-const token_info = useUserStore().token
+if (localStorage.getItem('user') != null) {
+  const token_info = useUserStore().token
+}
 
 // 创建axios实例
 const request = axios.create({

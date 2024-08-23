@@ -68,6 +68,7 @@ import TabBar from '@/components/tabBar'
 import Nav from '@/components/nav'
 import { useRouter, useRoute } from 'vue-router'
 import { getUserInfo, getLocation } from '@/utils/api'
+import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
 const route = useRoute()
@@ -83,13 +84,16 @@ const user = reactive({
 const locationDetails = reactive({})
 
 onBeforeMount(async () => {
-  // get用户信息
-  const resp_userInfo = await getUserInfo()
-  if (resp_userInfo.errCode == 1000) {
-    Object.assign(user, resp_userInfo.data)
-  } else {
-  }
-  console.log('get用户信息：', resp_userInfo)
+  const userStore = useUserStore()
+  const resp_userInfo = userStore.getUserInfo()
+  console.log(resp_userInfo)
+  // // get用户信息
+  // const resp_userInfo = await getUserInfo()
+  // if (resp_userInfo.errCode == 1000) {
+  //   Object.assign(user, resp_userInfo.data)
+  // } else {
+  // }
+  // console.log('get用户信息：', resp_userInfo)
 
   // get地址信息
   const locationPost = reactive({

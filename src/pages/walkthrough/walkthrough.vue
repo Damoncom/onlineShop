@@ -68,9 +68,14 @@
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
 const route = useRoute()
+
+// 挂载pinia
+useUserStore()
+
 // 引入swiper
 import { register } from 'swiper/element/bundle'
 
