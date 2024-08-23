@@ -119,6 +119,7 @@ import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
 import { getUserInfo, updateUserInfo, uploadImage } from '@/utils/api'
 import { Toast_Success } from '@/utils/extract'
+import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
 const route = useRoute()
@@ -233,7 +234,9 @@ const user = reactive({
 // get请求获取用户信息
 onBeforeMount(async () => {
   // get用户信息
-  const resp_userInfo = await getUserInfo()
+  const resp_userInfo = await useUserStore().getUserInfo()
+  console.log(resp_userInfo)
+
   if (resp_userInfo.errCode == 1000) {
     Object.assign(user, resp_userInfo.data)
   } else {

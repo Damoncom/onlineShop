@@ -1,7 +1,7 @@
 import 'reset-css'
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import piniaPluginPersist from 'pinia-plugin-persist'
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import Vant from 'vant'
@@ -18,9 +18,9 @@ if (process.env.NODE_ENV !== 'local') {
 
 const app = createApp(App)
 
-app.use(createPinia().use(piniaPluginPersist))
+app.use(createPinia().use(piniaPluginPersistedstate))
 app.use(router)
 app.use(ElementPlus)
 app.use(Vant)
-app.use(PullRefresh)
+// app.use(PullRefresh)
 app.mount('#app')

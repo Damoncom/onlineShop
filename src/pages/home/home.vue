@@ -251,6 +251,9 @@ import { ref, reactive, onBeforeMount, nextTick, toRaw } from 'vue'
 import TabBar from '@/components/tabBar'
 import { useRouter, useRoute } from 'vue-router'
 import { getUserInfo, getNotification, editCart } from '@/utils/api'
+import { useUserStore } from '@/stores/user'
+
+const token_info = useUserStore().token
 
 const router = useRouter()
 const route = useRoute()
@@ -378,72 +381,7 @@ const categoriesList = ref([
 const recommendedList = reactive([])
 
 // popular数据
-const popularList = reactive([
-  // {
-  //   id: '1',
-  //   name: 'Shade Palette',
-  //   brand: 'Naked',
-  //   price: '$25.00',
-  //   img: product2,
-  //   isAdd: false
-  // },
-  // {
-  //   id: '2',
-  //   name: 'Curolog Blossom',
-  //   brand: 'Curolog',
-  //   price: '$20.00',
-  //   img: product3,
-  //   isAdd: false
-  // },
-  // {
-  //   id: '3',
-  //   name: 'Shade Palette',
-  //   brand: 'Naked',
-  //   price: '$25.00',
-  //   img: product2,
-  //   isAdd: false
-  // },
-  // {
-  //   id: '4',
-  //   name: 'Curolog Blossom',
-  //   brand: 'Curolog',
-  //   price: '$20.00',
-  //   img: product3,
-  //   isAdd: false
-  // },
-  // {
-  //   id: '5',
-  //   name: 'Shade Palette',
-  //   brand: 'Naked',
-  //   price: '$25.00',
-  //   img: product2,
-  //   isAdd: false
-  // },
-  // {
-  //   id: '6',
-  //   name: 'Curolog Blossom',
-  //   brand: 'Curolog',
-  //   price: '$20.00',
-  //   img: product3,
-  //   isAdd: false
-  // },
-  // {
-  //   id: '7',
-  //   name: 'Shade Palette',
-  //   brand: 'Naked',
-  //   price: '$25.00',
-  //   img: product2,
-  //   isAdd: false
-  // },
-  // {
-  //   id: '8',
-  //   name: 'Curolog Blossom',
-  //   brand: 'Curolog',
-  //   price: '$20.00',
-  //   img: product3,
-  //   isAdd: false
-  // }
-])
+const popularList = reactive([])
 
 const chooseProduct = (product) => {
   const productId = ref(product.id)
@@ -485,7 +423,7 @@ const notificationList = reactive([])
 
 onBeforeMount(async () => {
   // 获取首页数据
-  const token_info = localStorage.getItem('token')
+  // const token_info = localStorage.getItem('token')
   const { data: resp } = await axios({
     method: 'get',
     url: '/onlineShop/getHomeData',

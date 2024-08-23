@@ -74,13 +74,13 @@
           <p class="text">Or Sign In With</p>
         </div>
         <div class="social_buttons">
-          <div class="google" @click="googleRegister">
+          <div class="google">
             <img src="@/assets/google.svg" class="google_img" />
           </div>
-          <div class="facebook" @click="facebookRegister">
+          <div class="facebook">
             <img src="@/assets/facebook.svg" class="facebook_img" />
           </div>
-          <div class="apple" @click="appleRegister">
+          <div class="apple">
             <img src="@/assets/apple.svg" class="apple_img" />
           </div>
         </div>
@@ -90,23 +90,11 @@
 </template>
 
 <script setup>
-import {
-  ref,
-  onUpdated,
-  nextTick,
-  onMounted,
-  onBeforeMount,
-  unref,
-  toValue,
-  reactive,
-  isReactive,
-  isRef
-} from 'vue'
+import { ref, onUpdated, nextTick, onBeforeMount, reactive } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
-import { signIn } from '@/utils/api'
-import { checkPhoneNumber, checkPwd } from '@/utils/extract'
-import { Toast, Toast_Success } from '@/utils/extract'
+import { checkPhoneNumber, checkPwd, Toast } from '@/utils/extract'
+import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
 const route = useRoute()
@@ -127,7 +115,6 @@ const user = reactive({
   pwd: '',
   isRemember: true
 })
-// console.log(user)
 
 const linkToReset = () => {
   router.push({
@@ -155,7 +142,6 @@ onUpdated(async () => {
   await nextTick()
 
   // 判断手机号码的输入格式正确与否
-  // 判断手机号码的输入格式正确与否
   const checkphone = await checkPhoneNumber(user.phoneNumber)
   isRightPhone.value = checkphone
 
@@ -181,42 +167,14 @@ const signInButton = async (user) => {
     let obj = { ...user }
 
     // post登录
-    const resp = await signIn(obj)
-    if (resp.errCode == 1000) {
-      // 存储token
-      localStorage.setItem('token', resp.data.token)
-      // 存储isRemember的值
-      localStorage.setItem('isRemember', JSON.stringify(obj.isRemember))
-
-      // 跳转到home页面
-      router.push({
-        path: '/home'
-      })
-    } else {
-      msg.value = resp.errMsg
-    }
-    console.log('post请求siginIn', resp)
+    const userStore = useUserStore()
+    userStore.signIn(obj)
   }
 
   if (isRightPhone.value === true && isRightPwd.value === true) {
-    Toast_Success('Successfully!')
   } else {
     Toast(msg.value)
   }
-}
-
-// 其他渠道注册
-let isGoogle = ref(false)
-let isFacebook = ref(false)
-let isApple = ref(false)
-const googleRegister = () => {
-  isGoogle.value = true
-}
-const facebookRegister = () => {
-  isFacebook.value = true
-}
-const appleRegister = () => {
-  isApple.value = true
 }
 </script>
 

@@ -88,11 +88,11 @@
 </template>
 
 <script setup>
-import { ref, unref, onUpdated, nextTick, onMounted } from 'vue'
+import { ref, unref, onUpdated, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
 import md5 from 'js-md5'
-import { checkPhoneNumber, checkPwd, Toast, Toast_Success } from '@/utils/extract'
+import { checkPhoneNumber, checkPwd, Toast } from '@/utils/extract'
 
 const router = useRouter()
 const route = useRoute()
@@ -172,7 +172,6 @@ const createAccount = async () => {
   }
 
   if (isRightPhone.value === true && isRightPwd.value === true && isRightName.value === true) {
-    Toast_Success('Successfully!')
   } else {
     Toast(msg.value)
   }

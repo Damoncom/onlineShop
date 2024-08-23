@@ -64,12 +64,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick, onUpdated, toRaw, reactive, isReactive } from 'vue'
+import { ref, onMounted, nextTick, toRaw } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
 import axios from 'axios'
-import { signIn, signUp } from '@/utils/api'
-import { Toast, Toast_Success } from '@/utils/extract'
+import { Toast, Toast_Info } from '@/utils/extract'
+import { useUserStore } from '@/stores/user'
 
 // 导入导航栏
 const navTitle = ''
@@ -160,33 +160,19 @@ const submit = async (user) => {
   Reflect.set(user, 'verificationCode', sum)
 
   // post注册
-  const resp_signUp = await signUp(user)
-  console.log(resp_signUp)
+  const userStore = useUserStore()
+  const resp_signUp = await userStore.signUp(user)
 
   if (resp_signUp.errCode == 1000) {
     // post登录须提交的数据
     let obj = { ...user }
     // post登录
-    const resp = await signIn(obj)
-    if (resp.errCode == 1000) {
-      // 存储token
-      localStorage.setItem('token', resp.data.token)
-      // 存储isRemember的值
-      localStorage.setItem('isRemember', true)
-
-      Toast_Success('Successfully!')
-      // 跳转到home页面
-      router.push({
-        path: '/home'
-      })
-    } else {
-      msg.value = resp.errMsg
-    }
-    console.log('post请求siginIn', resp)
+    userStore.signIn(obj)
   } else if (resp_signUp.errCode == 1001) {
     msg.value = resp_signUp.errMsg
     setTimeout(async () => {
       await nextTick()
+      msg.value = resp_signUp.errMsg
       router.push({
         path: '/signIn'
       })
@@ -198,8 +184,7 @@ const submit = async (user) => {
     msg.value = resp_signUp.errMsg
   }
 
-  if (resp.errCode == 1000) {
-    Toast_Success('Successfully!')
+  if (resp_signUp.errCode == 1000) {
   } else {
     Toast(msg.value)
   }
@@ -210,6 +195,7 @@ let recendColor = ref(false)
 const recendFunc = () => {
   recendColor.value = true
   msg.value = 'The verification code has been successfully sent!'
+  Toast_Info(msg.value)
   setTimeout(() => {
     router.go(0)
   }, 2000)

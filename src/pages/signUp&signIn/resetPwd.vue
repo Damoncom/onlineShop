@@ -75,10 +75,10 @@
 </template>
 
 <script setup>
-import { ref, onUpdated, nextTick, onMounted } from 'vue'
+import { ref, onUpdated, nextTick } from 'vue'
 import Nav from '@/components/nav'
 import { useRouter, useRoute } from 'vue-router'
-import { checkPwd, Toast } from '@/utils/extract'
+import { checkPwd, Toast, Toast_Success } from '@/utils/extract'
 
 const router = useRouter()
 const route = useRoute()
@@ -131,7 +131,15 @@ const reset = () => {
   isReset.value = true
   isActivedReset.value = true
 
-  Toast(msg.value)
+  if (
+    isRightPwd.value == true &&
+    isRightComfirmPwd.value == true &&
+    user.value.pwd === user.value.comfirmPwd
+  ) {
+    Toast_Success('Successfully!')
+  } else {
+    Toast(msg.value)
+  }
 
   setTimeout(() => {
     isActivedReset.value = false
