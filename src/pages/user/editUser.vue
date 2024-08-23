@@ -231,19 +231,20 @@ const user = reactive({
   iconImage: 'src/assets/imgurl.jpg'
 })
 
+const userStore = reactive({})
+
 // get请求获取用户信息
 onBeforeMount(async () => {
   // 接口
-  const userStore = useUserStore()
+  Object.assign(userStore, useUserStore())
   // get用户信息
   Object.assign(user, userStore.userData)
 
-  if (resp_userInfo.data.gender == '1') {
+  if (userStore.userData.gender == '1') {
     input_gender.value = 'Female'
   } else {
     input_gender.value = 'Male'
   }
-  console.log('get用户信息：', resp_userInfo)
 })
 
 // 保存修改按钮
@@ -261,7 +262,7 @@ const save = async () => {
   let obj = { ...user }
 
   // put修改用户信息
-  const resp_update = await updateUserInfo(obj)
+  const resp_update = await userStore.updateUserInfo(obj)
   if (resp_update.errCode == 1000) {
     Toast_Success('Successfully!')
     // 跳转到profile页面

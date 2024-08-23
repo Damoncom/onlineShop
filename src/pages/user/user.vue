@@ -69,6 +69,7 @@ import Nav from '@/components/nav'
 import { useRouter, useRoute } from 'vue-router'
 import { getLocation } from '@/utils/api'
 import { useUserStore } from '@/stores/user'
+import { onMounted } from 'vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -82,10 +83,11 @@ const user = reactive({
 })
 
 const locationDetails = reactive({})
+const userStore = reactive({})
 
 onBeforeMount(async () => {
   // 接口
-  const userStore = useUserStore()
+  Object.assign(userStore, useUserStore())
   // get用户信息
   Object.assign(user, userStore.userData)
 
@@ -100,6 +102,11 @@ onBeforeMount(async () => {
   } else {
   }
   console.log('get地址信息：', resp_getLocation)
+
+  // TODO:更新后的数据
+  userStore.getUserInfo()
+  user = { ...userStore.userData }
+  // Object.assign(user, userStore.userData)
 })
 
 // 确认是Profile页面

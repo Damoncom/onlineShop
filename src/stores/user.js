@@ -7,7 +7,6 @@ import router from '@/router/index.js'
 export const useUserStore = defineStore(
   'user',
   () => {
-    const signInData = reactive({})
     const resp_signIn = reactive({})
     const token = ref()
     const isRemember = ref()
@@ -16,14 +15,14 @@ export const useUserStore = defineStore(
 
     // post登录
     async function signIn(data) {
-      this.signInData = data
-      this.resp_signIn = await request.post('/onlineShop/signIn', data)
+      Object.assign(resp_signIn, await request.post('/onlineShop/signIn', data))
       token.value = this.resp_signIn.data.token
-      isRemember.value = this.signInData.isRemember
+      isRemember.value = data.isRemember
       if (this.resp_signIn.errCode == 1000) {
         localStorage.setItem('token', this.resp_signIn.data.token)
         Toast_Success('Successfully!')
 
+        // get用户信息
         // 当获取token后，自动获取用户信息并保存在pinia中
         if (localStorage.getItem('token') != null) {
           Object.assign(
@@ -50,25 +49,28 @@ export const useUserStore = defineStore(
       return await request.post('/onlineShop/signUp', data)
     }
 
-    // const userData = reactive({})
-    // const resp_getUserInfo = reactive({})
-    // get用户数据
-    // async function getUserInfo() {
-    //   this.resp_getUserInfo = await request.get('/onlineShop/getUserInfo', { params: {} })
-    //   this.userData = this.resp_getUserInfo.data
-    //   return await request.get('/onlineShop/getUserInfo', { params: {} })
-    // }
+    // get用户信息
+    async function getUserInfo() {
+      Object.assign(resp_getUserInfo, await request.get('/onlineShop/getUserInfo', { params: {} }))
+      Object.assign(userData, resp_getUserInfo.data)
+      return await request.get('/onlineShop/getUserInfo', { params: {} })
+    }
+
+    // put更改用户信息
+    async function updateUserInfo(data) {
+      return await request.put('/onlineShop/updateUserInfo', data)
+    }
 
     return {
-      signInData,
       resp_signIn,
       token,
       isRemember,
       signIn,
       signUp,
       userData,
-      resp_getUserInfo
-      //   getUserInfo
+      resp_getUserInfo,
+      getUserInfo,
+      updateUserInfo
     }
   },
   {
