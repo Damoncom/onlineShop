@@ -16,7 +16,7 @@
         <div class="active">
           <div
             class="box"
-            v-for="(region, index) of regionList"
+            v-for="(region, index) of locationStore.locationList"
             :key="index"
             :data-name="region.name"
             :data-index="index"
@@ -36,10 +36,13 @@
   </div>
 </template>
 <script setup>
-import { ref, onUpdated, nextTick, onBeforeMount, reactive, toRaw } from 'vue'
+import { ref, nextTick, onBeforeMount, reactive, toRaw } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
-import { getLocation } from '@/utils/api'
+import { useLocationStore } from '@/stores/location'
+
+// 接口
+const locationStore = useLocationStore()
 
 const router = useRouter()
 const route = useRoute()
@@ -48,7 +51,6 @@ const route = useRoute()
 const navTitle = 'Select Location'
 
 // 地址列表
-const regionList = reactive([])
 let avtivedIndex = ref(0)
 const chooseRegion = (e) => {
   avtivedIndex.value = e.currentTarget.dataset.index
@@ -63,10 +65,10 @@ const searchList = reactive([])
 const searchLocation = async () => {
   await nextTick()
 
-  toRaw(regionList).forEach((item, index) => {
+  toRaw(locationStore.locationList).forEach((item, index) => {
     if (item.location.search(inputText.value) == -1) {
       // toRaw(searchList).push(item)
-      toRaw(regionList).splice(index)
+      toRaw(locationStore.locationList).splice(index)
     } else {
     }
   })
@@ -78,7 +80,6 @@ const searchLocation = async () => {
 
 // 跳到编辑地址页面
 const linkToEditLocation = (region) => {
-  // console.log(region)
   router.push({
     path: '/edit_location',
     query: region
@@ -91,14 +92,10 @@ onBeforeMount(async () => {
     size: 10,
     page: 1
   })
-  const resp_getLocation = await getLocation(locationPost)
-  if (resp_getLocation.errCode == 1000) {
-    Object.assign(regionList, resp_getLocation.data.list)
-  } else {
-  }
-  console.log('get地址信息：', resp_getLocation)
+  await locationStore.getLocation(locationPost)
 })
 </script>
+
 <style lang="scss" scoped>
 .app {
   .content {

@@ -46,10 +46,13 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, nextTick } from 'vue'
+import { ref, reactive, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import AMap from '@amap/amap-jsapi-loader'
-import { createLocation } from '@/utils/api'
+import { useLocationStore } from '@/stores/location'
+
+// 接口
+const locationStore = useLocationStore()
 
 const router = useRouter()
 const route = useRoute()
@@ -134,10 +137,9 @@ const comfirm = async () => {
 
   isActivedCurrent.value = false
 
-  const resp_createLocation = await createLocation(postData)
-  console.log('post添加配送地址', resp_createLocation)
+  await locationStore.createLocation(postData)
 
-  if (resp_createLocation.errCode == 1000) {
+  if (locationStore.resp_createLocation.errCode == 1000) {
     isActivedCurrent.value = false
     router.go(-1)
   } else {

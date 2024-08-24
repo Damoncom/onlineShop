@@ -31,7 +31,7 @@
         <div class="address_box" @click="linkToLoaction">
           <div class="list">
             <div class="title">Address</div>
-            <div class="detail">{{ locationDetails.location }}</div>
+            <div class="detail">{{ locationStore.locationList.location }}</div>
           </div>
         </div>
         <div class="birthday_box">
@@ -67,11 +67,12 @@ import { onBeforeMount, reactive } from 'vue'
 import TabBar from '@/components/tabBar'
 import Nav from '@/components/nav'
 import { useRouter, useRoute } from 'vue-router'
-import { getLocation } from '@/utils/api'
 import { useUserStore } from '@/stores/user'
+import { useLocationStore } from '@/stores/location'
 
 // 接口
 const userStore = useUserStore()
+const locationStore = useLocationStore()
 
 const router = useRouter()
 const route = useRoute()
@@ -85,20 +86,13 @@ const user = reactive({
   // iconImage: 'src/assets/imgurl.jpg'
 })
 
-const locationDetails = reactive({})
-
 onBeforeMount(async () => {
   // get地址信息
   const locationPost = reactive({
     size: 1,
     page: 1
   })
-  const resp_getLocation = await getLocation(locationPost)
-  if (resp_getLocation.errCode == 1000) {
-    Object.assign(locationDetails, ...resp_getLocation.data.list)
-  } else {
-  }
-  console.log('get地址信息：', resp_getLocation)
+  await locationStore.getLocation(locationPost)
 
   // get用户信息
   await userStore.getUserInfo()

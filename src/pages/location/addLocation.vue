@@ -47,15 +47,16 @@
 </template>
 
 <script setup>
-import { onUpdated, nextTick, reactive, ref, onBeforeMount } from 'vue'
+import { reactive, ref } from 'vue'
 import Nav from '@/components/nav'
 import AreaSelect from '@/components/areaSelect'
 import { useRouter, useRoute } from 'vue-router'
-import { createLocation } from '@/utils/api'
 import { useUserStore } from '@/stores/user'
+import { useLocationStore } from '@/stores/location'
 
 // 接口
 const userStore = useUserStore()
+const locationStore = useLocationStore()
 
 // 导入导航栏
 const navTitle = 'Add Location'
@@ -73,10 +74,9 @@ const save = async () => {
     lat: '22.684308'
   })
 
-  const resp_createLocation = await createLocation(postData)
-  console.log('post添加配送地址', resp_createLocation)
+  await locationStore.createLocation(postData)
 
-  if (resp_createLocation.errCode == 1000) {
+  if (locationStore.createLocation.errCode == 1000) {
     router.push({
       path: '/select_location'
     })

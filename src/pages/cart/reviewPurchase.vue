@@ -28,7 +28,7 @@
             <i class="iconfont icon-dingwei"></i>
           </div>
           <div class="location_text">
-            <p class="text">{{ locationDetails.location }}</p>
+            <p class="text">{{ locationStore.locationList.location }}</p>
           </div>
           <div class="jump">
             <i class="iconfont icon-jiantou"></i>
@@ -74,8 +74,12 @@ import { reactive, ref, toRaw, nextTick, onBeforeMount } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
 import currency from 'currency.js'
-import { getLocation, getCart, calculateCost } from '@/utils/api'
+import { getCart, calculateCost } from '@/utils/api'
+import { useLocationStore } from '@/stores/location'
 import { Toast } from '@/utils/extract'
+
+// 接口
+const locationStore = useLocationStore()
 
 const router = useRouter()
 const route = useRoute()
@@ -84,24 +88,7 @@ const route = useRoute()
 const navTitle = 'Review Purchase'
 
 // 商品列表信息
-const cartList = reactive([
-  // {
-  //   id: '1',
-  //   name: 'Gienchy L’  intemprorel Blossom',
-  //   price: '29.33',
-  //   img: product,
-  //   num: 1,
-  //   isChosen: true
-  // },
-  // {
-  //   id: '2',
-  //   name: 'Gienchy L’  intemprorel Blossom',
-  //   price: '29.99',
-  //   img: product,
-  //   num: 1,
-  //   isChosen: true
-  // }
-])
+const cartList = reactive([])
 
 // edit按钮
 const linkToCart = () => {
@@ -124,9 +111,6 @@ const linkToLocation = () => {
     path: '/location'
   })
 }
-
-const locationDetails = reactive({})
-const queryOrder = reactive([])
 
 onBeforeMount(async () => {
   // get购物车
@@ -156,23 +140,20 @@ onBeforeMount(async () => {
     size: 1,
     page: 1
   })
-  const resp_getLocation = await getLocation(locationPost)
-  if (resp_getLocation.errCode == 1000) {
-    Object.assign(locationDetails, ...resp_getLocation.data.list)
-  } else {
-  }
-  if (resp_getLocation.data.list.length == 0) {
+  await locationStore.getLocation(locationPost)
+
+  // 判断是否有地址信息，若没有，则进行不了下一步
+  if (locationStore.locationList.length == 0) {
     isHaveLocation.value = false
   } else {
     isHaveLocation.value = true
   }
-  console.log('get地址信息：', resp_getLocation)
 
   // post计算费用
   const moneyPost = reactive({
     goods: toRaw(postgoods),
     subtotal: pre.sum,
-    locationId: locationDetails.id
+    locationId: locationStore.locationList.id
   })
   const resp_calculate = await calculateCost(moneyPost)
   if (resp_calculate.errCode == 1000) {

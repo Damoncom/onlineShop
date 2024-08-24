@@ -6,13 +6,13 @@
         <div class="name_box">
           <div class="name_text">Name</div>
           <div class="input_box">
-            <input type="text" class="name_input" v-model="user.name" />
+            <input type="text" class="name_input" v-model="userStore.userData.name" />
           </div>
         </div>
         <div class="phone_box">
           <div class="phone_text">phone</div>
           <div class="input_box">
-            <input type="number" class="phone_input" v-model="user.phoneNumber" />
+            <input type="number" class="phone_input" v-model="userStore.userData.phoneNumber" />
           </div>
         </div>
         <div class="area_box">
@@ -64,11 +64,15 @@
 </template>
 
 <script setup>
-import { onUpdated, nextTick, reactive, ref, onBeforeMount } from 'vue'
+import { nextTick, reactive, ref, onBeforeMount } from 'vue'
 import Nav from '@/components/nav'
 import { useRouter, useRoute } from 'vue-router'
-import { removeLocation, updateLocation, getUserInfo } from '@/utils/api'
 import { useUserStore } from '@/stores/user'
+import { useLocationStore } from '@/stores/location'
+
+// 接口
+const userStore = useUserStore()
+const locationStore = useLocationStore()
 
 // 导入导航栏
 const navTitle = 'Edit Location'
@@ -76,7 +80,6 @@ const navTitle = 'Edit Location'
 const router = useRouter()
 const route = useRoute()
 
-const user = reactive({})
 const locationInfo = route.query
 const str = ref(locationInfo.location)
 const areaText = ref(str.value?.slice(0, str.value?.indexOf('区') + 1))
@@ -84,10 +87,8 @@ const detailsText = ref(str.value?.slice(str.value?.indexOf('区') + 1))
 
 // 获取用户信息
 onBeforeMount(async () => {
-  // 接口
-  const userStore = useUserStore()
   // get用户信息
-  Object.assign(user, userStore.userData)
+  await userStore.useUserStore()
 })
 
 // 发送put请求，修改配送地址
@@ -101,16 +102,14 @@ const save = async () => {
     lng: locationInfo.lng,
     lat: locationInfo.lat
   })
-  console.log(postData)
 
-  const resp_updateLocation = await updateLocation(postData)
-  if (resp_updateLocation.errCode == 1000) {
+  await locationStore.updateLocation(postData)
+  if (locationStore.resp_updateLocation.errCode == 1000) {
     router.push({
       path: '/select_location'
     })
   } else {
   }
-  console.log('put修改地址：', resp_updateLocation)
 }
 
 // 控制蒙层
@@ -135,10 +134,9 @@ const comfirmDelete = async () => {
   const postData = reactive({
     id: locationInfo.id
   })
-  const resp_removeLocation = await removeLocation(postData)
-  console.log('delete删除配送地址', resp_removeLocation)
+  await locationStore.removeLocation(postData)
 
-  if (resp_removeLocation.errCode == 1000) {
+  if (locationStore.resp_removeLocation.errCode == 1000) {
     router.push({
       path: '/select_location'
     })

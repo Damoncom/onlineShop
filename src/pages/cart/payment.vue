@@ -92,11 +92,13 @@ import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
 import currency from 'currency.js'
 import axios from 'axios'
-import { getLocation, getCart, pay } from '@/utils/api'
+import { getCart, pay } from '@/utils/api'
 import { useUserStore } from '@/stores/user'
+import { useLocationStore } from '@/stores/location'
 
 // 接口
 const userStore = useUserStore()
+const locationStore = useLocationStore()
 
 const router = useRouter()
 const route = useRoute()
@@ -151,7 +153,6 @@ let mf = new Date().getMinutes() < 10 ? '0' + new Date().getMinutes() : new Date
 let ss = new Date().getSeconds() < 10 ? '0' + new Date().getSeconds() : new Date().getSeconds()
 
 const token_info = localStorage.getItem('token')
-const locationDetails = reactive({})
 const queryOrder = reactive([])
 
 // post请求创建通知
@@ -194,12 +195,7 @@ onBeforeMount(async () => {
     size: 1,
     page: 1
   })
-  const resp_getLocation = await getLocation(locationPost)
-  if (resp_getLocation.errCode == 1000) {
-    Object.assign(locationDetails, ...resp_getLocation.data.list)
-  } else {
-  }
-  console.log('get地址信息：', resp_getLocation)
+  await locationStore.getLocation(locationPost)
 
   // 整理订单数据
   const queryOrderPre = reactive([])
@@ -217,7 +213,7 @@ onBeforeMount(async () => {
     })
   })
   toRaw(queryOrderPre).forEach((item) => {
-    item.locationId = locationDetails.id
+    item.locationId = locationStore.locationList.id
   })
   Object.assign(queryOrder, queryOrderPre)
 })
