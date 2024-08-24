@@ -250,15 +250,16 @@
 import { ref, reactive, onBeforeMount, nextTick, toRaw } from 'vue'
 import TabBar from '@/components/tabBar'
 import { useRouter, useRoute } from 'vue-router'
-import { editCart } from '@/utils/api'
+import { useCartStore } from '@/stores/cart'
 import { useUserStore } from '@/stores/user'
 import { useNocticeStore } from '@/stores/notification'
-import { useHomeStore } from '@/stores/home'
+import { useHomeStore } from '@/stores/Home'
 
 // 接口
 const userStore = useUserStore()
 const nocticeStore = useNocticeStore()
 const homeStore = useHomeStore()
+const cartStore = useCartStore()
 
 const router = useRouter()
 const route = useRoute()
@@ -382,12 +383,6 @@ const categoriesList = ref([
   }
 ])
 
-// recommended数据
-const recommendedList = reactive([])
-
-// popular数据
-const popularList = reactive([])
-
 const chooseProduct = (product) => {
   const productId = ref(product.id)
   //   跳转到productDetail页面
@@ -413,13 +408,12 @@ const addToCart = async (product, event) => {
     goodsId: product.id,
     amount: '1'
   })
-  const resp_addToCart = await editCart(addToCartPost)
-  if (resp_addToCart.errCode == 1000) {
+  await cartStore.editCart(addToCartPost)
+  if (cartStore.resp_editCart.errCode == 1000) {
     isAdd.value = true
   } else {
     isAdd.value = false
   }
-  console.log('post加入购物车：', resp_addToCart)
 }
 
 const noRead = ref(false)

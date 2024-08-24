@@ -92,13 +92,15 @@ import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
 import currency from 'currency.js'
 import axios from 'axios'
-import { getCart, pay } from '@/utils/api'
+import { pay } from '@/utils/api'
 import { useUserStore } from '@/stores/user'
 import { useLocationStore } from '@/stores/location'
+import { useCartStore } from '@/stores/cart'
 
 // 接口
 const userStore = useUserStore()
 const locationStore = useLocationStore()
+const cartStore = useCartStore()
 
 const router = useRouter()
 const route = useRoute()
@@ -158,26 +160,21 @@ const queryOrder = reactive([])
 // post请求创建通知
 const createNotice = reactive([])
 
-// 购物车变量
-const cartList = reactive([])
-
 onBeforeMount(async () => {
   // get购物车
   const postData = reactive({
     size: 10,
     page: 1
   })
-  const resp_getCart = await getCart(postData)
-  if (resp_getCart.errCode == 1000) {
-    Object.assign(cartList, resp_getCart.data.list)
-    toRaw(cartList).forEach((item) => {
+  await cartStore.getCart(postData)
+  if (cartStore.resp_getCart.errCode == 1000) {
+    toRaw(cartStore.cartList).forEach((item) => {
       toRaw(createNotice).push({
         content: '您购买的' + item.goods.name + '商品已下单'
       })
     })
   } else {
   }
-  console.log('get购物车：', resp_getCart)
 
   // get用户信息
   toRaw(createNotice).forEach((item) => {
@@ -229,7 +226,7 @@ const linkToDone = async () => {
 
   // 前端生成订单号：order_${yyyMMddHHmmss}_${uuid}【多个商品时，使用相同的OrderId】
   const time = yy + mm + dd + hh + mf + ss
-  toRaw(cartList).forEach((item) => {
+  toRaw(cartStore.cartList).forEach((item) => {
     toRaw(queryOrder).forEach((item2) => {
       item2.orderId = 'order_' + time + '_' + item.goodsId
     })

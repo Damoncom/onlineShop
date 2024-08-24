@@ -62,11 +62,15 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick, onBeforeMount, reactive, toRaw } from 'vue'
+import { ref, onBeforeMount, reactive, toRaw } from 'vue'
 import TabBar from '@/components/tabBar'
 import Nav from '@/components/nav'
 import { useRouter, useRoute } from 'vue-router'
-import { getOrderList, editCart } from '@/utils/api'
+import { getOrderList } from '@/utils/api'
+import { useCartStore } from '@/stores/cart'
+
+// 接口
+const cartStore = useCartStore()
 
 const router = useRouter()
 const route = useRoute()
@@ -122,11 +126,7 @@ const reOrder = async (order) => {
     goodsId: order.goods.id,
     amount: '1'
   })
-  const resp_addToCart = await editCart(addToCartPost)
-  if (resp_addToCart.errCode == 1000) {
-  } else {
-  }
-  console.log('post加入购物车：', resp_addToCart)
+  await cartStore.editCart(addToCartPost)
 }
 </script>
 

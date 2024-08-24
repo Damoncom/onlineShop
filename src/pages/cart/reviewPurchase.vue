@@ -3,7 +3,7 @@
     <Nav :init_title="navTitle" />
     <div class="content">
       <ul class="cart_list">
-        <li class="cart_item" v-for="(cart, cart_index) of cartList" :key="cart_index">
+        <li class="cart_item" v-for="(cart, cart_index) of cartStore.cartList" :key="cart_index">
           <div class="product_box">
             <img :src="cart.goods.image" class="img" />
             <div class="text_box">
@@ -74,21 +74,21 @@ import { reactive, ref, toRaw, nextTick, onBeforeMount } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
 import currency from 'currency.js'
-import { getCart, calculateCost } from '@/utils/api'
+import { calculateCost } from '@/utils/api'
 import { useLocationStore } from '@/stores/location'
+import { useCartStore } from '@/stores/cart'
+
 import { Toast } from '@/utils/extract'
 
 // 接口
 const locationStore = useLocationStore()
+const cartStore = useCartStore()
 
 const router = useRouter()
 const route = useRoute()
 
 // 导入导航栏
 const navTitle = 'Review Purchase'
-
-// 商品列表信息
-const cartList = reactive([])
 
 // edit按钮
 const linkToCart = () => {
@@ -118,12 +118,7 @@ onBeforeMount(async () => {
     size: 10,
     page: 1
   })
-  const resp_getCart = await getCart(postData)
-  if (resp_getCart.errCode == 1000) {
-    Object.assign(cartList, resp_getCart.data.list)
-  } else {
-  }
-  console.log('get购物车：', resp_getCart)
+  await cartStore.getCart(postData)
 
   // 重新整合商品数据
   const postgoods = reactive([])

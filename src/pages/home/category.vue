@@ -59,13 +59,14 @@
 import { reactive, ref, onBeforeMount, nextTick, toRaw } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
-import { editCart } from '@/utils/api'
+import { useCartStore } from '@/stores/cart'
 import { useGoodsStore } from '@/stores/goods'
 import { Toast_Info } from '@/utils/extract'
 import { debounce } from 'lodash'
 
 // 接口
 const goodsStore = useGoodsStore()
+const cartStore = useCartStore()
 
 const router = useRouter()
 const route = useRoute()
@@ -97,13 +98,12 @@ const addToCart = async (product, event) => {
     goodsId: product.id,
     amount: '1'
   })
-  const resp_addToCart = await editCart(addToCartPost)
-  if (resp_addToCart.errCode == 1000) {
+  await cartStore.editCart(addToCartPost)
+  if (cartStore.resp_editCart.errCode == 1000) {
     isAdd.value = true
   } else {
     isAdd.value = false
   }
-  console.log('post加入购物车：', resp_addToCart)
 }
 
 // get商品列表信息

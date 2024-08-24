@@ -5,7 +5,7 @@
       <ul class="cart_list">
         <li
           class="cart_item"
-          v-for="(cart, cart_index) of cartList"
+          v-for="(cart, cart_index) of cartStore.cartList"
           :key="cart_index"
           :data-index="cart_index"
           :data-name="cart.name"
@@ -53,20 +53,14 @@
   </div>
 </template>
 <script setup>
-import {
-  onUnmounted,
-  reactive,
-  ref,
-  toRaw,
-  onUpdated,
-  nextTick,
-  onBeforeMount,
-  onMounted
-} from 'vue'
+import { reactive, ref, toRaw, onBeforeMount } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
 import currency from 'currency.js'
-import { getCart, editCart } from '@/utils/api'
+import { useCartStore } from '@/stores/cart'
+
+// 接口
+const cartStore = useCartStore()
 
 const router = useRouter()
 const route = useRoute()
@@ -74,13 +68,10 @@ const route = useRoute()
 // 导入导航栏
 const navTitle = 'Cart'
 
-// 商品列表信息
-const cartList = reactive([])
-
 // 计算总数
 const sum = ref(0.0)
 let sumShow = ref()
-const arr = toRaw(cartList)
+const arr = toRaw(cartStore.cartList)
 
 // 减一
 const minus = async (cart) => {
@@ -100,11 +91,7 @@ const minus = async (cart) => {
     goodsId: cart.goodsId,
     amount: cart.amount
   })
-  const resp_minus = await editCart(minusPost)
-  if (resp_minus.errCode == 1000) {
-  } else {
-  }
-  console.log('post数量减一：', resp_minus)
+  await cartStore.editCart(minusPost)
 }
 // 加一
 const add = async (cart, arr) => {
@@ -120,11 +107,7 @@ const add = async (cart, arr) => {
     goodsId: cart.goodsId,
     amount: cart.amount
   })
-  const resp_add = await editCart(addPost)
-  if (resp_add.errCode == 1000) {
-  } else {
-  }
-  console.log('post数量加一：', resp_add)
+  await cartStore.editCart(addPost)
 }
 
 // 跳转到reviewPurchase页面
@@ -143,12 +126,7 @@ onBeforeMount(async () => {
     size: 10,
     page: 1
   })
-  const resp_getCart = await getCart(postData)
-  if (resp_getCart.errCode == 1000) {
-    Object.assign(cartList, resp_getCart.data.list)
-  } else {
-  }
-  console.log('get购物车：', resp_getCart)
+  await cartStore.getCart(postData)
 
   // pre计算总数
   arr.forEach((item, index) => {

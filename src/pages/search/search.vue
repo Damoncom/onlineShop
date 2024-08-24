@@ -169,25 +169,17 @@
 </template>
 
 <script setup>
-import {
-  reactive,
-  ref,
-  onMounted,
-  onUnmounted,
-  onBeforeMount,
-  nextTick,
-  toRaw,
-  onUpdated
-} from 'vue'
+import { reactive, ref, onUnmounted, onBeforeMount, nextTick, toRaw } from 'vue'
 import TabBar from '@/components/tabBar'
 import { useRouter, useRoute } from 'vue-router'
-import { getGoodsList, editCart } from '@/utils/api'
+import { useCartStore } from '@/stores/cart'
 import { useGoodsStore } from '@/stores/goods'
 import { Toast_Info } from '@/utils/extract'
 import { debounce } from 'lodash'
 
 // 接口
 const goodsStore = useGoodsStore()
+const cartStore = useCartStore()
 
 const router = useRouter()
 const route = useRoute()
@@ -321,13 +313,12 @@ const addToCart = async (product, event) => {
     goodsId: toRaw(product.id),
     amount: 1
   })
-  const resp_addToCart = await editCart(addToCartPost)
-  if (resp_addToCart.errCode == 1000) {
+  await cartStore.editCart(addToCartPost)
+  if (cartStore.resp_editCart.errCode == 1000) {
     isAdd.value = true
   } else {
     isAdd.value = false
   }
-  console.log('post加入购物车：', resp_addToCart)
 }
 
 // TODO:下拉刷新(Search和category)
