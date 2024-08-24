@@ -76,7 +76,7 @@ const save = async () => {
 
   await locationStore.createLocation(postData)
 
-  if (locationStore.createLocation.errCode == 1000) {
+  if (locationStore.resp_createLocation.errCode == 1000) {
     router.push({
       path: '/select_location'
     })

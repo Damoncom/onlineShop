@@ -321,7 +321,6 @@ const addToCart = async (product, event) => {
   }
 }
 
-// TODO:下拉刷新(Search和category)
 const loading = ref(false)
 const onRefresh = async () => {
   setTimeout(async () => {
@@ -329,7 +328,6 @@ const onRefresh = async () => {
     loading.value = false
   }, 1000)
 
-  // 清空
   goodsStore.goodsList.length = 10
 
   // 重新请求

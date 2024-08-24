@@ -3,7 +3,7 @@
     <Nav :init_title="navTitle" />
     <div class="content">
       <div class="img_box" @click="changeImg">
-        <img :src="userStore.userData.iconImage" class="img" />
+        <img :src="user.iconImage" class="img" />
         <i class="iconfont icon-zhaoxiangji1"></i>
       </div>
       <div class="frame">
@@ -12,12 +12,7 @@
           <div class="form">
             <div class="main">
               <i class="iconfont icon-geren"></i>
-              <input
-                type="text"
-                placeholder="Enter your name"
-                class="name"
-                v-model="userStore.userData.name"
-              />
+              <input type="text" placeholder="Enter your name" class="name" v-model="user.name" />
             </div>
           </div>
         </div>
@@ -30,7 +25,7 @@
                 type="email"
                 placeholder="Enter your email"
                 class="email"
-                v-model="userStore.userData.email"
+                v-model="user.email"
               />
             </div>
           </div>
@@ -44,7 +39,7 @@
                 type="text"
                 placeholder="Enter your phone number"
                 class="phone"
-                v-model="userStore.userData.phoneNumber"
+                v-model="user.phoneNumber"
               />
             </div>
           </div>
@@ -54,7 +49,7 @@
           <div class="form">
             <div class="main">
               <i class="iconfont icon-rili"></i>
-              <input type="date" class="birthday" v-model="userStore.userData.birthday" />
+              <input type="date" class="birthday" v-model="user.birthday" />
             </div>
           </div>
         </div>
@@ -236,12 +231,15 @@ const selectGender = () => {
 const user = reactive({
   address: '',
   cardNum: '',
-  iconImage: 'src/assets/imgurl.jpg'
+  iconImage: 'src/assets/imgurl.jpg',
+  ...userStore.userData
 })
+console.log(user)
 
 // get请求获取用户信息
 onBeforeMount(async () => {
   // get用户信息
+  await userStore.getUserInfo()
 
   if (userStore.userData.gender == '1') {
     input_gender.value = 'Female'

@@ -19,6 +19,14 @@
           </div>
         </li>
       </ul>
+      <div class="askBuy" v-if="askBuy == true">
+        <i class="iconfont icon-404"></i>
+        <p class="askBuy_text">
+          You haven't collected any products yet！
+          <br />
+          Go take a look ~
+        </p>
+      </div>
     </div>
     <div class="bottom">
       <div class="button_box" @click="linkToHome">
@@ -31,7 +39,7 @@
 </template>
 
 <script setup>
-import { reactive, onBeforeMount } from 'vue'
+import { reactive, onBeforeMount, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
 import { useWishStore } from '@/stores/wishlist'
@@ -39,15 +47,25 @@ import { useWishStore } from '@/stores/wishlist'
 // 接口
 const wishStore = useWishStore()
 
+console.log(wishStore.resp_getWishlist)
+
 const router = useRouter()
 const route = useRoute()
 
 // 导入导航栏
 const navTitle = 'Wishlist'
 
+const askBuy = ref(false)
+
 // get收藏列表
 onBeforeMount(async () => {
   await wishStore.getWishlist()
+
+  if (wishStore.wishList.length == 0) {
+    askBuy.value = true
+  } else {
+    askBuy.value = false
+  }
 })
 
 // delete取消收藏
@@ -131,6 +149,26 @@ const linkToHome = () => {
             color: #a456dd;
           }
         }
+      }
+    }
+    .askBuy {
+      margin-top: 50%;
+      width: 327px;
+      height: 100px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      .icon-404 {
+        font-size: 50px;
+        color: #a456dd;
+        line-height: 70px;
+      }
+      .askBuy_text {
+        font-size: 20px;
+        color: #a456dd;
+        line-height: 30px;
+        text-align: center;
       }
     }
   }

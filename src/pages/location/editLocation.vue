@@ -44,10 +44,29 @@
     </div>
   </div>
   <!-- 蒙层 -->
-  <div class="mask" v-if="isMask == true" @click="activedMask"></div>
+  <!-- <div class="mask" v-if="isMask == true" @click="activedMask"></div> -->
 
   <!-- 删除面板 -->
-  <div class="delete_bigBox" @click.self="activedMask">
+  <!-- <div class="delete_bigBox" @click.self="activedMask">
+    <div class="delete_box" v-if="isMask == true">
+      <i class="iconfont icon-shanchu"></i>
+      <div class="delete_text">Are you sure to delete this address information?</div>
+      <div class="choose_button">
+        <div class="cancel_button" @click="cancelDelete">
+          <p>no</p>
+        </div>
+        <div class="delete_button" @click="comfirmDelete">
+          <p>yes</p>
+        </div>
+      </div>
+    </div>
+  </div>  -->
+  <!-- 蒙层 -->
+  <!-- <div class="mask" v-if="isMask == true" @click="activedMask"> -->
+
+  <!-- 删除面板 -->
+  <!-- <div class="delete_bigBox" @click.self="activedMask"> -->
+  <div class="mask" v-if="isMask == true" @click.self="activedMask">
     <div class="delete_box" v-if="isMask == true">
       <i class="iconfont icon-shanchu"></i>
       <div class="delete_text">Are you sure to delete this address information?</div>
@@ -347,15 +366,15 @@ const comfirmDelete = async () => {
   position: absolute;
   top: 0;
   z-index: 2;
-}
+  // }
 
-// 删除面板
-.delete_bigBox {
-  position: absolute;
-  top: 0;
-  width: 375px;
-  height: 812px;
-  z-index: 2;
+  // 删除面板
+  // .delete_bigBox {
+  // position: absolute;
+  // top: 0;
+  // width: 375px;
+  // height: 812px;
+  // z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -417,5 +436,8 @@ const comfirmDelete = async () => {
       }
     }
   }
+}
+.delete_bigBox_bottom {
+  z-index: 0;
 }
 </style>

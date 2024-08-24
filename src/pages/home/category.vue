@@ -125,13 +125,17 @@ const onRefresh = async () => {
     Toast_Info('刷新成功')
     loading.value = false
   }, 1000)
+
+  goodsStore.goodsList.length = 10
+
+  // 重新请求
   const data3 = {
     size: 10,
     page: 1,
     barCode: '',
     name: ''
   }
-  // get更多商品列表信息
+  // get第一页商品列表信息
   await goodsStore.getGoodsList(data3)
 }
 

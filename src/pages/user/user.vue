@@ -31,7 +31,7 @@
         <div class="address_box" @click="linkToLoaction">
           <div class="list">
             <div class="title">Address</div>
-            <div class="detail">{{ locationStore.locationList.location }}</div>
+            <div class="detail">{{ locationStore.locationList[0].location }}</div>
           </div>
         </div>
         <div class="birthday_box">

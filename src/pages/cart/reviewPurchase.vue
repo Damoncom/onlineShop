@@ -28,7 +28,7 @@
             <i class="iconfont icon-dingwei"></i>
           </div>
           <div class="location_text">
-            <p class="text">{{ locationStore.locationList.location }}</p>
+            <p class="text">{{ locationStore.locationList[0].location }}</p>
           </div>
           <div class="jump">
             <i class="iconfont icon-jiantou"></i>
@@ -122,7 +122,7 @@ onBeforeMount(async () => {
 
   // 重新整合商品数据
   const postgoods = reactive([])
-  const arr = toRaw(resp_getCart.data.list)
+  const arr = toRaw(cartStore.cartList)
   arr.forEach((item, index) => {
     postgoods.push({
       id: item.goodsId,
@@ -136,6 +136,7 @@ onBeforeMount(async () => {
     page: 1
   })
   await locationStore.getLocation(locationPost)
+  console.log(locationStore.locationList)
 
   // 判断是否有地址信息，若没有，则进行不了下一步
   if (locationStore.locationList.length == 0) {
@@ -152,10 +153,10 @@ onBeforeMount(async () => {
   })
   await orderStore.calculateCost(moneyPost)
   if (orderStore.resp_calculateCost.errCode == 1000) {
-    Object.assign(plus, resp_calculateCost.data)
+    Object.assign(plus, orderStore.resp_calculateCost.data)
     total.value = currency(pre.sum)
-      .add(currency(resp_calculateCost.data.handling))
-      .add(currency(resp_calculateCost.data.tax))
+      .add(currency(orderStore.resp_calculateCost.data.handling))
+      .add(currency(orderStore.resp_calculateCost.data.tax))
   } else {
   }
 })

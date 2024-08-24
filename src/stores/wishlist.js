@@ -28,7 +28,7 @@ export const useWishStore = defineStore(
         resp_getWishlist,
         await request.get('/onlineShop/getWishlist', { params: { size: 10, page: 1 } })
       )
-      Object.assign(wishList, getWishlist.data.list)
+      Object.assign(wishList, resp_getWishlist.data.list)
     }
 
     return {

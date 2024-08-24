@@ -3,7 +3,6 @@ import axios from 'axios'
 import router from '@/router/index.js'
 import { Toast } from '@/utils/extract'
 import { useUserStore } from '@/stores/user'
-import { reactive, ref } from 'vue'
 
 // 创建axios实例
 const request = axios.create({
@@ -64,5 +63,3 @@ request.interceptors.response.use(
   }
 )
 export default request
-
-// TODO:建议把请求挂到stores，把所有收到的返回也挂上去，顺便做一下持久化，

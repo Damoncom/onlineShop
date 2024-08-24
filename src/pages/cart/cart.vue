@@ -134,7 +134,7 @@ onBeforeMount(async () => {
     sumShow.value = currency(sum.value).value
   })
 
-  if (resp_getCart.data.list.length == 0) {
+  if (cartStore.cartList.length == 0) {
     sumShow.value = '0.00'
   }
 })

@@ -11,12 +11,6 @@ export const useOrderStore = defineStore(
       Object.assign(resp_calculateCost, await request.post('/onlineShop/calculateCost', data))
     }
 
-    // // post创建订单
-    // const resp_createOrder = reactive({})
-    // async function createOrder(data) {
-    //   Object.assign(resp_createOrder, await request.post('/onlineShop/createOrder', data))
-    // }
-
     // get订单列表
     const orderList = reactive([])
     const resp_getOrderList = reactive({})
@@ -25,7 +19,8 @@ export const useOrderStore = defineStore(
         resp_getOrderList,
         await request.get('/onlineShop/getOrderList', { params: { size: 10, page: 1 } })
       )
-      toRaw(orderStore.orderList).forEach((item) => {
+      Object.assign(orderList, resp_getOrderList.data.list)
+      toRaw(orderList).forEach((item) => {
         if (item.status == -1) {
           item.state = 'cancelled'
         } else if (item.status == 1) {
@@ -36,7 +31,6 @@ export const useOrderStore = defineStore(
           item.state = 'pending'
         }
       })
-      Object.assign(orderList, resp_getOrderList.data.list)
     }
 
     // post支付

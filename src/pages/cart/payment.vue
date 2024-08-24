@@ -156,7 +156,7 @@ let hh = new Date().getHours()
 let mf = new Date().getMinutes() < 10 ? '0' + new Date().getMinutes() : new Date().getMinutes()
 let ss = new Date().getSeconds() < 10 ? '0' + new Date().getSeconds() : new Date().getSeconds()
 
-const token_info = localStorage.getItem('token')
+const token_info = userStore.token
 const queryOrder = reactive([])
 
 // post请求创建通知
@@ -187,7 +187,7 @@ onBeforeMount(async () => {
   balance.value = userStore.userData.payment
 
   // 重新整合商品数据
-  const arr = toRaw(resp_getCart.data.list)
+  const arr = toRaw(cartStore.cartList)
 
   // get配送地址
   const locationPost = reactive({
@@ -212,9 +212,10 @@ onBeforeMount(async () => {
     })
   })
   toRaw(queryOrderPre).forEach((item) => {
-    item.locationId = locationStore.locationList.id
+    item.locationId = locationStore.locationList[0].id
   })
   Object.assign(queryOrder, queryOrderPre)
+  console.log(queryOrderPre)
 })
 
 const queryOrderId = reactive([])
