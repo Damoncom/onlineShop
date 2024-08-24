@@ -3,7 +3,11 @@
     <Nav :init_title="navTitle" />
     <div class="content">
       <ul class="whishlist_list">
-        <li class="whishlist_item" v-for="(wish, wishlist_index) of wishlist" :key="wishlist_index">
+        <li
+          class="whishlist_item"
+          v-for="(wish, wishlist_index) of wishStore.wishList"
+          :key="wishlist_index"
+        >
           <img :src="wish.goods.image" class="img" />
           <div class="text_box">
             <div class="name">{{ wish.goods.name }}</div>
@@ -27,10 +31,13 @@
 </template>
 
 <script setup>
-import { reactive, ref, onBeforeMount, nextTick } from 'vue'
+import { reactive, onBeforeMount } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
-import { deleteWishlist, getWishlist } from '@/utils/api'
+import { useWishStore } from '@/stores/wishlist'
+
+// 接口
+const wishStore = useWishStore()
 
 const router = useRouter()
 const route = useRoute()
@@ -38,18 +45,9 @@ const route = useRoute()
 // 导入导航栏
 const navTitle = 'Wishlist'
 
-// 定义收藏列表变量
-const wishlist = reactive([])
-
 // get收藏列表
 onBeforeMount(async () => {
-  const resp_getWishList = await getWishlist()
-  console.log('get收藏列表', resp_getWishList)
-
-  if (resp_getWishList.errCode == 1000) {
-    Object.assign(wishlist, resp_getWishList.data.list)
-  } else {
-  }
+  await wishStore.getWishlist()
 })
 
 // delete取消收藏
@@ -57,10 +55,9 @@ const cancelLike = async (wish) => {
   const postData = reactive({
     id: wish.goodsId
   })
-  const resp_cancelShoucang = await deleteWishlist(postData)
-  console.log('delete取消收藏', resp_cancelShoucang)
+  await wishStore.deleteWishlist(postData)
 
-  if (resp_cancelShoucang.errCode == 1000) {
+  if (wishStore.resp_deleteWishlist.errCode == 1000) {
     router.go(0)
   } else {
   }

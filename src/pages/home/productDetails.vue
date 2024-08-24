@@ -60,11 +60,13 @@
 import { onBeforeMount, reactive, ref, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import StarRating from 'vue-star-rating'
-import { createWishlist, deleteWishlist, editCart } from '@/utils/api'
+import { editCart } from '@/utils/api'
 import { useGoodsStore } from '@/stores/goods'
+import { useWishStore } from '@/stores/wishlist'
 
 // 接口
 const goodsStore = useGoodsStore()
+const wishStore = useWishStore()
 
 const router = useRouter()
 const route = useRoute()
@@ -93,10 +95,9 @@ const comfirmShouCang = async () => {
   goodsStore.goodsDetail.inWishlist = true
 
   // post收藏
-  const resp_shoucang = await createWishlist(postData)
-  console.log('post收藏', resp_shoucang)
+  await wishStore.createWishlist(postData)
 
-  if (resp_shoucang.errCode == 1000) {
+  if (wishStore.resp_createWishlist.errCode == 1000) {
     goodsStore.goodsDetail.inWishlist = true
   } else {
     goodsStore.goodsDetail.inWishlist = false
@@ -110,10 +111,9 @@ const cancelShouCang = async () => {
   goodsStore.goodsDetail.inWishlist = false
 
   // delete取消收藏
-  const resp_cancelShoucang = await deleteWishlist(postData)
-  console.log('delete取消收藏', resp_cancelShoucang)
+  await wishStore.deleteWishlist(postData)
 
-  if (resp_cancelShoucang.errCode == 1000) {
+  if (wishStore.resp_deleteWishlist.errCode == 1000) {
     goodsStore.goodsDetail.inWishlist = false
   } else {
     goodsStore.goodsDetail.inWishlist = true
