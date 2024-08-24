@@ -96,11 +96,13 @@ import { pay } from '@/utils/api'
 import { useUserStore } from '@/stores/user'
 import { useLocationStore } from '@/stores/location'
 import { useCartStore } from '@/stores/cart'
+import { useOrderStore } from '@/stores/order'
 
 // 接口
 const userStore = useUserStore()
 const locationStore = useLocationStore()
 const cartStore = useCartStore()
+const orderStore = useOrderStore()
 
 const router = useRouter()
 const route = useRoute()
@@ -293,13 +295,12 @@ const linkToDone = async () => {
 
   // post支付
   const isPay = ref(false)
-  const resp_pay = await pay(payment)
-  if (resp_pay.errCode == 1000) {
+  await orderStore.pay(payment)
+  if (orderStore.resp_pay.errCode == 1000) {
     isPay.value = true
   } else {
     isPay.value = false
   }
-  console.log('get用户信息：', resp_pay)
 
   if (!respStateList.includes(false) && !respStateList2.includes(false) && isPay.value == true) {
     router.push({

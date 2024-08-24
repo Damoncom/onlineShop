@@ -5,7 +5,7 @@
       <ul class="orders_list">
         <li
           class="orders_item"
-          v-for="(order, order_index) of orderList"
+          v-for="(order, order_index) of orderStore.orderList"
           :key="order_index"
           :data-index="order_index"
         >
@@ -32,10 +32,13 @@
   </div>
 </template>
 <script setup>
-import { reactive, onBeforeMount, nextTick, toRaw, ref } from 'vue'
+import { onBeforeMount, nextTick, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
-import { getOrderList } from '@/utils/api'
+import { useOrderStore } from '@/stores/order'
+
+// 接口
+const orderStore = useOrderStore()
 
 const router = useRouter()
 const route = useRoute()
@@ -44,35 +47,19 @@ const route = useRoute()
 const navTitle = 'Payment History'
 
 // 订单列表信息
-const orderList = reactive([])
 const askBuy = ref(false)
 
 onBeforeMount(async () => {
   await nextTick()
 
   // 获取订单列表
-  const resp = await getOrderList()
-  if (resp.errCode == 1000) {
-    Object.assign(orderList, resp.data.list)
-    toRaw(orderList).forEach((item) => {
-      if (item.status == -1) {
-        item.state = 'cancelled'
-      } else if (item.status == 1) {
-        item.state = 'pending'
-      } else if (item.status == 2) {
-        item.state = 'on going'
-      } else if (item.status == 3) {
-        item.state = 'pending'
-      }
-    })
-  } else {
-  }
-  if (resp.data.list.length == 0) {
+  await orderStore.getOrderList()
+
+  if (orderStore.orderList.length == 0) {
     askBuy.value = true
   } else {
     askBuy.value = false
   }
-  console.log('获取订单列表', resp)
 })
 </script>
 

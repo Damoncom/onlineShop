@@ -74,15 +74,15 @@ import { reactive, ref, toRaw, nextTick, onBeforeMount } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
 import currency from 'currency.js'
-import { calculateCost } from '@/utils/api'
 import { useLocationStore } from '@/stores/location'
 import { useCartStore } from '@/stores/cart'
-
+import { useOrderStore } from '@/stores/order'
 import { Toast } from '@/utils/extract'
 
 // 接口
 const locationStore = useLocationStore()
 const cartStore = useCartStore()
+const orderStore = useOrderStore()
 
 const router = useRouter()
 const route = useRoute()
@@ -150,16 +150,14 @@ onBeforeMount(async () => {
     subtotal: pre.sum,
     locationId: locationStore.locationList.id
   })
-  const resp_calculate = await calculateCost(moneyPost)
-  if (resp_calculate.errCode == 1000) {
-    Object.assign(plus, resp_calculate.data)
+  await orderStore.calculateCost(moneyPost)
+  if (orderStore.resp_calculateCost.errCode == 1000) {
+    Object.assign(plus, resp_calculateCost.data)
     total.value = currency(pre.sum)
-      .add(currency(resp_calculate.data.handling))
-      .add(currency(resp_calculate.data.tax))
+      .add(currency(resp_calculateCost.data.handling))
+      .add(currency(resp_calculateCost.data.tax))
   } else {
   }
-
-  console.log('post计算费用：', resp_calculate)
 })
 
 // 跳转到Payment页面

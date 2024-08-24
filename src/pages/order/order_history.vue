@@ -14,7 +14,7 @@
         <ul class="orders_list">
           <li
             class="orders_item"
-            v-for="(order, order_index) of orderList"
+            v-for="(order, order_index) of orderStore.orderList"
             :key="order_index"
             :data-index="order_index"
             :data-name="order.name"
@@ -68,9 +68,11 @@ import Nav from '@/components/nav'
 import { useRouter, useRoute } from 'vue-router'
 import { getOrderList } from '@/utils/api'
 import { useCartStore } from '@/stores/cart'
+import { useOrderStore } from '@/stores/order'
 
 // 接口
 const cartStore = useCartStore()
+const orderStore = useOrderStore()
 
 const router = useRouter()
 const route = useRoute()
@@ -89,34 +91,18 @@ const linkToUpcoming = () => {
 const isOrderPage = true
 
 // 订单列表信息
-const orderList = reactive([])
 const askBuy = ref(false)
 
 // -1:cancelled 1:pending 2:on going 3:completed
 onBeforeMount(async () => {
   // 获取订单列表
-  const resp = await getOrderList()
-  if (resp.errCode == 1000) {
-    Object.assign(orderList, resp.data.list)
-    toRaw(orderList).forEach((item) => {
-      if (item.status == -1) {
-        item.state = 'cancelled'
-      } else if (item.status == 1) {
-        item.state = 'pending'
-      } else if (item.status == 2) {
-        item.state = 'on going'
-      } else if (item.status == 3) {
-        item.state = 'pending'
-      }
-    })
-  } else {
-  }
-  if (resp.data.list.length == 0) {
+  await orderStore.getOrderList()
+
+  if (orderStore.orderList.length == 0) {
     askBuy.value = true
   } else {
     askBuy.value = false
   }
-  console.log('获取订单列表', resp)
 })
 
 // reorder重新添加到购物车
