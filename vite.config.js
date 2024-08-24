@@ -7,6 +7,9 @@ import basicSsl from '@vitejs/plugin-basic-ssl'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  build: {
+    emptyOutDir: true
+  },
   plugins: [vue(), vueDevTools(), basicSsl()],
   server: {
     host: '0.0.0.0',
