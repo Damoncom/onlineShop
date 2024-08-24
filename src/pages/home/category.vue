@@ -14,7 +14,7 @@
         >
           <li
             class="product_item"
-            v-for="(product, product_index) of productList"
+            v-for="(product, product_index) of goodsStore.goodsList"
             :key="product_index"
             :data-index="product_index"
             :data-name="product.name"
@@ -22,6 +22,7 @@
             :data-price="product.price"
             @click="chooseProduct(product)"
           >
+            <!-- TODO:图片显示问题 -->
             <div class="img_box">
               <img :src="product.image" class="product_img" />
             </div>
@@ -58,18 +59,19 @@
 import { reactive, ref, onBeforeMount, nextTick, toRaw } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
-import { getGoodsList, editCart } from '@/utils/api'
+import { editCart } from '@/utils/api'
+import { useGoodsStore } from '@/stores/goods'
 import { Toast_Info } from '@/utils/extract'
 import { debounce } from 'lodash'
+
+// 接口
+const goodsStore = useGoodsStore()
 
 const router = useRouter()
 const route = useRoute()
 
 // 导入导航栏
 const navTitle = 'Category'
-
-// 商品列表数据
-const productList = reactive([])
 
 //  跳转到productDetail页面
 const chooseProduct = (product) => {
@@ -104,7 +106,7 @@ const addToCart = async (product, event) => {
   console.log('post加入购物车：', resp_addToCart)
 }
 
-// 获取商品列表信息
+// get商品列表信息
 onBeforeMount(async () => {
   const data = {
     size: 10,
@@ -113,13 +115,7 @@ onBeforeMount(async () => {
     name: ''
   }
   // get商品列表信息
-  const resp_getGoodsList = await getGoodsList(data)
-  console.log('get商品列表信息', resp_getGoodsList)
-
-  if (resp_getGoodsList.errCode == 1000) {
-    Object.assign(productList, resp_getGoodsList.data.list)
-  } else {
-  }
+  await goodsStore.getGoodsList(data)
 })
 
 // 下拉刷新
@@ -136,15 +132,7 @@ const onRefresh = async () => {
     name: ''
   }
   // get更多商品列表信息
-  const resp_getGoodsList = await getGoodsList(data3)
-  console.log('get商品列表信息', resp_getGoodsList)
-
-  if (resp_getGoodsList.errCode == 1000) {
-    productList.length = 0
-    Object.assign(productList, resp_getGoodsList.data.list)
-    count_product.value = productList.length
-  } else {
-  }
+  await goodsStore.getGoodsList(data3)
 }
 
 // 上拉加载
@@ -165,19 +153,17 @@ const onLoad = debounce(async () => {
       name: ''
     }
     // get更多商品列表信息
-    const resp_getGoodsList = await getGoodsList(data2)
-    console.log('get商品列表信息', resp_getGoodsList)
+    await goodsStore.getGoodsList(data2)
 
     // 判断没有新数据了
-    if (productList.length == resp_getGoodsList.data.total) {
+    if (goodsStore.goodsList.length == goodsStore.resp_getGoodsList.data.total) {
       downFinished.value = true
     }
 
-    if (resp_getGoodsList.errCode == 1000) {
-      resp_getGoodsList.data.list.forEach((item) => {
-        productList.push(item)
+    if (goodsStore.resp_getGoodsList.errCode == 1000) {
+      goodsStore.resp_getGoodsList.data.list.forEach((item) => {
+        goodsStore.goodsList.push(item)
       })
-      count_product.value = productList.length
     } else {
     }
   }, 300)

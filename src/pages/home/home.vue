@@ -73,7 +73,7 @@
           <ul class="product_list">
             <li
               class="product_item"
-              v-for="(product, product_index) of recommendedList"
+              v-for="(product, product_index) of homeStore.dataList.recommended"
               :key="product_index"
               :data-index="product_index"
               :data-name="product.name"
@@ -112,7 +112,7 @@
           <ul class="product_list">
             <li
               class="product_item"
-              v-for="(product, product_index) of popularList"
+              v-for="(product, product_index) of homeStore.dataList.popular"
               :key="product_index"
               :data-index="product_index"
               :data-name="product.name"
@@ -145,7 +145,7 @@
           <ul class="product_list">
             <li
               class="product_item"
-              v-for="(product, product_index) of popularList"
+              v-for="(product, product_index) of homeStore.dataList.popular"
               :key="product_index"
               :data-index="product_index"
               :data-name="product.name"
@@ -250,13 +250,15 @@
 import { ref, reactive, onBeforeMount, nextTick, toRaw } from 'vue'
 import TabBar from '@/components/tabBar'
 import { useRouter, useRoute } from 'vue-router'
-import { getNotification, editCart } from '@/utils/api'
+import { editCart } from '@/utils/api'
 import { useUserStore } from '@/stores/user'
 import { useNocticeStore } from '@/stores/notification'
+import { useHomeStore } from '@/stores/home'
 
 // 接口
 const userStore = useUserStore()
 const nocticeStore = useNocticeStore()
+const homeStore = useHomeStore()
 
 const router = useRouter()
 const route = useRoute()
@@ -423,30 +425,10 @@ const addToCart = async (product, event) => {
 const noRead = ref(false)
 
 onBeforeMount(async () => {
-  const token_info = localStorage.getItem('token')
-  // 获取首页数据
-  const { data: resp } = await axios({
-    method: 'get',
-    url: '/onlineShop/getHomeData',
-    params: {},
-    headers: {
-      Authorization: `Bearer ${token_info}`,
-      'Content-Type': 'application/json; charset=utf-8'
-    }
-  })
-  Object.assign(recommendedList, resp.data.recommended)
-  Object.assign(popularList, resp.data.popular)
-  Object.assign(banner, resp.data.banner)
-  console.log('首页数据resp', resp)
+  // get首页数据
+  await homeStore.getHomeData()
 
-  // toRaw(banner).forEach((item) => {
-  //   item.image = item.image.slice(item.image.indexOf('/public') + 1)
-  // })
-  // console.log(banner)
-
-  // get用户信息
-
-  // get通知列表
+  Object.assign(banner, homeStore.dataList.banner)
 
   // 判断通知小红点是否出现
   const arr = reactive([])

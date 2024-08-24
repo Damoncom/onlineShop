@@ -73,7 +73,7 @@
         >
           <li
             class="product_item"
-            v-for="(product, product_index) of productList"
+            v-for="(product, product_index) of goodsStore.goodsList"
             :key="product_index"
             :data-index="product_index"
             :data-name="product.name"
@@ -127,7 +127,7 @@
         >
           <li
             class="product_item"
-            v-for="(product, product_index) of productList"
+            v-for="(product, product_index) of goodsStore.goodsList"
             :key="product_index"
             :data-index="product_index"
             :data-name="product.name"
@@ -182,14 +182,17 @@ import {
 import TabBar from '@/components/tabBar'
 import { useRouter, useRoute } from 'vue-router'
 import { getGoodsList, editCart } from '@/utils/api'
+import { useGoodsStore } from '@/stores/goods'
 import { Toast_Info } from '@/utils/extract'
 import { debounce } from 'lodash'
+
+// 接口
+const goodsStore = useGoodsStore()
 
 const router = useRouter()
 const route = useRoute()
 
 // 商品列表数据
-const productList = reactive([])
 const count_product = ref()
 
 // 确认是Home页面
@@ -240,26 +243,23 @@ const search = async () => {
     name: inputText.value
   }
   // get商品列表信息
-  const resp_getGoodsList = await getGoodsList(data)
-  console.log('get模糊搜索商品列表信息', resp_getGoodsList)
+  await goodsStore.getGoodsList(data)
 
-  if (resp_getGoodsList.errCode == 1000) {
-    Object.assign(productList, resp_getGoodsList.data.list)
-    count_product.value = productList.length
+  if (goodsStore.resp_getGoodsList.errCode == 1000) {
+    count_product.value = goodsStore.goodsList.length
     isWay.value = true
   } else {
     isWay.value = false
   }
-  if (resp_getGoodsList.data.list.length == 0) {
-    productList.length = 0
-    count_product.value = 0
-  }
+
+  count_product.value = goodsStore.goodsList.length
 }
 
 // 取消功能
 const cancel = () => {
   inputText.value = ''
   isWay.value = false
+  goodsStore.goodsList.length = 0
 }
 
 // 清空搜索历史
@@ -278,12 +278,10 @@ const deleteHistory = async () => {
     name: ''
   }
   // get商品列表信息
-  const resp_getGoodsList = await getGoodsList(data)
-  console.log('get商品列表信息', resp_getGoodsList)
+  await goodsStore.getGoodsList(data)
 
-  if (resp_getGoodsList.errCode == 1000) {
-    Object.assign(productList, resp_getGoodsList.data.list)
-    count_product.value = productList.length
+  if (goodsStore.resp_getGoodsList.errCode == 1000) {
+    count_product.value = goodsStore.goodsList.length
   } else {
   }
 }
@@ -332,29 +330,27 @@ const addToCart = async (product, event) => {
   console.log('post加入购物车：', resp_addToCart)
 }
 
-// 下拉刷新
+// TODO:下拉刷新(Search和category)
 const loading = ref(false)
 const onRefresh = async () => {
   setTimeout(async () => {
     Toast_Info('刷新成功')
     loading.value = false
   }, 1000)
+
+  // 清空
+  goodsStore.goodsList.length = 10
+
+  // 重新请求
   const data3 = {
     size: 10,
     page: 1,
     barCode: '',
     name: ''
   }
-  // get更多商品列表信息
-  const resp_getGoodsList = await getGoodsList(data3)
-  console.log('get商品列表信息', resp_getGoodsList)
-
-  if (resp_getGoodsList.errCode == 1000) {
-    productList.length = 0
-    Object.assign(productList, resp_getGoodsList.data.list)
-    count_product.value = productList.length
-  } else {
-  }
+  // get第一页商品列表信息
+  await goodsStore.getGoodsList(data3)
+  count_product.value = goodsStore.goodsList.length
 }
 
 // 上拉加载
@@ -375,19 +371,18 @@ const onLoad = debounce(async () => {
       name: ''
     }
     // get更多商品列表信息
-    const resp_getGoodsList = await getGoodsList(data2)
-    console.log('get商品列表信息', resp_getGoodsList)
+    await goodsStore.getGoodsList(data2)
 
     // 判断没有新数据了
-    if (productList.length == resp_getGoodsList.data.total) {
+    if (goodsStore.goodsList.length == goodsStore.resp_getGoodsList.data.total) {
       downFinished.value = true
     }
 
-    if (resp_getGoodsList.errCode == 1000) {
-      resp_getGoodsList.data.list.forEach((item) => {
-        productList.push(item)
+    if (goodsStore.resp_getGoodsList.errCode == 1000) {
+      goodsStore.resp_getGoodsList.data.list.forEach((item) => {
+        goodsStore.goodsList.push(item)
       })
-      count_product.value = productList.length
+      count_product.value = goodsStore.goodsList.length
     } else {
     }
   }, 300)
@@ -633,7 +628,7 @@ const onLoad = debounce(async () => {
       }
     }
     .product_card::-webkit-scrollbar {
-      display: none;
+      // display: none;
     }
     .loading_icon {
       position: absolute;

@@ -13,18 +13,18 @@
     </div>
     <div class="content">
       <div class="img_box">
-        <img :src="details.image" class="img" />
+        <img :src="goodsStore.goodsDetail.image" class="img" />
       </div>
       <div class="info">
         <div class="info_title">
-          {{ details.name }}
+          {{ goodsStore.goodsDetail.name }}
         </div>
         <div class="info_brand">
-          {{ details.origin }}
+          {{ goodsStore.goodsDetail.origin }}
         </div>
         <div class="score">
           <star-rating
-            :rating="details.score"
+            :rating="goodsStore.goodsDetail.score"
             :increment="0.1"
             :read-only="true"
             :star-size="20"
@@ -32,7 +32,7 @@
           ></star-rating>
         </div>
         <div class="info_discription">
-          {{ details.introduction }}
+          {{ goodsStore.goodsDetail.introduction }}
         </div>
       </div>
     </div>
@@ -41,12 +41,12 @@
         <i
           class="iconfont icon-aixin"
           @click="comfirmShouCang"
-          v-if="details.inWishlist == false"
+          v-if="goodsStore.goodsDetail.inWishlist == false"
         ></i>
         <i
           class="iconfont icon-aixin1"
           @click="cancelShouCang"
-          v-if="details.inWishlist == true"
+          v-if="goodsStore.goodsDetail.inWishlist == true"
         ></i>
       </div>
       <div class="add_button" @click="addToCart">
@@ -59,9 +59,12 @@
 <script setup>
 import { onBeforeMount, reactive, ref, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import axios from 'axios'
 import StarRating from 'vue-star-rating'
-import { getGoodsDetail, createWishlist, deleteWishlist, editCart } from '@/utils/api'
+import { createWishlist, deleteWishlist, editCart } from '@/utils/api'
+import { useGoodsStore } from '@/stores/goods'
+
+// 接口
+const goodsStore = useGoodsStore()
 
 const router = useRouter()
 const route = useRoute()
@@ -76,17 +79,9 @@ const rating = ref('')
 const productId = route.query
 console.log('传参的数据', productId)
 
-const details = reactive({})
-
 onBeforeMount(async () => {
   // get商品详情信息
-  const resp_getGoodsDetails = await getGoodsDetail(productId.productId)
-  console.log('get商品详情信息', resp_getGoodsDetails)
-
-  if (resp_getGoodsDetails.errCode == 1000) {
-    Object.assign(details, resp_getGoodsDetails.data)
-  } else {
-  }
+  await goodsStore.getGoodsDetail(productId.productId)
 })
 
 const postData = reactive({
@@ -95,16 +90,16 @@ const postData = reactive({
 
 // 收藏
 const comfirmShouCang = async () => {
-  details.inWishlist = true
+  goodsStore.goodsDetail.inWishlist = true
 
   // post收藏
   const resp_shoucang = await createWishlist(postData)
   console.log('post收藏', resp_shoucang)
 
   if (resp_shoucang.errCode == 1000) {
-    details.inWishlist = true
+    goodsStore.goodsDetail.inWishlist = true
   } else {
-    details.inWishlist = false
+    goodsStore.goodsDetail.inWishlist = false
   }
 }
 
@@ -112,16 +107,16 @@ const comfirmShouCang = async () => {
 const cancelShouCang = async () => {
   await nextTick()
 
-  details.inWishlist = false
+  goodsStore.goodsDetail.inWishlist = false
 
   // delete取消收藏
   const resp_cancelShoucang = await deleteWishlist(postData)
   console.log('delete取消收藏', resp_cancelShoucang)
 
   if (resp_cancelShoucang.errCode == 1000) {
-    details.inWishlist = false
+    goodsStore.goodsDetail.inWishlist = false
   } else {
-    details.inWishlist = true
+    goodsStore.goodsDetail.inWishlist = true
   }
 }
 

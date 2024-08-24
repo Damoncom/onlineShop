@@ -1,8 +1,6 @@
-import { ref, reactive } from 'vue'
+import { reactive } from 'vue'
 import { defineStore } from 'pinia'
-import { Toast, Toast_Success } from '@/utils/extract'
 import request from '@/axios/request.js'
-import router from '@/router/index.js'
 import dayjs from 'dayjs'
 
 export const useNocticeStore = defineStore(
@@ -27,7 +25,6 @@ export const useNocticeStore = defineStore(
         item.timediff = timediff + ' m ago'
       })
       Object.assign(notification, resp_getNotification.data.list)
-      return await request.get('/onlineShop/getNotification', { params: { size: 10, page: 1 } })
     }
 
     // put已读消息
