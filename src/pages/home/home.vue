@@ -192,8 +192,8 @@
       <img src="@/assets/info_logo.jpg" class="img" />
     </div>
     <div class="user_info">
-      <div class="user_name">{{ user.name }}</div>
-      <div class="user_phone">{{ user.phoneNumber }}</div>
+      <div class="user_name">{{ userStore.userData.name }}</div>
+      <div class="user_phone">{{ userStore.userData.phoneNumber }}</div>
       <div class="user_score">
         <i class="iconfont icon-shoucang"></i>
         <p class="score_text">4.8 (231)</p>
@@ -252,6 +252,11 @@ import TabBar from '@/components/tabBar'
 import { useRouter, useRoute } from 'vue-router'
 import { getNotification, editCart } from '@/utils/api'
 import { useUserStore } from '@/stores/user'
+import { useNocticeStore } from '@/stores/notification'
+
+// 接口
+const userStore = useUserStore()
+const nocticeStore = useNocticeStore()
 
 const router = useRouter()
 const route = useRoute()
@@ -415,28 +420,24 @@ const addToCart = async (product, event) => {
   console.log('post加入购物车：', resp_addToCart)
 }
 
-const user = reactive({})
 const noRead = ref(false)
-const notificationList = reactive([])
 
 onBeforeMount(async () => {
-  // 接口
-  const userStore = useUserStore()
-
+  const token_info = localStorage.getItem('token')
   // 获取首页数据
-  // const { data: resp } = await axios({
-  //   method: 'get',
-  //   url: '/onlineShop/getHomeData',
-  //   params: {},
-  //   headers: {
-  //     Authorization: `Bearer ${token_info}`,
-  //     'Content-Type': 'application/json; charset=utf-8'
-  //   }
-  // })
-  // Object.assign(recommendedList, resp.data.recommended)
-  // Object.assign(popularList, resp.data.popular)
-  // Object.assign(banner, resp.data.banner)
-  // console.log('首页数据resp', resp)
+  const { data: resp } = await axios({
+    method: 'get',
+    url: '/onlineShop/getHomeData',
+    params: {},
+    headers: {
+      Authorization: `Bearer ${token_info}`,
+      'Content-Type': 'application/json; charset=utf-8'
+    }
+  })
+  Object.assign(recommendedList, resp.data.recommended)
+  Object.assign(popularList, resp.data.popular)
+  Object.assign(banner, resp.data.banner)
+  console.log('首页数据resp', resp)
 
   // toRaw(banner).forEach((item) => {
   //   item.image = item.image.slice(item.image.indexOf('/public') + 1)
@@ -444,18 +445,12 @@ onBeforeMount(async () => {
   // console.log(banner)
 
   // get用户信息
-  Object.assign(user, userStore.userData)
 
   // get通知列表
-  const resp_getNotice = await getNotification()
-  console.log(resp_getNotice)
-  if (resp_getNotice.errCode == 1000) {
-    Object.assign(notificationList, resp_getNotice.data.list)
-  }
 
   // 判断通知小红点是否出现
   const arr = reactive([])
-  toRaw(resp_getNotice.data.list).forEach((item) => {
+  toRaw(nocticeStore.notification).forEach((item) => {
     if (item.read == 0) {
       toRaw(arr).push({
         noread: item.read

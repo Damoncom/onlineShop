@@ -96,6 +96,9 @@ import Nav from '@/components/nav'
 import { checkPhoneNumber, checkPwd, Toast } from '@/utils/extract'
 import { useUserStore } from '@/stores/user'
 
+// let userStore
+let userStore = useUserStore()
+
 const router = useRouter()
 const route = useRoute()
 
@@ -125,6 +128,7 @@ const linkToReset = () => {
 onBeforeMount(async () => {
   await nextTick()
 
+  // 接口
   const isRemember_info = JSON.parse(localStorage.getItem('isRemember'))
   if (isRemember_info == false) {
     // 清除localstorage缓存
@@ -167,7 +171,6 @@ const signInButton = async (user) => {
     let obj = { ...user }
 
     // post登录
-    const userStore = useUserStore()
     userStore.signIn(obj)
   }
 

@@ -3,7 +3,7 @@
     <Nav :init_title="navTitle" />
     <div class="content">
       <div class="img_box" @click="changeImg">
-        <img :src="user.iconImage" class="img" />
+        <img :src="userStore.userData.iconImage" class="img" />
         <i class="iconfont icon-zhaoxiangji1"></i>
       </div>
       <div class="frame">
@@ -12,7 +12,12 @@
           <div class="form">
             <div class="main">
               <i class="iconfont icon-geren"></i>
-              <input type="text" placeholder="Enter your name" class="name" v-model="user.name" />
+              <input
+                type="text"
+                placeholder="Enter your name"
+                class="name"
+                v-model="userStore.userData.name"
+              />
             </div>
           </div>
         </div>
@@ -25,7 +30,7 @@
                 type="email"
                 placeholder="Enter your email"
                 class="email"
-                v-model="user.email"
+                v-model="userStore.userData.email"
               />
             </div>
           </div>
@@ -39,7 +44,7 @@
                 type="text"
                 placeholder="Enter your phone number"
                 class="phone"
-                v-model="user.phoneNumber"
+                v-model="userStore.userData.phoneNumber"
               />
             </div>
           </div>
@@ -49,7 +54,7 @@
           <div class="form">
             <div class="main">
               <i class="iconfont icon-rili"></i>
-              <input type="date" class="birthday" v-model="user.birthday" />
+              <input type="date" class="birthday" v-model="userStore.userData.birthday" />
             </div>
           </div>
         </div>
@@ -114,21 +119,20 @@
 </template>
 
 <script setup>
-import { ref, onUpdated, nextTick, unref, isReactive, isRef, onBeforeMount, reactive } from 'vue'
+import { ref, nextTick, unref, onBeforeMount, reactive } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
-import { getUserInfo, updateUserInfo, uploadImage } from '@/utils/api'
 import { Toast_Success } from '@/utils/extract'
 import { useUserStore } from '@/stores/user'
+
+// 接口
+const userStore = useUserStore()
 
 const router = useRouter()
 const route = useRoute()
 
 // 导入导航栏
 const navTitle = 'Edit Profile'
-
-// 接口
-const userStore = reactive({})
 
 // 修改头像
 const uploadInput = ref(null)
@@ -237,10 +241,7 @@ const user = reactive({
 
 // get请求获取用户信息
 onBeforeMount(async () => {
-  // 接口
-  Object.assign(userStore, useUserStore())
   // get用户信息
-  Object.assign(user, userStore.userData)
 
   if (userStore.userData.gender == '1') {
     input_gender.value = 'Female'

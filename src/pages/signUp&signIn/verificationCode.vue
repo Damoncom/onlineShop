@@ -71,6 +71,9 @@ import axios from 'axios'
 import { Toast, Toast_Info } from '@/utils/extract'
 import { useUserStore } from '@/stores/user'
 
+// 接口
+let userStore = useUserStore()
+
 // 导入导航栏
 const navTitle = ''
 
@@ -159,9 +162,6 @@ const submit = async (user) => {
   const arr = toRaw(verificationCodes.value)
   const sum = arr.join('')
   Reflect.set(user, 'verificationCode', sum)
-
-  // 接口
-  const userStore = useUserStore()
   // post注册
   const resp_signUp = await userStore.signUp(user)
 

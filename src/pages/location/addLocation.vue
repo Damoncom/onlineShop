@@ -6,13 +6,13 @@
         <div class="name_box">
           <div class="name_text">Name</div>
           <div class="input_box">
-            <input type="text" class="name_input" v-model="user.name" />
+            <input type="text" class="name_input" v-model="userStore.userData.name" />
           </div>
         </div>
         <div class="phone_box">
           <div class="phone_text">phone</div>
           <div class="input_box">
-            <input type="number" class="phone_input" v-model="user.phoneNumber" />
+            <input type="number" class="phone_input" v-model="userStore.userData.phoneNumber" />
           </div>
         </div>
         <div class="area_box">
@@ -54,23 +54,16 @@ import { useRouter, useRoute } from 'vue-router'
 import { createLocation } from '@/utils/api'
 import { useUserStore } from '@/stores/user'
 
+// 接口
+const userStore = useUserStore()
+
 // 导入导航栏
 const navTitle = 'Add Location'
 
 const router = useRouter()
 const route = useRoute()
 
-const user = reactive({})
-
 const detailsText = ref()
-
-// 获取用户信息
-onBeforeMount(async () => {
-  // 接口
-  const userStore = useUserStore()
-  // get用户信息
-  Object.assign(user, userStore.userData)
-})
 
 // 发送post请求，添加配送地址
 const save = async () => {

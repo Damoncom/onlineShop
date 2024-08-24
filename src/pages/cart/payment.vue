@@ -95,6 +95,9 @@ import axios from 'axios'
 import { getLocation, getCart, pay } from '@/utils/api'
 import { useUserStore } from '@/stores/user'
 
+// 接口
+const userStore = useUserStore()
+
 const router = useRouter()
 const route = useRoute()
 
@@ -158,8 +161,6 @@ const createNotice = reactive([])
 const cartList = reactive([])
 
 onBeforeMount(async () => {
-  // 接口
-  const userStore = useUserStore()
   // get购物车
   const postData = reactive({
     size: 10,

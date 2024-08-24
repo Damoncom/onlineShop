@@ -4,12 +4,12 @@
     <div class="content">
       <div class="user">
         <div class="details">
-          <img :src="user.iconImage" class="img" />
+          <img :src="userStore.userData.iconImage" class="img" />
           <div class="info">
-            <div class="name">{{ user.name }}</div>
+            <div class="name">{{ userStore.userData.name }}</div>
             <div class="emailAndphone">
-              <div class="email">{{ user.email }}</div>
-              <div class="phone">{{ user.phoneNumber }}</div>
+              <div class="email">{{ userStore.userData.email }}</div>
+              <div class="phone">{{ userStore.userData.phoneNumber }}</div>
             </div>
           </div>
         </div>
@@ -19,13 +19,13 @@
         <div class="email_box">
           <div class="list">
             <div class="title">Email</div>
-            <div class="detail">{{ user.email }}</div>
+            <div class="detail">{{ userStore.userData.email }}</div>
           </div>
         </div>
         <div class="mobile_box">
           <div class="list">
             <div class="title">Mobile</div>
-            <div class="detail">{{ user.phoneNumber }}</div>
+            <div class="detail">{{ userStore.userData.phoneNumber }}</div>
           </div>
         </div>
         <div class="address_box" @click="linkToLoaction">
@@ -37,7 +37,7 @@
         <div class="birthday_box">
           <div class="list">
             <div class="title">Birthday</div>
-            <div class="detail">{{ user.birthday }}</div>
+            <div class="detail">{{ userStore.userData.birthday }}</div>
           </div>
         </div>
         <div class="vacination_box">
@@ -54,7 +54,7 @@
           <div class="list">
             <img src="@/assets/visa_logo.jpg" class="title_img" />
             <div class="more">(Default)</div>
-            <div class="num">{{ user.cardNum }}</div>
+            <div class="num">{{ userStore.userData.cardNum }}</div>
           </div>
         </div>
       </div>
@@ -69,7 +69,9 @@ import Nav from '@/components/nav'
 import { useRouter, useRoute } from 'vue-router'
 import { getLocation } from '@/utils/api'
 import { useUserStore } from '@/stores/user'
-import { onMounted } from 'vue'
+
+// 接口
+const userStore = useUserStore()
 
 const router = useRouter()
 const route = useRoute()
@@ -78,19 +80,14 @@ const route = useRoute()
 const navTitle = 'Profile'
 
 // 用户信息
+// TODO:默认照片
 const user = reactive({
-  iconImage: 'src/assets/imgurl.jpg'
+  // iconImage: 'src/assets/imgurl.jpg'
 })
 
 const locationDetails = reactive({})
-const userStore = reactive({})
 
 onBeforeMount(async () => {
-  // 接口
-  Object.assign(userStore, useUserStore())
-  // get用户信息
-  Object.assign(user, userStore.userData)
-
   // get地址信息
   const locationPost = reactive({
     size: 1,
@@ -103,9 +100,8 @@ onBeforeMount(async () => {
   }
   console.log('get地址信息：', resp_getLocation)
 
-  // TODO:更新后的数据
-  userStore.getUserInfo()
-  Object.assign(user, userStore.userData)
+  // get用户信息
+  await userStore.getUserInfo()
 })
 
 // 确认是Profile页面

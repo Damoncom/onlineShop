@@ -1,4 +1,4 @@
-import { ref, computed, reactive } from 'vue'
+import { ref, reactive } from 'vue'
 import { defineStore } from 'pinia'
 import { Toast, Toast_Success } from '@/utils/extract'
 import request from '@/axios/request.js'
@@ -61,10 +61,17 @@ export const useUserStore = defineStore(
       return await request.put('/onlineShop/updateUserInfo', data)
     }
 
-    // post注册
+    // post更改头像
     async function uploadImage(data) {
       return await request.post('/onlineShop/uploadImage', data)
     }
+
+    // async function checkToken() {
+    //   return new Promise((reactive, reject) => {
+    //     if (token) return reactive()
+    //     else return reject()
+    //   })
+    // }
 
     return {
       resp_signIn,
@@ -77,6 +84,7 @@ export const useUserStore = defineStore(
       getUserInfo,
       updateUserInfo,
       uploadImage
+      //   checkToken
     }
   },
   {

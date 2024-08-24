@@ -5,7 +5,7 @@
       <ul class="notification_list">
         <li
           class="notification_item"
-          v-for="(notification, notification_index) of notificationList"
+          v-for="(notification, notification_index) of nocticeStore.notification"
           :key="notification_index"
           @click="readNotice(notification)"
         >
@@ -26,20 +26,13 @@
   </div>
 </template>
 <script setup>
-import {
-  onBeforeMount,
-  reactive,
-  ref,
-  nextTick,
-  onUpdated,
-  toRaw,
-  onUnmounted,
-  onBeforeUnmount
-} from 'vue'
+import { onBeforeMount, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
-import dayjs from 'dayjs'
-import { getNotification } from '@/utils/api'
+import { useNocticeStore } from '@/stores/notification'
+
+// 接口
+const nocticeStore = useNocticeStore()
 
 const router = useRouter()
 const route = useRoute()
@@ -47,57 +40,28 @@ const route = useRoute()
 // 导入导航栏
 const navTitle = 'Notification'
 
-// 消息列表数据
-const notificationList = reactive([])
-
-const token_info = localStorage.getItem('token')
-
 onBeforeMount(async () => {
   // get通知列表
-  const resp_getNotice = await getNotification()
-  console.log('get通知列表', resp_getNotice)
-  if (resp_getNotice.errCode == 1000) {
-    Object.assign(notificationList, resp_getNotice.data.list)
-  }
-
-  // 时间差处理
-  notificationList.forEach((item) => {
-    let time = item.createdAt
-    time = dayjs(time).format('YYYY-MM-DD HH:mm:ss')
-    let nowTime = dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss')
-
-    const date1 = dayjs(nowTime)
-    const timediff = date1.diff(nowTime, 'minute')
-
-    item.timediff = timediff + ' m ago'
-  })
+  await nocticeStore.getNotification()
 })
 
 // 已读通知put请求
 const readNotice = async (notification) => {
   await nextTick()
 
+  // 已读消息点击不会发送请求处理
   if (notification.read == true) {
     return notification
   } else {
     notification.read = true
 
     // put请求
-    const { data: resp_read } = await axios({
-      method: 'put',
-      url: '/onlineShop/readNotification',
-      data: { id: notification.id },
-      headers: {
-        Authorization: `Bearer ${token_info}`,
-        'Content-Type': 'multipart/form-data'
-      }
-    })
+    const resp_read = await nocticeStore.readNotification(notification.id)
     if (resp_read.errCode == 1000) {
       notification.read = true
     } else {
       notification.read = false
     }
-    console.log('put已读：', resp_read)
   }
 }
 </script>

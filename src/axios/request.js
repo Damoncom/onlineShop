@@ -3,10 +3,7 @@ import axios from 'axios'
 import router from '@/router/index.js'
 import { Toast } from '@/utils/extract'
 import { useUserStore } from '@/stores/user'
-import { ref } from 'vue'
-
-// TODO:报错eferenceError: Cannot access 'useUserStore' before initialization
-const token_info = localStorage.getItem('token')
+import { reactive, ref } from 'vue'
 
 // 创建axios实例
 const request = axios.create({
@@ -14,13 +11,17 @@ const request = axios.create({
   timeout: 10000 // 请求超时时间
 })
 
+let store = null
+let token
 // 请求拦截器
 request.interceptors.request.use(
   (config) => {
     // 可以在这里添加请求头等信息
-    if (token_info) {
+    if (!store) store = useUserStore()
+    token = store.token
+    if (token) {
       // 判断是否存在token，如果存在的话，则每个http header都加上token
-      config.headers.Authorization = `Bearer ${token_info}` //请求头加上token
+      config.headers.Authorization = `Bearer ${token}` //请求头加上token
     }
     return config
   },
