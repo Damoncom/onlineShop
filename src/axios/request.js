@@ -6,7 +6,7 @@ import { useUserStore } from '@/stores/user'
 
 // 创建axios实例
 const request = axios.create({
-  // baseURL: process.env.VUE_APP_BASE_API, // api的base_url
+  baseURL: process.env.VITE_API_URL, // api的base_url
   timeout: 10000 // 请求超时时间
 })
 
