@@ -32,12 +32,9 @@ export const useUserStore = defineStore(
           Object.assign(userData, resp_getUserInfo.data)
         }
 
-        // // 当用户信息获取完毕时，才跳转home页
-        // if (userData.name != null) {
-        //   router.push({
-        //     path: '/home'
-        //   })
-        // }
+        router.push({
+          path: '/home'
+        })
       } else {
         Toast(this.resp_signIn.errMsg)
       }
