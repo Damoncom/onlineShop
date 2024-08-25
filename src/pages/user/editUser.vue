@@ -157,8 +157,8 @@ const takePhoto = async () => {
   const resp_upload_photo = await userStore.uploadImage(formData1)
   if (resp_upload_photo.errCode == 1000) {
     // 获取上传图片的路径
-    imgUrl.value = 'http://192.168.100.7:7001' + resp_upload_photo.url
-    user.iconImage = 'http://192.168.100.7:7001' + resp_upload_photo.url
+    imgUrl.value = 'https://api.cake803.cn' + resp_upload_photo.url
+    user.iconImage = 'https://api.cake803.cn' + resp_upload_photo.url
   } else {
   }
   console.log(resp_upload_photo)
