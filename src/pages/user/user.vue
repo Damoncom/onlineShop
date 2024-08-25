@@ -4,7 +4,7 @@
     <div class="content">
       <div class="user">
         <div class="details">
-          <img :src="userStore.userData.iconImage" class="img" />
+          <img :src="user.iconImage" class="img" />
           <div class="info">
             <div class="name">{{ userStore.userData.name }}</div>
             <div class="emailAndphone">
@@ -83,7 +83,8 @@ const navTitle = 'Profile'
 // 用户信息
 // TODO:默认照片
 const user = reactive({
-  // iconImage: 'src/assets/imgurl.jpg'
+  iconImage: 'src/assets/imgurl.jpg',
+  ...userStore.userData
 })
 
 onBeforeMount(async () => {

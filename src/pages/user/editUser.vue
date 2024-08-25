@@ -154,14 +154,15 @@ const takePhoto = async () => {
   formData1.append('file', unref(cameraInput).files[0])
 
   // post上传用户头像
-  const resp_upload_photo = await userStore.uploadImage(formData1)
-  if (resp_upload_photo.errCode == 1000) {
+  await userStore.uploadImage(formData1)
+  if (userStore.resp_uploadImage.errCode == 1000) {
     // 获取上传图片的路径
-    imgUrl.value = 'https://api.cake803.cn' + resp_upload_photo.url
-    user.iconImage = 'https://api.cake803.cn' + resp_upload_photo.url
+    // imgUrl.value = 'https://api.cake803.cn' + userStore.resp_uploadImage.data.url
+    // user.iconImage = 'https://api.cake803.cn' + userStore.resp_uploadImage.data.url
+    imgUrl.value = 'http://192.168.100.7:7001' + userStore.resp_uploadImage.data.url
+    user.iconImage = 'http://192.168.100.7:7001' + userStore.resp_uploadImage.data.url
   } else {
   }
-  console.log(resp_upload_photo)
 }
 
 // 上传照片
@@ -192,14 +193,15 @@ const handleFileUpload = async (file, fileList) => {
 
   // TODO:图片链接前缀
   // post上传用户头像
-  const resp_upload_picture = await userStore.uploadImage(formData)
-  if (resp_upload_picture.errCode == 1000) {
+  await userStore.uploadImage(formData)
+  if (userStore.resp_uploadImage.errCode == 1000) {
     // 获取上传图片的路径
-    imgUrl.value = 'http://192.168.100.7:7001' + resp_upload_picture.url
-    user.iconImage = 'http://192.168.100.7:7001' + resp_upload_picture.url
+    // imgUrl.value = 'https://api.cake803.cn' + userStore.resp_uploadImage.data.url
+    // user.iconImage = 'https://api.cake803.cn' + userStore.resp_uploadImage.data.url
+    imgUrl.value = 'http://192.168.100.7:7001' + userStore.resp_uploadImage.data.url
+    user.iconImage = 'http://192.168.100.7:7001' + userStore.resp_uploadImage.data.url
   } else {
   }
-  console.log(resp_upload_picture)
 }
 
 // 性别选择
@@ -234,7 +236,6 @@ const user = reactive({
   iconImage: 'src/assets/imgurl.jpg',
   ...userStore.userData
 })
-console.log(user)
 
 // get请求获取用户信息
 onBeforeMount(async () => {
@@ -246,7 +247,6 @@ onBeforeMount(async () => {
   } else {
     input_gender.value = 'Male'
   }
-  console.log(user)
 })
 
 // 保存修改按钮

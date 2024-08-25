@@ -32,15 +32,22 @@ export const useUserStore = defineStore(
           Object.assign(userData, resp_getUserInfo.data)
         }
 
-        // 当用户信息获取完毕时，才跳转home页
-        if (userData.name != null) {
-          router.push({
-            path: '/home'
-          })
-        }
+        // // 当用户信息获取完毕时，才跳转home页
+        // if (userData.name != null) {
+        //   router.push({
+        //     path: '/home'
+        //   })
+        // }
       } else {
         Toast(this.resp_signIn.errMsg)
       }
+      // 当用户信息获取完毕时，才跳转home页
+      if (userData.name != null) {
+        router.push({
+          path: '/home'
+        })
+      }
+
       return token
     }
 
@@ -61,9 +68,10 @@ export const useUserStore = defineStore(
       return await request.put('/onlineShop/updateUserInfo', data)
     }
 
+    const resp_uploadImage = reactive({})
     // post更改头像
     async function uploadImage(data) {
-      return await request.post('/onlineShop/uploadImage', data)
+      Object.assign(resp_uploadImage, await request.post('/onlineShop/uploadImage', data))
     }
 
     // async function checkToken() {
@@ -83,6 +91,7 @@ export const useUserStore = defineStore(
       resp_getUserInfo,
       getUserInfo,
       updateUserInfo,
+      resp_uploadImage,
       uploadImage
       //   checkToken
     }
