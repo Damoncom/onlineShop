@@ -62,11 +62,10 @@
 </template>
 
 <script setup>
-import { ref, onBeforeMount, reactive, toRaw } from 'vue'
+import { ref, onBeforeMount, reactive } from 'vue'
 import TabBar from '@/components/tabBar'
 import Nav from '@/components/nav'
 import { useRouter, useRoute } from 'vue-router'
-import { getOrderList } from '@/utils/api'
 import { useCartStore } from '@/stores/cart'
 import { useOrderStore } from '@/stores/order'
 
