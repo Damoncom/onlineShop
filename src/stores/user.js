@@ -64,10 +64,19 @@ export const useUserStore = defineStore(
       return await request.put('/onlineShop/updateUserInfo', data)
     }
 
-    const resp_uploadImage = reactive({})
     // post更改头像
+    const resp_uploadImage = reactive({})
     async function uploadImage(data) {
       Object.assign(resp_uploadImage, await request.post('/onlineShop/uploadImage', data))
+    }
+
+    // get验证码
+    const resp_getVerificationCode = reactive({})
+    async function getVerificationCode(data) {
+      Object.assign(
+        resp_getVerificationCode,
+        await request.get('/onlineShop/getVerificationCode', { params: { phoneNumber: data } })
+      )
     }
 
     // async function checkToken() {
@@ -88,7 +97,9 @@ export const useUserStore = defineStore(
       getUserInfo,
       updateUserInfo,
       resp_uploadImage,
-      uploadImage
+      uploadImage,
+      resp_getVerificationCode,
+      getVerificationCode
       //   checkToken
     }
   },

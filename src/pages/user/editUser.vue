@@ -157,10 +157,10 @@ const takePhoto = async () => {
   await userStore.uploadImage(formData1)
   if (userStore.resp_uploadImage.errCode == 1000) {
     // 获取上传图片的路径
-    // imgUrl.value = 'https://api.cake803.cn' + userStore.resp_uploadImage.data.url
-    // user.iconImage = 'https://api.cake803.cn' + userStore.resp_uploadImage.data.url
-    imgUrl.value = 'http://192.168.100.7:7001' + userStore.resp_uploadImage.data.url
-    user.iconImage = 'http://192.168.100.7:7001' + userStore.resp_uploadImage.data.url
+    imgUrl.value = 'https://api.cake803.cn' + userStore.resp_uploadImage.data.url
+    user.iconImage = 'https://api.cake803.cn' + userStore.resp_uploadImage.data.url
+    // imgUrl.value = 'http://192.168.100.7:7001' + userStore.resp_uploadImage.data.url
+    // user.iconImage = 'http://192.168.100.7:7001' + userStore.resp_uploadImage.data.url
   } else {
   }
 }
@@ -195,10 +195,10 @@ const handleFileUpload = async (file, fileList) => {
   await userStore.uploadImage(formData)
   if (userStore.resp_uploadImage.errCode == 1000) {
     // 获取上传图片的路径
-    // imgUrl.value = 'https://api.cake803.cn' + userStore.resp_uploadImage.data.url
-    // user.iconImage = 'https://api.cake803.cn' + userStore.resp_uploadImage.data.url
-    imgUrl.value = 'http://192.168.100.7:7001' + userStore.resp_uploadImage.data.url
-    user.iconImage = 'http://192.168.100.7:7001' + userStore.resp_uploadImage.data.url
+    imgUrl.value = 'https://api.cake803.cn' + userStore.resp_uploadImage.data.url
+    user.iconImage = 'https://api.cake803.cn' + userStore.resp_uploadImage.data.url
+    // imgUrl.value = 'http://192.168.100.7:7001' + userStore.resp_uploadImage.data.url
+    // user.iconImage = 'http://192.168.100.7:7001' + userStore.resp_uploadImage.data.url
   } else {
   }
 }

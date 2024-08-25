@@ -96,12 +96,14 @@ import { useUserStore } from '@/stores/user'
 import { useLocationStore } from '@/stores/location'
 import { useCartStore } from '@/stores/cart'
 import { useOrderStore } from '@/stores/order'
+import { useNocticeStore } from '@/stores/notification'
 
 // 接口
 const userStore = useUserStore()
 const locationStore = useLocationStore()
 const cartStore = useCartStore()
 const orderStore = useOrderStore()
+const noticeStore = useNocticeStore()
 
 const router = useRouter()
 const route = useRoute()
@@ -214,7 +216,6 @@ onBeforeMount(async () => {
     item.locationId = locationStore.locationList[0].id
   })
   Object.assign(queryOrder, queryOrderPre)
-  console.log(queryOrderPre)
 })
 
 const queryOrderId = reactive([])
@@ -236,32 +237,24 @@ const linkToDone = async () => {
     Reflect.set(payment, 'orderIdList', ['order_' + time + '_' + item.goodsId])
   })
 
-  console.log(payment)
   // promise.all(并起发送请求)
   // post创建订单
-  const arrReq = queryOrder.map((item) => {
-    return axios({
-      method: 'post',
-      url: '/onlineShop/createOrder',
-      data: item,
-      headers: {
-        Authorization: `Bearer ${token_info}`,
-        'Content-Type': 'multipart/form-data'
-      }
-    })
+  const arrReq = queryOrder.map(async (item) => {
+    return await orderStore.createOrder(item)
   })
-
+  console.log(arrReq)
   const respList = await Promise.all(arrReq)
+  console.log(respList)
   const respStateList = respList.map((item) => {
-    if (item.data.errCode == 1000) return true
+    if (item.errCode == 1000) return true
     else return false
   })
   console.log(respStateList)
   if (!respStateList.includes(false)) {
     // 全部接口放回正确后需要操作
     console.log('创建所有订单success')
-    ;(await Promise.all(arrReq)).forEach((item) => {
-      queryOrderId.push(item.data.data.orderId)
+    respList.forEach((item) => {
+      queryOrderId.push(item.data.orderId)
     })
   }
   console.log(await Promise.all(arrReq))
@@ -270,20 +263,12 @@ const linkToDone = async () => {
 
   // 创建通知
   const arrReq2 = createNotice.map((item) => {
-    return axios({
-      method: 'post',
-      url: '/onlineShop/createNotification',
-      data: item,
-      headers: {
-        Authorization: `Bearer ${token_info}`,
-        'Content-Type': 'multipart/form-data'
-      }
-    })
+    return noticeStore.createNotification(item)
   })
 
   const respList2 = await Promise.all(arrReq2)
   const respStateList2 = respList2.map((item) => {
-    if (item.data.errCode == 1000) return true
+    if (item.errCode == 1000) return true
     else return false
   })
   console.log(respStateList2)

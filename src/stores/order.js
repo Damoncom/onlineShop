@@ -11,6 +11,13 @@ export const useOrderStore = defineStore(
       Object.assign(resp_calculateCost, await request.post('/onlineShop/calculateCost', data))
     }
 
+    // post创建订单
+    const resp_createOrder = reactive({})
+    async function createOrder(data) {
+      Object.assign(resp_createOrder, await request.post('/onlineShop/createOrder', data))
+      return resp_createOrder
+    }
+
     // get订单列表
     const orderList = reactive([])
     const resp_getOrderList = reactive({})
@@ -42,6 +49,8 @@ export const useOrderStore = defineStore(
     return {
       resp_calculateCost,
       calculateCost,
+      resp_createOrder,
+      createOrder,
       orderList,
       resp_getOrderList,
       getOrderList,

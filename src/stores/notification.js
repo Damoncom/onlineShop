@@ -6,10 +6,19 @@ import dayjs from 'dayjs'
 export const useNocticeStore = defineStore(
   'notice',
   () => {
-    const notification = reactive([])
-    const resp_getNotification = reactive({})
+    // post创建通知
+    const resp_createNotification = reactive({})
+    async function createNotification(data) {
+      Object.assign(
+        resp_createNotification,
+        await request.post('/onlineShop/createNotification', data)
+      )
+      return resp_createNotification
+    }
 
     // get通知列表
+    const notification = reactive([])
+    const resp_getNotification = reactive({})
     async function getNotification() {
       Object.assign(
         resp_getNotification,
@@ -32,7 +41,14 @@ export const useNocticeStore = defineStore(
       return await request.put('/onlineShop/readNotification', { id: data })
     }
 
-    return { notification, resp_getNotification, getNotification, readNotification }
+    return {
+      notification,
+      resp_getNotification,
+      resp_createNotification,
+      createNotification,
+      getNotification,
+      readNotification
+    }
   },
   {
     persist: true

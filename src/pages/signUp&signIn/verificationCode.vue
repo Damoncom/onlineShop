@@ -67,7 +67,6 @@
 import { ref, onMounted, nextTick, toRaw } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
-import axios from 'axios'
 import { Toast, Toast_Info } from '@/utils/extract'
 import { useUserStore } from '@/stores/user'
 
@@ -112,18 +111,15 @@ const phone = user.phoneNumber
 // 页面载入完毕获取验证码get请求
 onMounted(async () => {
   // get验证码
-  const { data: resp } = await axios({
-    method: 'get',
-    url: '/onlineShop/getVerificationCode',
-    params: {
-      phoneNumber: user.phoneNumber
-    },
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8'
-    }
-  })
-  Toast_Info('verificationCode：', resp.verificationCode, 'Valid for three minutes')
-  // alert(resp.verificationCode)
+  await userStore.getVerificationCode(user.phoneNumber)
+  if (userStore.resp_getVerificationCode.errCode == 1000) {
+    Toast_Info(
+      'verificationCode：' +
+        userStore.resp_getVerificationCode.verificationCode +
+        ' ,Valid for three minutes'
+    )
+  }
+  console.log(userStore.resp_getVerificationCode)
 })
 
 // 验证码框
