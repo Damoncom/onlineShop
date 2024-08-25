@@ -22,7 +22,6 @@
             :data-price="product.price"
             @click="chooseProduct(product)"
           >
-            <!-- TODO:图片显示问题 -->
             <div class="img_box">
               <img :src="product.image" class="product_img" />
             </div>

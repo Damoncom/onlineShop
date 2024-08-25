@@ -63,7 +63,6 @@
           </li>
         </ul>
       </div>
-      <!-- TODO:商品图片前缀地址去掉 -->
       <!-- recommend -->
       <div class="recommended">
         <div class="recommended_title">

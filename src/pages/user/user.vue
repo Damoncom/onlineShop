@@ -81,7 +81,6 @@ const route = useRoute()
 const navTitle = 'Profile'
 
 // 用户信息
-// TODO:默认照片
 const user = reactive({
   iconImage: 'src/assets/imgurl.jpg',
   ...userStore.userData
@@ -97,6 +96,8 @@ onBeforeMount(async () => {
 
   // get用户信息
   await userStore.getUserInfo()
+
+  console.log('user', user)
 })
 
 // 确认是Profile页面

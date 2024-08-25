@@ -60,7 +60,6 @@ export const useUserStore = defineStore(
     async function getUserInfo() {
       Object.assign(resp_getUserInfo, await request.get('/onlineShop/getUserInfo', { params: {} }))
       Object.assign(userData, resp_getUserInfo.data)
-      return await request.get('/onlineShop/getUserInfo', { params: {} })
     }
 
     // put更改用户信息

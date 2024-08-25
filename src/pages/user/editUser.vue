@@ -191,7 +191,6 @@ const handleFileUpload = async (file, fileList) => {
     return [f]
   }
 
-  // TODO:图片链接前缀
   // post上传用户头像
   await userStore.uploadImage(formData)
   if (userStore.resp_uploadImage.errCode == 1000) {
