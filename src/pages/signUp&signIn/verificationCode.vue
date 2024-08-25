@@ -122,7 +122,8 @@ onMounted(async () => {
       'Content-Type': 'application/json; charset=utf-8'
     }
   })
-  alert(resp.verificationCode)
+  Toast_Info('verificationCode：', resp.verificationCode, 'Valid for three minutes')
+  // alert(resp.verificationCode)
 })
 
 // 验证码框
