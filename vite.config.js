@@ -21,7 +21,7 @@ export default defineConfig({
       //   rewrite: (path) => path.replace(/^\/api/, '')
       // }
       '/onlineShop': {
-        target: 'http://192.168.100.7:7001',
+        target: 'http://192.168.100.9:7001',
         changeOrigin: true //是否跨域
         // rewrite: (path) => path.replace(/^\/onlineShop/, ''), //因为后端接口有onlineShop前缀，所以不需要替换
       }

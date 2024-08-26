@@ -58,6 +58,7 @@ import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
 import currency from 'currency.js'
 import { useCartStore } from '@/stores/cart'
+import { Toast } from '@/utils/extract'
 
 // 接口
 const cartStore = useCartStore()
@@ -112,12 +113,16 @@ const add = async (cart, arr) => {
 
 // 跳转到reviewPurchase页面
 const linkToReviewPurchase = () => {
-  router.push({
-    path: '/reviewPurchase',
-    query: {
-      sum: sumShow.value
-    }
-  })
+  if (cartStore.cartList.length == 0) {
+    Toast('You haven‘t added any products yet!')
+  } else {
+    router.push({
+      path: '/reviewPurchase',
+      query: {
+        sum: sumShow.value
+      }
+    })
+  }
 }
 
 onBeforeMount(async () => {

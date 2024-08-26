@@ -31,7 +31,7 @@
         <div class="address_box" @click="linkToLoaction">
           <div class="list">
             <div class="title">Address</div>
-            <div class="detail">{{ locationStore.locationList[0].location }}</div>
+            <div class="detail">{{ locationText }}</div>
           </div>
         </div>
         <div class="birthday_box">
@@ -69,6 +69,7 @@ import Nav from '@/components/nav'
 import { useRouter, useRoute } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { useLocationStore } from '@/stores/location'
+import { ref } from 'vue'
 
 // 接口
 const userStore = useUserStore()
@@ -86,6 +87,7 @@ const user = reactive({
   ...userStore.userData
 })
 
+const locationText = ref()
 onBeforeMount(async () => {
   // get地址信息
   const locationPost = reactive({
@@ -97,7 +99,11 @@ onBeforeMount(async () => {
   // get用户信息
   await userStore.getUserInfo()
 
-  console.log('user', user)
+  if (locationStore.locationList.length == 0) {
+    locationText.value = ''
+  } else {
+    locationStore.locationList[0].location
+  }
 })
 
 // 确认是Profile页面

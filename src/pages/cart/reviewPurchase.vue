@@ -28,7 +28,7 @@
             <i class="iconfont icon-dingwei"></i>
           </div>
           <div class="location_text">
-            <p class="text">{{ locationStore.locationList[0].location }}</p>
+            <p class="text">{{ locationText }}</p>
           </div>
           <div class="jump">
             <i class="iconfont icon-jiantou"></i>
@@ -130,18 +130,20 @@ onBeforeMount(async () => {
     })
   })
 
+  const locationText = ref(' ')
   // get配送地址
   const locationPost = reactive({
     size: 1,
     page: 1
   })
   await locationStore.getLocation(locationPost)
-  console.log(locationStore.locationList)
 
   // 判断是否有地址信息，若没有，则进行不了下一步
   if (locationStore.locationList.length == 0) {
+    locationText.value = ''
     isHaveLocation.value = false
   } else {
+    locationText.value = locationStore.locationList[0].location
     isHaveLocation.value = true
   }
 
@@ -168,7 +170,7 @@ const linkToPayment = () => {
       path: '/payment'
     })
   } else {
-    Toast('The delivery address cannot be empty')
+    Toast('The delivery address cannot be empty!')
     setTimeout(async () => {
       await nextTick()
     }, 3900)

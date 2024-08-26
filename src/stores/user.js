@@ -77,6 +77,7 @@ export const useUserStore = defineStore(
         resp_getVerificationCode,
         await request.get('/onlineShop/getVerificationCode', { params: { phoneNumber: data } })
       )
+      return resp_getVerificationCode
     }
 
     // async function checkToken() {
