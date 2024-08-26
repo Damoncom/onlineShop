@@ -3,7 +3,7 @@
     <Nav :init_title="navTitle" />
     <div class="content">
       <div class="img_box" @click="changeImg">
-        <img :src="user.iconImage" class="img" />
+        <img :src="imgUrl" class="img" />
         <i class="iconfont icon-zhaoxiangji1"></i>
       </div>
       <div class="frame">
@@ -119,6 +119,7 @@ import { useRouter, useRoute } from 'vue-router'
 import Nav from '@/components/nav'
 import { Toast_Success } from '@/utils/extract'
 import { useUserStore } from '@/stores/user'
+import demoIcon from '@/assets/imgurl.jpg'
 
 // 接口
 const userStore = useUserStore()
@@ -132,7 +133,7 @@ const navTitle = 'Edit Profile'
 // 修改头像
 const uploadInput = ref(null)
 const cameraInput = ref(null)
-const imgUrl = ref('src/assets/imgurl.jpg')
+const imgUrl = ref(demoIcon)
 
 // 控制蒙层和changeImg_box的出现
 let isChange = ref(false)
@@ -232,7 +233,7 @@ const selectGender = () => {
 const user = reactive({
   address: '',
   cardNum: '',
-  iconImage: 'src/assets/imgurl.jpg',
+  // iconImage: 'src/assets/imgurl.jpg',
   ...userStore.userData
 })
 
@@ -245,6 +246,10 @@ onBeforeMount(async () => {
     input_gender.value = 'Female'
   } else {
     input_gender.value = 'Male'
+  }
+
+  if (userStore.userData.iconImage != '') {
+    imgUrl.value = userStore.userData.iconImage
   }
 })
 

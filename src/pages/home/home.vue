@@ -253,6 +253,13 @@ import { useCartStore } from '@/stores/cart'
 import { useUserStore } from '@/stores/user'
 import { useNocticeStore } from '@/stores/notification'
 import { useHomeStore } from '@/stores/Home'
+import homeIcon from '@/assets/info_home.jpg'
+import notificationIcon from '@/assets/info_notification.jpg'
+import whishlistIcon from '@/assets/info_whishlist.jpg'
+import historyIcon from '@/assets/info_history.jpg'
+import settingIcon from '@/assets/info_setting.jpg'
+import supportIcon from '@/assets/info_support.jpg'
+import playstoreIcon from '@/assets/info_playstore.jpg'
 
 // 接口
 const userStore = useUserStore()
@@ -443,37 +450,37 @@ const useList = ref([
   {
     id: '1',
     name: 'Home',
-    img: 'src/assets/info_home.jpg'
+    img: homeIcon
   },
   {
     id: '2',
     name: 'Notification',
-    img: 'src/assets/info_notification.jpg'
+    img: notificationIcon
   },
   {
     id: '3',
     name: 'My Whishlist',
-    img: 'src/assets/info_whishlist.jpg'
+    img: whishlistIcon
   },
   {
     id: '4',
     name: 'Payment History',
-    img: 'src/assets/info_history.jpg'
+    img: historyIcon
   },
   {
     id: '5',
     name: 'Settings',
-    img: 'src/assets/info_setting.jpg'
+    img: settingIcon
   },
   {
     id: '6',
     name: 'Support Center',
-    img: 'src/assets/info_support.jpg'
+    img: supportIcon
   },
   {
     id: '7',
     name: 'Rate on Playstore',
-    img: 'src/assets/info_playstore.jpg'
+    img: playstoreIcon
   }
 ])
 

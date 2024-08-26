@@ -38,13 +38,6 @@ export const useUserStore = defineStore(
       } else {
         Toast(this.resp_signIn.errMsg)
       }
-      // 当用户信息获取完毕时，才跳转home页
-      if (userData.name != null) {
-        router.push({
-          path: '/home'
-        })
-      }
-
       return token
     }
 

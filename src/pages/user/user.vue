@@ -4,7 +4,7 @@
     <div class="content">
       <div class="user">
         <div class="details">
-          <img :src="user.iconImage" class="img" />
+          <img :src="originIcon" class="img" />
           <div class="info">
             <div class="name">{{ userStore.userData.name }}</div>
             <div class="emailAndphone">
@@ -63,13 +63,13 @@
   <TabBar :init_profile="isProfilePage" />
 </template>
 <script setup>
-import { onBeforeMount, reactive } from 'vue'
+import { onBeforeMount, reactive, ref } from 'vue'
 import TabBar from '@/components/tabBar'
 import Nav from '@/components/nav'
 import { useRouter, useRoute } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { useLocationStore } from '@/stores/location'
-import { ref } from 'vue'
+import demoIcon from '@/assets/imgurl.jpg'
 
 // 接口
 const userStore = useUserStore()
@@ -81,11 +81,12 @@ const route = useRoute()
 // 导入导航栏
 const navTitle = 'Profile'
 
+const originIcon = ref(demoIcon)
 // 用户信息
-const user = reactive({
-  iconImage: 'src/assets/imgurl.jpg',
-  ...userStore.userData
-})
+// const user = reactive({
+//   iconImage: '@/assets/imgurl.jpg',
+//   ...userStore.userData
+// })
 
 const locationText = ref()
 onBeforeMount(async () => {
@@ -96,13 +97,17 @@ onBeforeMount(async () => {
   })
   await locationStore.getLocation(locationPost)
 
-  // get用户信息
-  await userStore.getUserInfo()
-
   if (locationStore.locationList.length == 0) {
     locationText.value = ''
   } else {
     locationStore.locationList[0].location
+  }
+
+  // get用户信息
+  await userStore.getUserInfo()
+
+  if (userStore.userData.iconImage != '') {
+    originIcon.value = userStore.userData.iconImage
   }
 })
 
