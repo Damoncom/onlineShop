@@ -137,28 +137,37 @@ onUpdated(async () => {
   isRightPhone.value = checkphone
 
   // 判断密码的输入格式正确与否
-  const checkpwd = await checkPwd(user.value.pwd)
-  isRightPwd.value = checkpwd
+  if (user.value.pwd != '') {
+    isRightPwd.value = true
+  } else {
+    isRightPwd.value = false
+  }
+
+  // const checkpwd = await checkPwd(user.value.pwd)
+  // isRightPwd.value = checkpwd
 })
 
 // 创建账户按钮
-const createAccount = async () => {
-  await nextTick()
+const createAccount = () => {
+  console.log('yes')
 
   // 输入判断
-  if (isRightName.value === false) {
+  if (isRightName.value == false) {
     msg.value = 'Name cannot be empty'
-    return
+    Toast(msg.value)
+    return msg.value
   }
-  if (isRightPhone.value === false) {
+  if (isRightPhone.value == false) {
     msg.value = 'Incorrect phone number input'
-    return
+    Toast(msg.value)
+    return msg.value
   }
-  if (isRightPwd.value === false) {
+  if (isRightPwd.value == false) {
     msg.value = 'Incorrect password input'
-    return
+    Toast(msg.value)
+    return msg.value
   }
-  if (isRightPhone.value === true && isRightPwd.value === true && isRightName.value === true) {
+  if (isRightPhone.value == true && isRightPwd.value == true && isRightName.value == true) {
     create.value = true
 
     user.value.pwd = md5(user.value.pwd)
@@ -171,7 +180,8 @@ const createAccount = async () => {
     })
   }
 
-  if (isRightPhone.value === true && isRightPwd.value === true && isRightName.value === true) {
+  console.log('no')
+  if (isRightPhone.value == true && isRightPwd.value == true && isRightName.value == true) {
   } else {
     Toast(msg.value)
   }

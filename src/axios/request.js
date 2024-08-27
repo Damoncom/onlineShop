@@ -16,6 +16,7 @@ let token
 request.interceptors.request.use(
   (config) => {
     // 可以在这里添加请求头等信息
+    // 登录后才挂载user🍍
     if (!store) store = useUserStore()
     token = store.token
     if (token) {
