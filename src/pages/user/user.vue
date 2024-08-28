@@ -81,7 +81,13 @@ const route = useRoute()
 // 导入导航栏
 const navTitle = 'Profile'
 
-const originIcon = ref(demoIcon)
+const originIcon = ref()
+if (userStore.userData.iconImage != '@/assets/imgurl.jpg') {
+  originIcon.value = userStore.userData.iconImage
+} else {
+  originIcon.value = demoIcon
+}
+
 // 用户信息
 // const user = reactive({
 //   iconImage: '@/assets/imgurl.jpg',

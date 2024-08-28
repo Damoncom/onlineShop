@@ -133,7 +133,12 @@ const navTitle = 'Edit Profile'
 // 修改头像
 const uploadInput = ref(null)
 const cameraInput = ref(null)
-const imgUrl = ref(demoIcon)
+const imgUrl = ref()
+if (userStore.userData.iconImage != '@/assets/imgurl.jpg') {
+  imgUrl.value = userStore.userData.iconImage
+} else {
+  imgUrl.value = demoIcon
+}
 
 // 控制蒙层和changeImg_box的出现
 let isChange = ref(false)
