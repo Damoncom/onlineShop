@@ -30,9 +30,18 @@ const route = useRoute()
 // 回退到上一页
 const goBack = () => {
   router.beforeEach((to, from, next) => {
-    if (to.name == 'walkthrough' && isRemember_info == true) next({ name: 'home' })
+    if (to.name == 'order' && from.name == 'order') next({ name: 'home' })
     else next()
   })
+  router.beforeEach((to, from, next) => {
+    if (to.name == 'order_history' && from.name == 'order') next({ name: 'home' })
+    else next()
+  })
+  router.beforeEach((to, from, next) => {
+    if (to.name == 'done' && from.name == 'done') next({ name: 'home' })
+    else next()
+  })
+
   router.go(-1)
 }
 
