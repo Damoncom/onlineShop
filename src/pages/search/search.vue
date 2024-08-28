@@ -31,6 +31,7 @@
             class="history_item"
             v-for="(history, history_index) of historyList"
             :key="history_index"
+            @click="reSearch(history, $event)"
           >
             <p class="item_text">{{ history.name }}</p>
           </li>
@@ -256,11 +257,33 @@ const cancel = () => {
   goodsStore.goodsList.length = 0
 }
 
+// 历史记录重新搜索
+const reSearch = async (history, event) => {
+  inputText.value = history.name
+
+  const data = {
+    size: 10,
+    page: 1,
+    barCode: '',
+    name: history.name
+  }
+  // get商品列表信息
+  await goodsStore.getGoodsList(data)
+
+  if (goodsStore.resp_getGoodsList.errCode == 1000) {
+    count_product.value = goodsStore.goodsList.length
+    isWay.value = true
+  } else {
+    isWay.value = false
+  }
+
+  count_product.value = goodsStore.goodsList.length
+  event.target.blur()
+}
+
 // 清空搜索历史
 const deleteHistory = async () => {
   await nextTick()
-
-  isWay.value = true
 
   historyList.length = 0
 
@@ -429,6 +452,9 @@ const onLoad = debounce(async () => {
           }
           .search_input:focus ~ .icon-sousuo {
             color: #a456dd;
+          }
+          .search_input::-webkit-search-cancel-button {
+            -webkit-appearance: none; /*此处只是去掉默认的小×*/
           }
         }
 
