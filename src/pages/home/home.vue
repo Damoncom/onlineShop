@@ -236,7 +236,7 @@
           <p class="text">Submit</p>
         </div>
       </div>
-      <div class="button_box1">
+      <div class="button_box1" @click="cancelOutLogin">
         <div class="create_button">
           <p class="text">Cancel</p>
         </div>
@@ -534,6 +534,11 @@ const linkToTest = () => {
   router.push({
     path: '/test'
   })
+}
+
+const cancelOutLogin = () => {
+  isLogOut.value = false
+  isMask.value = false
 }
 
 // 在 Vue 组件或任何 JS 文件中
