@@ -68,6 +68,7 @@ import Nav from '@/components/nav'
 import { useRouter, useRoute } from 'vue-router'
 import { useCartStore } from '@/stores/cart'
 import { useOrderStore } from '@/stores/order'
+import { Toast_Success } from '@/utils/extract'
 
 // 接口
 const cartStore = useCartStore()
@@ -112,6 +113,7 @@ const reOrder = async (order) => {
     amount: '1'
   })
   await cartStore.editCart(addToCartPost)
+  Toast_Success('You have already Added to cart again!')
 }
 </script>
 

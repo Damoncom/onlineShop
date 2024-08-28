@@ -238,7 +238,6 @@ const selectGender = () => {
 const user = reactive({
   address: '',
   cardNum: '',
-  // iconImage: 'src/assets/imgurl.jpg',
   ...userStore.userData
 })
 
