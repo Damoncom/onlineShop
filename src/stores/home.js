@@ -12,6 +12,7 @@ export const useHomeStore = defineStore(
     async function getHomeData() {
       Object.assign(resp_getHomeData, await request.get('/onlineShop/getHomeData', { params: {} }))
       Object.assign(dataList, resp_getHomeData.data)
+      return resp_getHomeData
     }
 
     return { dataList, resp_getHomeData, getHomeData }

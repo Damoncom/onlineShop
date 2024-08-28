@@ -97,6 +97,9 @@ import { useLocationStore } from '@/stores/location'
 import { useCartStore } from '@/stores/cart'
 import { useOrderStore } from '@/stores/order'
 import { useNocticeStore } from '@/stores/notification'
+import visaIcon from '@/assets/visa_bottom.jpg'
+import changeIcon from '@/assets/change.jpg'
+import paypalIcon from '@/assets/paypal_logo.jpg'
 
 // 接口
 const userStore = useUserStore()
@@ -114,7 +117,7 @@ const navTitle = 'Payment'
 // 余额
 const balance = ref(370000.0)
 
-const logo = ref('src/assets/visa_bottom.jpg')
+const logo = ref(visaIcon)
 
 // 选择银行卡
 let isVisa = ref(true)
@@ -124,19 +127,19 @@ const chooseVisa = () => {
   isVisa.value = true
   isPaypal.value = false
   isChange.value = false
-  logo.value = 'src/assets/visa_bottom.jpg'
+  logo.value = visaIcon
 }
 const choosePaypal = () => {
   isVisa.value = false
   isPaypal.value = true
   isChange.value = false
-  logo.value = 'src/assets/paypal_logo.jpg'
+  logo.value = paypalIcon
 }
 const chooseChange = () => {
   isVisa.value = false
   isPaypal.value = false
   isChange.value = true
-  logo.value = 'src/assets/change.jpg'
+  logo.value = changeIcon
 }
 
 // 银行卡的输入

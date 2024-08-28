@@ -44,6 +44,7 @@ export const useOrderStore = defineStore(
     const resp_pay = reactive({})
     async function pay(data) {
       Object.assign(resp_pay, await request.post('/onlineShop/pay', data))
+      return resp_pay
     }
 
     return {
