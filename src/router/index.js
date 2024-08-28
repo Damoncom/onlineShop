@@ -169,12 +169,8 @@ const router = createRouter({
   ]
 })
 
-let store = null
-let token
-// 登录后才挂载user🍍
-if (!store) store = useUserStore()
-token = store.token
-const isRemember_info = store.isRemember
+const isRemember_info = JSON.parse(localStorage.getItem('isRemember'))
+
 // 全局前置守卫
 router.beforeEach((to, from, next) => {
   if (to.name == 'walkthrough' && isRemember_info == true) next({ name: 'home' })

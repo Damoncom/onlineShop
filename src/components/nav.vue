@@ -21,7 +21,6 @@
 
 <script setup>
 import { useRouter, useRoute } from 'vue-router'
-
 const props = defineProps(['init_title'])
 // console.log(props)
 
@@ -30,6 +29,10 @@ const route = useRoute()
 
 // 回退到上一页
 const goBack = () => {
+  router.beforeEach((to, from, next) => {
+    if (to.name == 'walkthrough' && isRemember_info == true) next({ name: 'home' })
+    else next()
+  })
   router.go(-1)
 }
 

@@ -214,7 +214,7 @@ onBeforeMount(async () => {
 // 搜索功能(回车后添加li)
 const inputText = ref('')
 const count = ref(historyList.length)
-const search = async () => {
+const search = async (event) => {
   await nextTick()
 
   isWay.value = true
@@ -245,6 +245,8 @@ const search = async () => {
   }
 
   count_product.value = goodsStore.goodsList.length
+
+  event.target.blur()
 }
 
 // 取消功能

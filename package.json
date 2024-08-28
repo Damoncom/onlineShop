@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "dev:prod": "vite --mode production",
     "dev": "vite ",
     "prod": "vite",
     "build": "vite build --mode production",

@@ -20,6 +20,7 @@ export const useUserStore = defineStore(
       isRemember.value = data.isRemember
       if (this.resp_signIn.errCode == 1000) {
         localStorage.setItem('token', this.resp_signIn.data.token)
+        localStorage.setItem('isRemember', data.isRemember)
         Toast_Success('Successfully!')
 
         // get用户信息
