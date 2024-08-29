@@ -531,9 +531,9 @@ const linkToSignIn = () => {
 }
 
 const linkToTest = () => {
-  router.push({
-    path: '/test'
-  })
+  // router.push({
+  //   path: '/test'
+  // })
 }
 
 const cancelOutLogin = () => {

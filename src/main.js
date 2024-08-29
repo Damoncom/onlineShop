@@ -11,10 +11,10 @@ import { PullRefresh } from 'vant'
 import App from './App.vue'
 import router from './router/index'
 
-import VConsole from 'vconsole'
-if (process.env.NODE_ENV !== 'local') {
-  const vConsole = new VConsole({ theme: 'dark' })
-}
+// import VConsole from 'vconsole'
+// if (process.env.NODE_ENV !== 'local') {
+//   const vConsole = new VConsole({ theme: 'dark' })
+// }
 
 const app = createApp(App)
 
